@@ -1,0 +1,9 @@
+# Ignore everything
+/*
+
+# Except for docs directory and .gitignore
+!/docs/
+!/.gitignore
+
+# macOS system files
+.DS_Store 
