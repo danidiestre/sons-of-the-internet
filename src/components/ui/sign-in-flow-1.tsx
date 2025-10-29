@@ -480,9 +480,7 @@ export function MiniNavbar() {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-col items-center space-y-4 mt-4 w-full">
-          {signupButtonElement}
-        </div>
+        {/* Mobile: intentionally no CTA here */}
       </div>
     </header>
   );
