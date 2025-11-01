@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, ReactNode } from 'react';
+import React, { useEffect, useRef, ReactNode, useState, useCallback, useMemo } from 'react';
 
 interface GlowCardProps {
   children: ReactNode;
@@ -25,6 +25,32 @@ const sizeMap = {
   lg: 'w-80 h-96'
 };
 
+// Check if device is mobile
+const isMobile = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+// Throttle function for performance
+const throttle = <T extends (...args: any[]) => void>(func: T, delay: number): T => {
+  let timeoutId: NodeJS.Timeout | null = null;
+  let lastExecTime = 0;
+  return ((...args: any[]) => {
+    const currentTime = Date.now();
+    
+    if (currentTime - lastExecTime > delay) {
+      func(...args);
+      lastExecTime = currentTime;
+    } else {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func(...args);
+        lastExecTime = Date.now();
+      }, delay - (currentTime - lastExecTime));
+    }
+  }) as T;
+};
+
 const GlowCard: React.FC<GlowCardProps> = ({ 
   children, 
   className = '', 
@@ -36,20 +62,32 @@ const GlowCard: React.FC<GlowCardProps> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
-    const syncPointer = (e: PointerEvent) => {
-      const { clientX: x, clientY: y } = e;
-      if (cardRef.current) {
-        cardRef.current.style.setProperty('--x', x.toFixed(2));
-        cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-        cardRef.current.style.setProperty('--y', y.toFixed(2));
-        cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
-      }
-    };
-    document.addEventListener('pointermove', syncPointer);
-    return () => document.removeEventListener('pointermove', syncPointer);
+    setIsMobileDevice(isMobile());
   }, []);
+
+  const syncPointer = useCallback((e: PointerEvent) => {
+    if (!cardRef.current) return;
+    const { clientX: x, clientY: y } = e;
+    cardRef.current.style.setProperty('--x', x.toFixed(2));
+    cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
+    cardRef.current.style.setProperty('--y', y.toFixed(2));
+    cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+  }, []);
+
+  // Throttle pointer events for better performance (16ms ≈ 60fps)
+  const throttledSyncPointer = useCallback(throttle(syncPointer, 16), [syncPointer]);
+
+  useEffect(() => {
+    // Only attach pointer listener when hovering and not on mobile
+    if (!isHovered || isMobileDevice) return;
+
+    document.addEventListener('pointermove', throttledSyncPointer, { passive: true });
+    return () => document.removeEventListener('pointermove', throttledSyncPointer);
+  }, [isHovered, isMobileDevice, throttledSyncPointer]);
 
   const { base, spread } = glowColorMap[glowColor];
 
@@ -85,17 +123,24 @@ const GlowCard: React.FC<GlowCardProps> = ({
       backgroundColor: 'var(--backdrop, transparent)',
       backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
       backgroundPosition: '50% 50%',
-      backgroundAttachment: 'fixed',
+      // Use 'scroll' on mobile to avoid performance issues, 'fixed' on desktop
+      backgroundAttachment: isMobileDevice ? 'scroll' : 'fixed',
       border: 'var(--border-size) solid var(--backup-border)',
       position: 'relative' as const,
-      touchAction: 'none' as const,
+      // Remove touchAction: 'none' to allow scrolling on mobile
+      // Use 'manipulation' for better touch performance without blocking scroll
+      touchAction: 'manipulation',
+      willChange: isHovered && !isMobileDevice ? 'background-image' : 'auto',
+      // Prevent scroll chaining on mobile for better scroll performance
+      overscrollBehavior: 'contain',
     };
     if (width !== undefined) baseStyles.width = typeof width === 'number' ? `${width}px` : width;
     if (height !== undefined) baseStyles.height = typeof height === 'number' ? `${height}px` : height;
     return baseStyles;
   };
 
-  const beforeAfterStyles = `
+  // Generate CSS with mobile-aware background-attachment (recompute when isMobileDevice changes)
+  const beforeAfterStyles = useMemo(() => `
     [data-glow]::before,
     [data-glow]::after {
       pointer-events: none;
@@ -104,7 +149,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       inset: calc(var(--border-size) * -1);
       border: var(--border-size) solid transparent;
       border-radius: calc(var(--radius) * 1px);
-      background-attachment: fixed;
+      background-attachment: ${isMobileDevice ? 'scroll' : 'fixed'};
       background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
       background-repeat: no-repeat;
       background-position: 50% 50%;
@@ -155,7 +200,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       inset: -10px;
       border-width: 10px;
     }
-  `;
+  `, [isMobileDevice]);
 
   return (
     <>
@@ -164,6 +209,8 @@ const GlowCard: React.FC<GlowCardProps> = ({
         ref={cardRef}
         data-glow
         style={getInlineStyles()}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={`
           ${getSizeClasses()}
           ${!customSize ? 'aspect-[3/4]' : ''}
