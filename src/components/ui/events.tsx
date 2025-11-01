@@ -118,7 +118,7 @@ export function EventsSection() {
     <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
       <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
         <div className="mb-8">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight">Events</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Events</h3>
           <p className="text-white/60 mt-2">Mark your digital calendar. These moments only happen IRL.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">

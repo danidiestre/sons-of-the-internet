@@ -7,6 +7,7 @@ interface TextShimmerProps {
   children: string;
   as?: React.ElementType;
   className?: string;
+  style?: React.CSSProperties;
   duration?: number;
   spread?: number;
 }
@@ -15,6 +16,7 @@ export function TextShimmer({
   children,
   as: Component = "p",
   className,
+  style,
   duration = 2,
   spread = 2,
 }: TextShimmerProps) {
@@ -43,6 +45,7 @@ export function TextShimmer({
       style={{
         "--spread": `${dynamicSpread}px`,
         backgroundImage: `var(--bg), linear-gradient(var(--base-color), var(--base-color))`,
+        ...style,
       } as React.CSSProperties}
     >
       {children}

@@ -19,13 +19,13 @@ export default function SponsorsPage() {
               reverse={false}
             />
           </div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,1)_0%,_transparent_100%)]" />
-          <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.3)_0%,_rgba(0,0,0,0)_70%)]" />
+          <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black/60 to-transparent" />
         </div>
 
-        <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-12 sm:pt-20">
+        <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-16 sm:pt-28">
           <MiniNavbar />
-          <div className="flex flex-col items-center justify-center h-full py-12 sm:py-20">
+          <div className="flex flex-col items-center justify-center h-full py-16 sm:py-24">
             <div className="w-full">
               <div className="w-full mx-auto max-w-2xl py-8 sm:py-12 text-center">
                 <div className="space-y-2">
@@ -40,7 +40,7 @@ export default function SponsorsPage() {
       {/* Why Partner section */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">Why partner with us?</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Why partner with us?</h3>
           <div className="space-y-8">
             <div className="flex items-start gap-4">
               <span className="text-white/50 select-none">01.</span>
@@ -69,7 +69,7 @@ export default function SponsorsPage() {
       {/* Who We Work With */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">Who we work with</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Who we work with</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             <GlowCard className="bg-white/5 p-4" glowColor="purple" customSize>
               <div className="space-y-2">
@@ -101,7 +101,7 @@ export default function SponsorsPage() {
       {/* Partnership Packages */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">Partnership packages</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Partnership packages</h3>
           <div className="grid grid-cols-1 gap-5 sm:gap-6">
             <GlowCard className="bg-white/5 p-5 sm:p-6" glowColor="purple" customSize>
               <div className="space-y-2">
@@ -130,7 +130,7 @@ export default function SponsorsPage() {
       {/* What You Receive */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">What you receive</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>What you receive</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             <div>
               <p className="text-white font-medium mb-4">During Events</p>
@@ -155,7 +155,7 @@ export default function SponsorsPage() {
       {/* Final CTA */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight">Build something that matters</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Build something that matters</h3>
           <p className="text-white/70 mt-3">Not another sponsorship.</p>
           <p className="text-white/70">A shared moment of relevance.</p>
           <div className="mt-8">

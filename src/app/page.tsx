@@ -12,7 +12,7 @@ export default function Home() {
       {/* Final CTA */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight">Build something that matters</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Build something that matters</h3>
           <p className="text-white/70 mt-3">Not another communty.</p>
           <p className="text-white/70">Join the new generation of builders now</p>
           <div className="mt-8">

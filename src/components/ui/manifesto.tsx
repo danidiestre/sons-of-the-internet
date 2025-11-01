@@ -4,7 +4,7 @@ export function ManifestoSection() {
   return (
     <section id="1" className="w-full scroll-mt-32 md:scroll-mt-40">
       <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-10 sm:py-12">
-        <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">The Manifesto</h3>
+        <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>The Manifesto</h3>
         <div className="space-y-8">
           <div className="flex items-start gap-4">
             <span className="text-white/50 select-none">01</span>

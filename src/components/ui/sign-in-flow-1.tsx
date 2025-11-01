@@ -48,7 +48,7 @@ export const CanvasRevealEffect = ({
 }) => {
   return (
     <div className={cn("h-full relative w-full", containerClassName)}>
-      <div className="h-full w-full">
+      <div className="h-full w-full relative z-0">
         <DotMatrix
           colors={colors ?? [[0, 255, 255]]}
           dotSize={dotSize ?? 3}
@@ -63,7 +63,7 @@ export const CanvasRevealEffect = ({
         />
       </div>
       {showGradient && (
-         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10" />
       )}
     </div>
   );
@@ -355,7 +355,17 @@ const Shader: React.FC<ShaderProps> = ({ source, uniforms, maxFps = 60 }) => {
   }
 
   return (
-    <Canvas className="absolute inset-0  h-full w-full" gl={{ antialias: true, powerPreference: "high-performance", alpha: true }}>
+    <Canvas 
+      className="absolute inset-0 h-full w-full" 
+      gl={{ 
+        antialias: true, 
+        powerPreference: "high-performance", 
+        alpha: true,
+        preserveDrawingBuffer: false,
+        failIfMajorPerformanceCaveat: false
+      }}
+      style={{ zIndex: 0 }}
+    >
       <ShaderMaterial source={source} uniforms={uniforms} maxFps={maxFps} />
     </Canvas>
   );

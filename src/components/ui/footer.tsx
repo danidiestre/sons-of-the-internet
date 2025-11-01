@@ -6,8 +6,19 @@ export function Footer() {
       <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
         <div className="space-y-8">
           <div>
-            <h4 className="text-white text-lg sm:text-xl font-semibold tracking-tight">Sons of The Internet</h4>
-            <p className="text-white/60 mr-12 mt-2">A global community of digital natives who build, create, and connect beyond the web.</p>
+            <h4 className="text-white text-lg sm:text-xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Sons of The Internet</h4>
+            <p className="text-white/60 mr-12 mt-2" style={{ fontFamily: 'var(--font-space-mono)' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
+            
+            <div className="flex mt-4">
+              <pre className="text-white/40 text-xs font-mono whitespace-pre leading-tight">
+{`    _____ ____  _   _ _____ 
+   / ____/ __ \\| \\ | / ____|
+  | (___| |  | |  \\| (___ 
+   \\___ \\| |  | | . \` |\\___ \\
+   ____) | |__| | |\\  |____) |
+  |_____/ \\____/|_| \\_|_____/`}
+              </pre>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
