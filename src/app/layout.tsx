@@ -23,7 +23,7 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sons of the Internet",
+  title: "SOTI Family",
   description: "We organize 1-week houses for people who builds things",
   icons: {
     icon: [

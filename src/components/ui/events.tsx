@@ -27,7 +27,7 @@ const EVENTS: EventItem[] = [
     title: "Barcelona Winter Edition",
     location: "Barcelona, Spain",
     cta: "VIEW DETAILS →",
-    image: "/events/barcelona.png",
+    image: "/events/barcelona-1.png",
     alt: "Barcelona, Spain",
     href: "https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link",
     badge: "FEW SPOTS LEFT",
