@@ -51,8 +51,12 @@ export function BarcelonaHouseSection() {
         ref={containerRef}
         className="relative w-full flex justify-center items-center"
         style={{
-          transform: `scale(${scale})`,
+          transform: `scale3d(${scale}, ${scale}, 1)`,
           transition: "transform 0.1s ease-out",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transformStyle: "preserve-3d",
         }}
       >
         <div className="w-full px-4 sm:px-6 md:px-8">
@@ -64,8 +68,13 @@ export function BarcelonaHouseSection() {
                   alt="Barcelona House"
                   fill
                   className="object-cover"
-                  sizes="100vw"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 85vw, 80vw"
+                  quality={100}
                   priority
+                  unoptimized={true}
+                  style={{
+                    imageRendering: 'auto',
+                  } as React.CSSProperties}
                 />
               </div>
             </div>
