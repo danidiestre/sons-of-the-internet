@@ -24,7 +24,7 @@ const spaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   title: "Sons of the Internet",
-  description: "We were raised by the web. Now we log off together.",
+  description: "We organize 1-week houses for people who builds things",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} antialiased`}
+        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} antialiased bg-black`}
       >
         {children}
         <SpeedInsights />

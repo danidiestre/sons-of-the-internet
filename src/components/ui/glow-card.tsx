@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, ReactNode, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, ReactNode, useState, useMemo } from 'react';
 
 interface GlowCardProps {
   children: ReactNode;
@@ -32,10 +32,11 @@ const isMobile = () => {
 };
 
 // Throttle function for performance
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const throttle = <T extends (...args: any[]) => void>(func: T, delay: number): T => {
   let timeoutId: NodeJS.Timeout | null = null;
   let lastExecTime = 0;
-  return ((...args: any[]) => {
+  return ((...args: Parameters<T>) => {
     const currentTime = Date.now();
     
     if (currentTime - lastExecTime > delay) {
@@ -63,31 +64,26 @@ const GlowCard: React.FC<GlowCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
-
-  useEffect(() => {
-    setIsMobileDevice(isMobile());
-  }, []);
-
-  const syncPointer = useCallback((e: PointerEvent) => {
-    if (!cardRef.current) return;
-    const { clientX: x, clientY: y } = e;
-    cardRef.current.style.setProperty('--x', x.toFixed(2));
-    cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
-    cardRef.current.style.setProperty('--y', y.toFixed(2));
-    cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
-  }, []);
-
-  // Throttle pointer events for better performance (16ms ≈ 60fps)
-  const throttledSyncPointer = useCallback(throttle(syncPointer, 16), [syncPointer]);
+  const [isMobileDevice] = useState(() => isMobile());
 
   useEffect(() => {
     // Only attach pointer listener when hovering and not on mobile
     if (!isHovered || isMobileDevice) return;
 
+    // Throttle pointer events for better performance (16ms ≈ 60fps)
+    const throttledSyncPointer = throttle((e: PointerEvent) => {
+      const currentCard = cardRef.current;
+      if (!currentCard) return;
+      const { clientX: x, clientY: y } = e;
+      currentCard.style.setProperty('--x', x.toFixed(2));
+      currentCard.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
+      currentCard.style.setProperty('--y', y.toFixed(2));
+      currentCard.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
+    }, 16);
+
     document.addEventListener('pointermove', throttledSyncPointer, { passive: true });
     return () => document.removeEventListener('pointermove', throttledSyncPointer);
-  }, [isHovered, isMobileDevice, throttledSyncPointer]);
+  }, [isHovered, isMobileDevice]);
 
   const { base, spread } = glowColorMap[glowColor];
 
@@ -96,8 +92,8 @@ const GlowCard: React.FC<GlowCardProps> = ({
     return sizeMap[size];
   };
 
-  const getInlineStyles = () => {
-    const baseStyles: any = {
+  const getInlineStyles = (): React.CSSProperties & Record<string, string | number> => {
+    const baseStyles: React.CSSProperties & Record<string, string | number> = {
       '--base': base,
       '--spread': spread,
       '--radius': '14',

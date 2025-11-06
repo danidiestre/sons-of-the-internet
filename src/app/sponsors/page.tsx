@@ -39,14 +39,14 @@ export default function SponsorsPage() {
       </section>
       {/* Why Partner section */}
       <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
+        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-8 sm:py-12">
           <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Why partner with us?</h3>
           <div className="space-y-8">
             <div className="flex items-start gap-4">
               <span className="text-white/50 select-none">01.</span>
               <div>
                 <p className="text-white font-medium">Access</p>
-                <p className="text-white/80 leading-relaxed">We curate presence. Every guest, every brand, every space is intentional. This is not about visibility. It's about belonging where the right people gather.</p>
+                <p className="text-white/80 leading-relaxed">We curate presence. Every guest, every brand, every space is intentional. This is not about visibility. It&apos;s about belonging where the right people gather.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -73,19 +73,13 @@ export default function SponsorsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             <GlowCard className="bg-white/5 p-4" glowColor="purple" customSize>
               <div className="space-y-2">
-                <p className="text-white font-medium">Venture Capital & Angel Syndicates</p>
+                <p className="text-white font-medium">Venture Capital Funds</p>
                 <p className="text-white/80 text-sm leading-relaxed">Early investors seeking proximity to emerging founders and builders.</p>
-              </div>
-            </GlowCard>
-            <GlowCard className="bg-white/5 p-4" glowColor="blue" customSize>
-              <div className="space-y-2">
-                <p className="text-white font-medium">Accelerators & Incubators</p>
-                <p className="text-white/80 text-sm leading-relaxed">Programs looking to attract and connect with high-intent talent.</p>
               </div>
             </GlowCard>
             <GlowCard className="bg-white/5 p-4" glowColor="green" customSize>
               <div className="space-y-2">
-                <p className="text-white font-medium">Tech Companies & SaaS Tools</p>
+                <p className="text-white font-medium">Tech Companies</p>
                 <p className="text-white/80 text-sm leading-relaxed">Brands that understand influence begins with trust, not impressions.</p>
               </div>
             </GlowCard>
@@ -100,7 +94,7 @@ export default function SponsorsPage() {
       </section>
       {/* Partnership Packages */}
       <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
+        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-4 sm:py-16">
           <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Partnership packages</h3>
           <div className="grid grid-cols-1 gap-5 sm:gap-6">
             <GlowCard className="bg-white/5 p-5 sm:p-6" glowColor="purple" customSize>
@@ -124,31 +118,6 @@ export default function SponsorsPage() {
                 <p className="text-white/80 leading-relaxed">For those who simply want to be part of the circle. Includes visibility, post-event insights, and early access to the next gathering.</p>
               </div>
             </GlowCard>
-          </div>
-        </div>
-      </section>
-      {/* What You Receive */}
-      <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>What you receive</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div>
-              <p className="text-white font-medium mb-4">During Events</p>
-              <ul className="space-y-2 text-white/80 text-sm">
-                <li>• <span className="font-medium">Presence across key touchpoints</span></li>
-                <li>• <span className="font-medium">Private roundtable or workshop involvement</span></li>
-                <li>• <span className="font-medium">Direct access to attendees</span></li>
-                <li>• <span className="font-medium">On-site documentation and coverage</span></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-white font-medium mb-4">Post-Event</p>
-              <ul className="space-y-2 text-white/80 text-sm">
-                <li>• <span className="font-medium">Detailed report and insights</span></li>
-                <li>• <span className="font-medium">Media assets for internal or external use</span></li>
-                <li>• <span className="font-medium">Priority invitations for future editions</span></li>
-              </ul>
-            </div>
           </div>
         </div>
       </section>

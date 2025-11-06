@@ -3,7 +3,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { CanvasRevealEffect, MiniNavbar } from "@/components/ui/sign-in-flow-1";
-import { TextShimmer } from "@/components/ui/text-shimmer";
 
 export function HeroSection({ className }: { className?: string }) {
   return (
@@ -27,11 +26,14 @@ export function HeroSection({ className }: { className?: string }) {
         <div className="flex flex-col items-center justify-center h-full py-16 sm:py-24">
           <div className="w-full">
             <div className="w-full mx-auto max-w-2xl py-8 sm:py-12 text-center">
-              <div className="space-y-2">
-                <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">We were raised by the web.</h1>
-                <h2 className="text-[1.5rem] sm:text-[1.8rem] text-white/70 font-light">Now we log off together.</h2>
-                <div className="pt-4">
-                  <TextShimmer className="mt-8 text-sm sm:text-base" style={{ fontFamily: 'var(--font-space-mono), monospace' }}>Generating a new generation of builders</TextShimmer>
+              <div className="space-y-10">
+                <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">We host 1-week houses for people who build things</h1>
+                <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next house in Barcelona, 15th December 2025</h2>
+                <div className="relative group inline-block w-full sm:w-auto">
+                  <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
+                  <a href="https://tally.so/r/n025Aj" target="_blank" rel="noopener noreferrer" className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto cursor-pointer">
+                    Apply to join the house
+                  </a>
                 </div>
               </div>
             </div>

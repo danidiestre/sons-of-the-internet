@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, type JSX } from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,24 @@ interface TextShimmerProps {
   spread?: number;
 }
 
+// Create motion components outside of render
+const MotionP = motion.p;
+const MotionSpan = motion.span;
+const MotionDiv = motion.div;
+const MotionH1 = motion.h1;
+const MotionH2 = motion.h2;
+const MotionH3 = motion.h3;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const motionComponentMap: Record<string, React.ComponentType<any>> = {
+  p: MotionP,
+  span: MotionSpan,
+  div: MotionDiv,
+  h1: MotionH1,
+  h2: MotionH2,
+  h3: MotionH3,
+};
+
 export function TextShimmer({
   children,
   as: Component = "p",
@@ -20,7 +38,8 @@ export function TextShimmer({
   duration = 2,
   spread = 2,
 }: TextShimmerProps) {
-  const MotionComponent = motion(Component as keyof JSX.IntrinsicElements);
+  const ComponentName = typeof Component === "string" ? Component : "p";
+  const MotionComponent = motionComponentMap[ComponentName] || MotionP;
 
   const dynamicSpread = useMemo(() => {
     return children.length * spread;

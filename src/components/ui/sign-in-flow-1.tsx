@@ -4,6 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Home } from "lucide-react";
 
 import * as THREE from "three";
 
@@ -226,10 +227,14 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
 };
 
 
+interface PreparedUniform {
+  value: number | THREE.Vector2 | THREE.Vector3 | THREE.Vector3[] | number[] | number[][];
+  type: string;
+}
+
 const ShaderMaterial = ({
   source,
   uniforms,
-  maxFps = 60,
 }: {
   source: string;
   hovered?: boolean;
@@ -238,40 +243,31 @@ const ShaderMaterial = ({
 }) => {
   const { size } = useThree();
   const ref = useRef<THREE.Mesh>(null);
-  let lastFrameTime = 0;
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const timestamp = clock.getElapsedTime();
 
-    lastFrameTime = timestamp;
-
-    const material: any = ref.current.material;
-    const timeLocation = material.uniforms.u_time;
+    const material = ref.current.material as THREE.ShaderMaterial;
+    const timeLocation = material.uniforms.u_time as { value: number };
     timeLocation.value = timestamp;
   });
 
   const getUniforms = () => {
-    const preparedUniforms: any = {};
+    const preparedUniforms: Record<string, PreparedUniform> = {};
 
     for (const uniformName in uniforms) {
-      const uniform: any = uniforms[uniformName];
+      const uniform = uniforms[uniformName];
 
       switch (uniform.type) {
-        case "uniform1f":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1f" };
-          break;
-        case "uniform1i":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1i" };
-          break;
         case "uniform3f":
           preparedUniforms[uniformName] = {
-            value: new THREE.Vector3().fromArray(uniform.value),
+            value: new THREE.Vector3().fromArray(uniform.value as number[]),
             type: "3f",
           };
           break;
         case "uniform1fv":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1fv" };
+          preparedUniforms[uniformName] = { value: uniform.value as number[], type: "1fv" };
           break;
         case "uniform3fv":
           preparedUniforms[uniformName] = {
@@ -287,6 +283,12 @@ const ShaderMaterial = ({
             type: "2f",
           };
           break;
+        case "uniform1f":
+          preparedUniforms[uniformName] = { value: uniform.value as number, type: "1f" };
+          break;
+        case "uniform1i":
+          preparedUniforms[uniformName] = { value: uniform.value as number, type: "1i" };
+          break;
         default:
           console.error(`Invalid uniform type for '${uniformName}'.`);
           break;
@@ -296,6 +298,7 @@ const ShaderMaterial = ({
     preparedUniforms["u_time"] = { value: 0, type: "1f" };
     preparedUniforms["u_resolution"] = {
       value: new THREE.Vector2(size.width * 2, size.height * 2),
+      type: "2f",
     };
     return preparedUniforms;
   };
@@ -324,10 +327,11 @@ const ShaderMaterial = ({
     });
 
     return materialObject;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size.width, size.height, source]);
 
   return (
-    <mesh ref={ref as any}>
+    <mesh ref={ref}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
     </mesh>
@@ -392,57 +396,39 @@ export function MiniNavbar() {
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => {
+      const newIsOpen = !prev;
+      // Update shape class based on new state
+      if (newIsOpen) {
+        setHeaderShapeClass('rounded-xl');
+      } else {
+        if (shapeTimeoutRef.current) {
+          clearTimeout(shapeTimeoutRef.current);
+        }
+        shapeTimeoutRef.current = setTimeout(() => {
+          setHeaderShapeClass('rounded-full');
+        }, 300);
+      }
+      return newIsOpen;
+    });
   };
 
   useEffect(() => {
-    if (shapeTimeoutRef.current) {
-      clearTimeout(shapeTimeoutRef.current);
-    }
-
-    if (isOpen) {
-      setHeaderShapeClass('rounded-xl');
-    } else {
-      shapeTimeoutRef.current = setTimeout(() => {
-        setHeaderShapeClass('rounded-full');
-      }, 300);
-    }
-
     return () => {
       if (shapeTimeoutRef.current) {
         clearTimeout(shapeTimeoutRef.current);
       }
     };
-  }, [isOpen]);
+  }, []);
 
   const logoElement = (
-    <div className="relative w-5 h-5 flex items-center justify-center">
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
- </div>
+    <Home className="w-5 h-5 text-gray-200" />
   );
 
   const navLinksData = [
     { label: 'Manifesto', href: '/#1' },
-    { label: 'Events', href: '/#2' },
-    { label: 'Sponsors', href: '/sponsors' },
+    { label: 'Houses', href: '/#2' },
   ];
-
-  const signupButtonElement = (
-    <div className="relative group w-full sm:w-auto">
-       <div className="absolute inset-0 -m-2 rounded-full
-                     hidden sm:block
-                     bg-gray-100
-                     opacity-40 filter blur-lg pointer-events-none
-                     transition-all duration-300 ease-out
-                     group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3 cu"></div>
-       <a href="https://tally.so/r/n025Aj" target="_blank" rel="noopener noreferrer" className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto cursor-pointer">
-         Apply as a member
-       </a>
-    </div>
-  );
 
   return (
     <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
@@ -467,10 +453,6 @@ export function MiniNavbar() {
             </AnimatedNavLink>
           ))}
         </nav>
-
-        <div className="hidden sm:flex items-center gap-2 sm:gap-3">
-          {signupButtonElement}
-        </div>
 
         <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
           {isOpen ? (
@@ -520,24 +502,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
       
       <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-24 sm:pt-32">
         <MiniNavbar />
-
-        <div className="flex flex-1 flex-col lg:flex-row ">
-          <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full">
-              <div className="w-full mx-auto max-w-2xl py-16 sm:py-24 text-center">
-                <div className="space-y-2">
-                  <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">We were raised by the web.</h1>
-                  <h2 className="text-[1.5rem] sm:text-[1.8rem] text-white/70 font-light">Now we log off together.</h2>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </div>
         {/* Manifesto section */}
         <section className="w-full border-t border-white/10">
           <div className="mx-auto w-full max-w-2xl py-16 sm:py-24">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">The Manifesto</h3>
+            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8">Our Manifesto</h3>
             <div className="space-y-8">
               <div className="flex items-start gap-4">
                 <span className="text-white/50 select-none">01</span>
@@ -549,7 +517,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
               </div>
               <div className="flex items-start gap-4">
                 <span className="text-white/50 select-none">03</span>
-                <p className="text-white/80 leading-relaxed">We're digital natives who enjoy disconnecting with other passionate builders.</p>
+                <p className="text-white/80 leading-relaxed">We&apos;re digital natives who enjoy disconnecting with other passionate builders.</p>
               </div>
               <div className="flex items-start gap-4">
                 <span className="text-white/50 select-none">04</span>
