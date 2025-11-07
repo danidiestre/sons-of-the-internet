@@ -106,10 +106,6 @@ export default function SponsorsTechPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Included in the official &quot;builder stack&quot; + optional workshop or challenge.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
                     <span className="leading-relaxed">Option to host a short talk, workshop, or builder challenge</span>
                   </li>
                 </ul>
@@ -136,7 +132,7 @@ export default function SponsorsTechPage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">we&apos;ll capture it all: <strong>photos and clips</strong> of people actually building with your product.</span>
+                    <span className="leading-relaxed">We&apos;ll capture it all: <strong>photos and clips</strong> of people actually building with your product.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
@@ -184,7 +180,7 @@ export default function SponsorsTechPage() {
                 <ul className="space-y-3 pt-2">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Want your own tennis tournament? We can make it happen! 🎾</span>
+                    <span className="leading-relaxed">Want your own tennis tournament or party? We can make it happen! 🎾</span>
                   </li>
                 </ul>
                 <div className="flex flex-col items-center gap-2 pt-2">

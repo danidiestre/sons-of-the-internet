@@ -40,6 +40,25 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   manifest: "/site.webmanifest",
+  openGraph: {
+    title: "SOTI Family",
+    description: "We organize 1-week houses for people who builds things",
+    images: [
+      {
+        url: "/events/barcelona-1.png",
+        width: 1200,
+        height: 630,
+        alt: "SOTI Family - Barcelona House",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SOTI Family",
+    description: "We organize 1-week houses for people who builds things",
+    images: ["/events/barcelona-1.png"],
+  },
 };
 
 export default function RootLayout({

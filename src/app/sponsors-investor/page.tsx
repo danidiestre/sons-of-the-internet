@@ -89,7 +89,7 @@ export default function SponsorsInvestorsPage() {
                 <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Be part of it. Logo and name featured across event materials, comms, and digital platforms.</span>
+                    <span className="leading-relaxed">Logo and name featured on event materials and digital platforms.</span>
                   </li>
                 </ul>
                 <div className="flex justify-center">
@@ -106,7 +106,7 @@ export default function SponsorsInvestorsPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Private access to project previews and invite-only dinners with top-tier founders, creators, and tech leads.</span>
+                    <span className="leading-relaxed">Private access to project previews and networking dinners with top-tier founders, creators, and tech leads.</span>
                   </li>
                 </ul>
                 <div className="flex flex-col items-center gap-2 pt-2">
@@ -118,10 +118,6 @@ export default function SponsorsInvestorsPage() {
                   <p className="text-white/60 text-sm italic">Dinners will happen here</p>
                 </div>
                 <ul className="space-y-3 pt-2">
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Want intros? Done.</span>
-                  </li>
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
                     <span className="leading-relaxed">Host a talk or AMA about building, scaling, or funding.</span>
@@ -138,7 +134,7 @@ export default function SponsorsInvestorsPage() {
                 <ul className="space-y-3 pt-2">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">You&apos;ll get a short branded video. We&apos;ll capture your story and give you the content ready to share.</span>
+                    <span className="leading-relaxed">Includes branded content, receive a professional video clip featuring your brand and role in the event, ready to share on your channels.</span>
                   </li>
                 </ul>
               </div>
@@ -148,16 +144,18 @@ export default function SponsorsInvestorsPage() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Lead the room. You can run a founder–investor session and create with us the story around your presence</span>
+                    <span className="leading-relaxed">Lead the room. You can create with us the story around your presence</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Host a private investor-founder session and co-create branded storytelling around your presence.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
                     <span className="leading-relaxed">Session naming: one of the event sessions or experiences will carry your name and be referenced in communications.</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Get in early. Meet founders before they scale, and products before they even have names.</span>
-                  </li>
+                </ul>
+                <ul className="space-y-3 pt-2">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
                     <span className="leading-relaxed">Want your own tennis tournament? We can make it happen! 🎾</span>
