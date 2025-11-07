@@ -58,43 +58,7 @@ export default function SponsorsInvestorsPage() {
           <div className="text-center text-balance text-2xl leading-normal max-w-2xl flex flex-col gap-4 mx-auto text-white">
             <RevealText text="This isn't a demo day, it's a creation week. Builders prototype ideas, form teams, and share projects before anyone else sees them. You get first access to the minds shaping what's next." />
             <RevealText text="This is not deal flow, it's context flow: a rare chance to connect with high-signal founders before they raise, and with creators who build in public and influence the next generation of tech adoption." />
-            <RevealText text="Gain early access to the next generation of startup talent, from indie hackers with paying users, to technical founders with PhDs building AI products that actually ship." />
-          </div>
-        </div>
-      </section>
-      {/* Opportunity section */}
-      <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-8 sm:py-12">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-8 text-center" style={{ fontFamily: 'var(--font-space-mono)' }}>Opportunity</h3>
-          <div className="space-y-8">
-            <div className="flex items-start gap-4">
-              <span className="text-white/50 select-none">01.</span>
-              <div>
-                <p className="text-white font-medium">Meet the Future — Be where the next wave of builders begins.</p>
-                <p className="text-white/80 leading-relaxed">Gain early access to founders and projects before they scale. Connect directly with the people shaping what&apos;s next in tech and get a private look at what&apos;s being built, by who, and why it matters.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="text-white/50 select-none">02.</span>
-              <div>
-                <p className="text-white font-medium">Lead and Discover — Share your expertise, spark new ideas.</p>
-                <p className="text-white/80 leading-relaxed">Host a talk or AMA about building, scaling, or funding. Join curated dinners and builder sessions to connect with founders, creators, and technical talent who align with your thesis.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="text-white/50 select-none">03.</span>
-              <div>
-                <p className="text-white font-medium">Stay in the Story — Be part of what&apos;s built next.</p>
-                <p className="text-white/80 leading-relaxed">Your presence continues long after the event. Receive branded content and a professional video clip featuring your brand and contribution — ready to share across your channels. Stay visible through post-event storytelling and new startup launches born here.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <span className="text-white/50 select-none">04.</span>
-              <div>
-                <p className="text-white font-medium">Be Recognized — Build long-term visibility.</p>
-                <p className="text-white/80 leading-relaxed">Represent your fund as an ally to the ecosystem. Your brand will be highlighted across event materials and communications, positioning you as a key supporter of innovation.</p>
-              </div>
-            </div>
+            <RevealText text="You're not just supporting an event, you're joining the story early, where indie hackers with paying users meet technical founders with PhDs building AI products." />
           </div>
         </div>
       </section>
@@ -106,9 +70,9 @@ export default function SponsorsInvestorsPage() {
             <div className="w-full sm:w-auto">
               <LimelightNav
                 items={[
-                  { id: 'community', label: 'Community Ally' },
-                  { id: 'investor', label: 'Investor Partner' },
-                  { id: 'headline', label: 'Headline Investor' },
+                  { id: 'analyst', label: 'Analyst' },
+                  { id: 'principal', label: 'Principal' },
+                  { id: 'partner', label: 'Partner' },
                 ]}
                 defaultActiveIndex={activeTabIndex}
                 onTabChange={setActiveTabIndex}
@@ -188,6 +152,10 @@ export default function SponsorsInvestorsPage() {
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
                     <span className="leading-relaxed">Get early access to emerging startups and high-potential founders while positioning your fund as a catalyst for what&apos;s next.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Includes branded content, your presence extends beyond the event, with a professional video clip featuring your brand and contribution, ready to share across your channels and stay visible through post-event storytelling.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
