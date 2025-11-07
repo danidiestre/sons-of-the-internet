@@ -7,7 +7,7 @@ interface RevealTextProps {
   className?: string;
 }
 
-function RevealText({ text, className = "" }: RevealTextProps) {
+export function RevealText({ text, className = "" }: RevealTextProps) {
   const containerRef = useRef<HTMLParagraphElement>(null);
   const chars = useMemo(() => text.split(""), [text]);
   const [opacities, setOpacities] = useState<number[]>(() => new Array(text.length).fill(0.2));

@@ -59,7 +59,7 @@ export function BarcelonaHouseSection() {
           transformStyle: "preserve-3d",
         }}
       >
-        <div className="w-full px-4 sm:px-6 md:px-8">
+        <div className="w-full">
           <div className="rounded-3xl bg-card shadow-2xl ring-1 ring-black/5 color-card-foreground">
             <div className="grid grid-cols-1 rounded-[2rem] p-2 shadow-md shadow-black/5">
               <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] md:aspect-[3/2] overflow-hidden rounded-[1rem] shadow-[inset_0_0_2px_1px_#ffffff4d] ring-1 ring-black/5">
