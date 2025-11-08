@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Twitter, Github, Linkedin } from "lucide-react";
+import { Twitter, Github, Linkedin, Youtube } from "lucide-react";
 
 interface ProfileCardProps {
   name: string;
@@ -9,6 +9,7 @@ interface ProfileCardProps {
   twitterUrl?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  youtubeUrl?: string;
 }
 
 export function ProfileCard({
@@ -18,6 +19,7 @@ export function ProfileCard({
   twitterUrl,
   githubUrl,
   linkedinUrl,
+  youtubeUrl,
 }: ProfileCardProps) {
   return (
     <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
@@ -40,6 +42,16 @@ export function ProfileCard({
 
         {/* Social Links */}
         <div className="flex gap-4 items-center">
+          {youtubeUrl && (
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+            >
+              <Youtube size={18} />
+            </a>
+          )}
           {twitterUrl && (
             <a
               href={twitterUrl}

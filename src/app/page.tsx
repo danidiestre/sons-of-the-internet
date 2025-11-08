@@ -31,6 +31,7 @@ export default function Home() {
               imageUrl="/marcos.jpeg"
               twitterUrl="https://x.com/_MarcosValera"
               linkedinUrl="https://www.linkedin.com/in/valeramarcos/"
+              youtubeUrl="https://www.youtube.com/@MarcosValera"
             />
             <ProfileCard
               name="Juan Pablo"
@@ -42,11 +43,11 @@ export default function Home() {
             />
             <ProfileCard
               name="Dani Diestre"
-              description="Co Founder & CEO Autentic (350K€ pre-seed funding), Youtube creator +3.3k subs (Product Audience), Linkedin >6K followers"
+              description="Co-Founder Autentic (350K€ pre-seed funding), Youtube Creator"
               imageUrl="/dani.png"
-              twitterUrl="https://x.com/dani_diestre"
               githubUrl="https://github.com/danidiestre"
               linkedinUrl="https://www.linkedin.com/in/danidiestre/"
+              youtubeUrl="https://www.youtube.com/@danidiestre"
             />
             <ProfileCard
               name="Aniol Carreras"
