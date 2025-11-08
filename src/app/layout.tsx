@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Geist_Mono, Space_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { OgLogo } from "@/components/og-logo";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -43,6 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SOTI Family",
     description: "We organize 1-week houses for people who builds things",
+    url: "https://www.soti.house",
     images: [
       {
         url: "/logo.png",
@@ -59,6 +61,9 @@ export const metadata: Metadata = {
     description: "We organize 1-week houses for people who builds things",
     images: ["/logo.png"],
   },
+  other: {
+    "og:logo": "https://www.soti.house/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -71,6 +76,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} antialiased bg-black`}
       >
+        <OgLogo />
         {children}
         <SpeedInsights />
         <Analytics />
