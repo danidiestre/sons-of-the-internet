@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     description: "We organize 1-week houses for people who builds things",
     images: [
       {
-        url: "/events/barcelona-1.png",
+        url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "SOTI Family - Barcelona House",
+        alt: "SOTI Family Logo",
       },
     ],
     type: "website",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SOTI Family",
     description: "We organize 1-week houses for people who builds things",
-    images: ["/events/barcelona-1.png"],
+    images: ["/logo.png"],
   },
 };
 
