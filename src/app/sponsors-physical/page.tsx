@@ -30,7 +30,7 @@ export default function SponsorsPhysicalPage() {
           <div className="flex flex-col items-center justify-center h-full py-16 sm:py-24">
             <div className="w-full">
               <div className="w-full mx-auto max-w-2xl py-8 sm:py-12 text-center">
-                <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">Where the next wave of founders spend a week, not pitching, but building.</h1>
+                <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">Be part of the builders' daily life from what they eat to what they create with.</h1>
                 <div className="mt-8">
                   <div className="relative group inline-block">
                     <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
@@ -46,8 +46,9 @@ export default function SponsorsPhysicalPage() {
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
           <div className="text-center text-balance text-2xl leading-normal max-w-2xl flex flex-col gap-4 mx-auto text-white">
-            <RevealText text="The future of the ecosystem doesn't start at conferences, it starts here." />
-            <RevealText text="A week where builders, creators, and founders turn ideas into products and connections into companies." />
+            <RevealText text="Where the brands of today meet the people building tomorrow." />
+            <RevealText text="Inside the house, founders, creators, and engineers work, eat, and create side by side." />
+            <RevealText text="This is where your brand becomes part of that story: seen in content, used by real people, and remembered by some of the most creative minds in tech." />
           </div>
         </div>
       </section>
@@ -56,11 +57,9 @@ export default function SponsorsPhysicalPage() {
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
           <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight text-center mb-8" style={{ fontFamily: 'var(--font-space-mono)' }}>Why sponsor</h3>
           <div className="text-center text-balance text-2xl leading-normal max-w-2xl flex flex-col gap-4 mx-auto text-white">
-            <RevealText text="This isn't a demo day, it's a build week." />
-            <RevealText text="Builders ship fast, team up, and drop projects before anyone else even hears about them." />
-            <RevealText text="You get first access to the minds shaping what's next." />
-            <RevealText text="Not deal flow, context flow. Meet founders before they raise, creators who build in public, and the minds shaping the next wave of adoption." />
-            <RevealText text="You're not sponsoring an event, you're joining the story early, where indie hackers with paying users meet PhDs and CTOs building AI products." />
+            <RevealText text="This is where brands turn into memories. From lunch tables to workstations, your product becomes part of the story, seen, shared, and remembered by some of the most creative minds in tech and content." />
+            <RevealText text="Your brand fuels the experience. It's what they grab between coding sessions, what they use to film, or what's on the table when the next idea is born." />
+            <RevealText text="We record, we share, and we reach an audience that includes founders and creators (with over 200,000 followers combined). People who shape what's next. The ones whose products, teams, and communities others will follow." />
           </div>
         </div>
       </section>
@@ -72,9 +71,8 @@ export default function SponsorsPhysicalPage() {
             <div className="w-full sm:w-auto">
               <LimelightNav
                 items={[
-                  { id: 'analyst', label: 'Analyst' },
-                  { id: 'principal', label: 'Principal' },
-                  { id: 'partner', label: 'Partner' },
+                  { id: 'experience', label: 'Experience' },
+                  { id: 'hero', label: 'Hero' },
                 ]}
                 defaultActiveIndex={activeTabIndex}
                 onTabChange={setActiveTabIndex}
@@ -89,88 +87,75 @@ export default function SponsorsPhysicalPage() {
                 <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Be part of it. Logo and name featured across event materials, comms, and digital platforms.</span>
+                    <span className="leading-relaxed">Logo and recognition on the website and social media</span>
                   </li>
                 </ul>
                 <div className="flex justify-center">
                   <img 
                     src="/sponsors/investors/ally.png" 
-                    alt="Community Ally" 
+                    alt="Experience tier" 
                     className="max-w-xs sm:max-w-sm h-auto border border-white/20 rounded-lg"
                   />
                 </div>
+                <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Natural visibility throughout the house as your product becomes part of the daily content</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Thank you mention during the week</span>
+                  </li>
+                </ul>
               </div>
             )}
             {activeTabIndex === 1 && (
-              <div className="text-white/80 space-y-3 max-w-xl mx-auto">
-                <ul className="space-y-3">
+              <div className="space-y-6">
+                <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Private access to project previews and invite-only dinners with top-tier founders, creators, and tech leads.</span>
+                    <span className="leading-relaxed">Featured presence in post-event storytelling and videos</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Product integration and inclusion in event storytelling and videos. Content featuring how tech people and founders actually use your product.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-white/50 mt-1">•</span>
+                    <span className="leading-relaxed">Dedicated brand moment (meal, break, or activity) during the week</span>
                   </li>
                 </ul>
-                <div className="flex flex-col items-center gap-2 pt-2">
-                  <img 
-                    src="/sponsors/investors/partner.jpeg" 
-                    alt="Networking dinners location" 
-                    className="max-w-xs sm:max-w-sm h-auto border border-white/20 rounded-lg"
-                  />
-                  <p className="text-white/60 text-sm italic">Dinners will happen here</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto pt-4">
+                  <div className="flex justify-center">
+                    <img 
+                      src="/sponsors/investors/jardin.jpeg" 
+                      alt="Hero tier" 
+                      className="max-w-full h-auto border border-white/20 rounded-lg"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <img 
+                      src="/sponsors/investors/partner-2.jpeg" 
+                      alt="Hero tier" 
+                      className="max-w-full h-auto border border-white/20 rounded-lg"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <img 
+                      src="/sponsors/investors/partner.jpeg" 
+                      alt="Hero tier" 
+                      className="max-w-full h-auto border border-white/20 rounded-lg"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <img 
+                      src="/sponsors/investors/salon.jpeg" 
+                      alt="Hero tier" 
+                      className="max-w-full h-auto border border-white/20 rounded-lg"
+                    />
+                  </div>
                 </div>
-                <ul className="space-y-3 pt-2">
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Want intros? Done.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Host a talk or AMA about building, scaling, or funding.</span>
-                  </li>
-                </ul>
-                <div className="flex flex-col items-center gap-2 pt-2">
-                  <img 
-                    src="/sponsors/investors/partner-2.jpeg" 
-                    alt="Talks location" 
-                    className="max-w-xs sm:max-w-sm h-auto border border-white/20 rounded-lg"
-                  />
-                  <p className="text-white/60 text-sm italic">Talks will happen here</p>
-                </div>
-                <ul className="space-y-3 pt-2">
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">You&apos;ll get a short branded video. We&apos;ll capture your story and give you the content ready to share.</span>
-                  </li>
-                </ul>
-              </div>
-            )}
-            {activeTabIndex === 2 && (
-              <div className="text-white/80 space-y-3 max-w-xl mx-auto">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Lead the room. You can run a founder–investor session and create with us the story around your presence</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Session naming: one of the event sessions or experiences will carry your name and be referenced in communications.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Get in early. Meet founders before they scale, and products before they even have names.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-white/50 mt-1">•</span>
-                    <span className="leading-relaxed">Want your own tennis tournament? We can make it happen! 🎾</span>
-                  </li>
-                </ul>
-                <div className="flex flex-col items-center gap-2 pt-2">
-                  <img 
-                    src="/sponsors/investors/headline.jpeg" 
-                    alt="Tennis tournaments location" 
-                    className="max-w-xs sm:max-w-sm h-auto border border-white/20 rounded-lg"
-                  />
-                  <p className="text-white/60 text-sm italic">Tennis tournments will happen here</p>
-                </div>
+                <p className="text-white/60 text-center text-sm italic pt-2">Your brand will be here</p>
               </div>
             )}
           </div>
