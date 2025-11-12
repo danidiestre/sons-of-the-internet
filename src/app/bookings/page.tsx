@@ -80,9 +80,9 @@ export default function BookingsPage() {
         <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
           <div className="mb-8 text-center">
             <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>
-              Selecciona una habitación
+              Select a room
             </h3>
-            <p className="text-white/60 mb-6">Haz clic en una habitación para ver sus detalles</p>
+            <p className="text-white/60 mb-6">Click on a room to see its details</p>
             
             {/* Floor Tabs */}
             <div className="flex justify-center mb-8 w-full">
@@ -90,7 +90,7 @@ export default function BookingsPage() {
                 <LimelightNav
                   items={floorsData.map((floor) => ({
                     id: `floor-${floor.floorNumber}`,
-                    label: `Piso ${floor.floorNumber}`,
+                    label: `Floor ${floor.floorNumber + 1}`,
                   }))}
                   defaultActiveIndex={activeFloorIndex}
                   onTabChange={handleFloorChange}

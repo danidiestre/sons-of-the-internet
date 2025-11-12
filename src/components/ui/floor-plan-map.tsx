@@ -63,6 +63,9 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
             />
           </div>
 
+          {/* Dark overlay layer */}
+          <div className="absolute inset-0 bg-black/40 z-[1] pointer-events-none" />
+
           {/* Clickable room areas */}
           {rooms.map((room) => {
             const isSelected = selectedRoomId === room.id;
@@ -76,23 +79,32 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                 onMouseEnter={() => setHoveredRoomId(room.id)}
                 onMouseLeave={() => setHoveredRoomId(null)}
                 className={cn(
-                  "absolute cursor-pointer transition-all duration-200 border-2 rounded",
+                  "absolute cursor-pointer transition-all duration-200 border-2 rounded z-20",
                   isSelected
-                    ? "bg-yellow-400/60 border-yellow-400 z-10"
+                    ? "bg-yellow-400/60 border-yellow-400"
                     : isHovered
-                    ? "bg-yellow-400/20 border-yellow-400/60 z-10"
-                    : "bg-yellow-400/10 border-yellow-400/40 opacity-60 hover:opacity-100"
+                    ? "bg-yellow-400/20 border-yellow-400/60"
+                    : "bg-yellow-300/5 border-yellow-400 opacity-100"
                 )}
                 style={getRoomStyle(room)}
                 aria-label={`Habitación ${room.number}`}
               >
                 {/* Room number label - always visible but more prominent on hover/select */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1">
                   <span className={cn(
                     "text-white text-xs font-medium bg-black/40 px-1.5 py-0.5 rounded transition-opacity",
-                    (isSelected || isHovered) ? "opacity-100 bg-black/70 text-sm" : "opacity-60"
+                    (isSelected || isHovered) ? "opacity-100 bg-black/10 text-sm" : "opacity-100"
                   )}>
-                    {room.number.replace("Habitación ", "")}
+                    Room {room.number.replace("Habitación ", "")}
+                  </span>
+                  {/* Room type tag */}
+                  <span className={cn(
+                    "text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide",
+                    room.roomType === "shared" 
+                      ? "bg-blue-500/80 text-white" 
+                      : "bg-green-500/80 text-white"
+                  )}>
+                    {room.roomType === "shared" ? "Shared" : "Individual"}
                   </span>
                 </div>
               </button>
