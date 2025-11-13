@@ -97,9 +97,9 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                   )}>
                     Room {room.number.replace("Habitación ", "")}
                   </span>
-                  {/* Room type tag */}
+                  {/* Room type tag - hidden on mobile */}
                   <span className={cn(
-                    "text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide",
+                    "hidden sm:inline-block text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide",
                     room.roomType === "shared" 
                       ? "bg-blue-500/80 text-white" 
                       : "bg-green-500/80 text-white"

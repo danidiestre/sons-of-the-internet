@@ -155,7 +155,7 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
           </Accordion>
 
           {/* Book this room CTA */}
-          <div className="mt-6" ref={bookingRef}>
+          <div className="mt-2" ref={bookingRef}>
             <button
               onClick={handleBookRoomClick}
               className="w-full px-4 py-3 bg-white text-black font-semibold rounded-lg hover:bg-white/90 transition-colors cursor-pointer"
