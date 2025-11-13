@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/ui/hero";
 import { BarcelonaHouseSection } from "@/components/ui/barcelona-house";
 import { ManifestoSection } from "@/components/ui/manifesto";
 import { EventsSection } from "@/components/ui/events";
+import { ScheduleSection } from "@/components/ui/schedule";
 import { Footer } from "@/components/ui/footer";
 import ExampleProgress from "@/components/ui/progress-1";
 import { ProfileCard } from "@/components/ui/profile-card";
@@ -19,6 +20,7 @@ export default function Home() {
       </section>
       <ManifestoSection />
       <EventsSection />
+      <ScheduleSection />
       {/* Led by Section */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">

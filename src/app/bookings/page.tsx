@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CanvasRevealEffect, MiniNavbar } from "@/components/ui/sign-in-flow-1";
 import { Footer } from "@/components/ui/footer";
 import { FloorPlanMap } from "@/components/ui/floor-plan-map";
@@ -12,6 +12,27 @@ export default function BookingsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
+
+  // Block body scroll when panel is open
+  useEffect(() => {
+    if (isPanelOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scroll position when panel closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isPanelOpen]);
 
   const currentFloor = floorsData[activeFloorIndex];
 
