@@ -100,21 +100,21 @@ export default function SponsorsPage() {
             <GlowCard className="bg-white/5 p-5 sm:p-6" glowColor="purple" customSize>
               <div className="space-y-2">
                 <p className="text-white font-semibold">FOUNDING PARTNER</p>
-                <p className="text-white/80">€10,000+</p>
+                <p className="text-white/80">€10k</p>
                 <p className="text-white/80 leading-relaxed">For those who want to help define what SOTI becomes. Includes co-branded presence, roundtable access, and shared equity opportunities.</p>
               </div>
             </GlowCard>
             <GlowCard className="bg-white/5 p-5 sm:p-6" glowColor="blue" customSize>
               <div className="space-y-2">
                 <p className="text-white font-semibold">EXPERIENCE SPONSOR</p>
-                <p className="text-white/80">€5,000</p>
+                <p className="text-white/80">€5k</p>
                 <p className="text-white/80 leading-relaxed">For brands that want to shape the atmosphere. Includes activation space, communication presence, and private access.</p>
               </div>
             </GlowCard>
             <GlowCard className="bg-white/5 p-5 sm:p-6" glowColor="green" customSize>
               <div className="space-y-2">
                 <p className="text-white font-semibold">COMMUNITY SUPPORTER</p>
-                <p className="text-white/80">€3,000</p>
+                <p className="text-white/80">€3k</p>
                 <p className="text-white/80 leading-relaxed">For those who simply want to be part of the circle. Includes visibility, post-event insights, and early access to the next gathering.</p>
               </div>
             </GlowCard>
