@@ -84,6 +84,10 @@ export default function SponsorsPhysicalPage() {
           <div className="mt-8">
             {activeTabIndex === 0 && (
               <div className="space-y-6">
+                <div className="text-center mb-4">
+                  <p className="text-white/60 text-sm uppercase tracking-wide mb-1">PRICE</p>
+                  <p className="text-white text-xl font-semibold">Free Product</p>
+                </div>
                 <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
@@ -111,6 +115,10 @@ export default function SponsorsPhysicalPage() {
             )}
             {activeTabIndex === 1 && (
               <div className="space-y-6">
+                <div className="text-center mb-4">
+                  <p className="text-white/60 text-sm uppercase tracking-wide mb-1">PRICE</p>
+                  <p className="text-white text-xl font-semibold">€3K</p>
+                </div>
                 <ul className="text-white/80 space-y-3 max-w-xl mx-auto">
                   <li className="flex items-start gap-3">
                     <span className="text-white/50 mt-1">•</span>
