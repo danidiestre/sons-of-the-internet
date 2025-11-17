@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Home } from "lucide-react";
 
 import * as THREE from "three";
 
@@ -422,7 +422,16 @@ export function MiniNavbar() {
   }, []);
 
   const logoElement = (
-    <Home className="w-5 h-5 text-gray-200" />
+    <div className="relative w-7 h-7">
+      <Image
+        src="/logo white.png"
+        alt="Sons of the Internet"
+        fill
+        sizes="28px"
+        className="object-contain"
+        priority={false}
+      />
+    </div>
   );
 
   const navLinksData = [

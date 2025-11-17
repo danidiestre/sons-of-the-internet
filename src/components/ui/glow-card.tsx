@@ -26,7 +26,7 @@ const sizeMap = {
 };
 
 // Check if device is mobile
-const isMobile = () => {
+const detectIsMobile = () => {
   if (typeof window === 'undefined') return false;
   return window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
@@ -64,7 +64,14 @@ const GlowCard: React.FC<GlowCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isMobileDevice] = useState(() => isMobile());
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const updateIsMobile = () => setIsMobileDevice(detectIsMobile());
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
 
   useEffect(() => {
     // Only attach pointer listener when hovering and not on mobile

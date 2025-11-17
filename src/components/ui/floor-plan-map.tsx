@@ -31,6 +31,7 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
   }, []);
 
   const handleRoomClick = (room: Room) => {
+    if (room.isSoldOut) return;
     onRoomClick(room);
   };
 
@@ -70,6 +71,7 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
           {rooms.map((room) => {
             const isSelected = selectedRoomId === room.id;
             const isHovered = hoveredRoomId === room.id;
+            const isSoldOut = room.isSoldOut;
 
             return (
               <button
@@ -79,15 +81,20 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                 onMouseEnter={() => setHoveredRoomId(room.id)}
                 onMouseLeave={() => setHoveredRoomId(null)}
                 className={cn(
-                  "absolute cursor-pointer transition-all duration-200 border-2 rounded z-20",
-                  isSelected
-                    ? "bg-yellow-400/60 border-yellow-400"
-                    : isHovered
-                    ? "bg-yellow-400/20 border-yellow-400/60"
-                    : "bg-yellow-300/5 border-yellow-400 opacity-100"
+                  "absolute transition-all duration-200 border-2 rounded z-20",
+                  isSoldOut
+                    ? "cursor-not-allowed bg-red-500/20 border-red-400/80 opacity-80"
+                    : "cursor-pointer",
+                  !isSoldOut &&
+                    (isSelected
+                      ? "bg-yellow-400/60 border-yellow-400"
+                      : isHovered
+                      ? "bg-yellow-400/20 border-yellow-400/60"
+                      : "bg-yellow-300/5 border-yellow-400 opacity-100")
                 )}
                 style={getRoomStyle(room)}
-                aria-label={`Habitación ${room.number}`}
+                aria-label={`Habitación ${room.number}${isSoldOut ? " (sold out)" : ""}`}
+                disabled={isSoldOut}
               >
                 {/* Room number label - always visible but more prominent on hover/select */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1">
@@ -97,15 +104,21 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                   )}>
                     Room {room.number.replace("Habitación ", "")}
                   </span>
-                  {/* Room type tag - hidden on mobile */}
-                  <span className={cn(
-                    "hidden sm:inline-block text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide",
-                    room.roomType === "shared" 
-                      ? "bg-blue-500/80 text-white" 
-                      : "bg-green-500/80 text-white"
-                  )}>
-                    {room.roomType === "shared" ? "Shared" : "Individual"}
-                  </span>
+                  {/* Room type tag or sold out status */}
+                  {isSoldOut ? (
+                    <span className="hidden sm:inline-block text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wide bg-red-500/80 text-white">
+                      Sold Out
+                    </span>
+                  ) : (
+                    <span className={cn(
+                      "hidden sm:inline-block text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wide",
+                      room.roomType === "shared" 
+                        ? "bg-blue-500/80 text-white" 
+                        : "bg-green-500/80 text-white"
+                    )}>
+                      {room.roomType === "shared" ? "Shared" : "Individual"}
+                    </span>
+                  )}
                 </div>
               </button>
             );

@@ -46,6 +46,8 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
 
   if (!room) return null;
 
+  const isSoldOut = room.isSoldOut;
+
   return (
     <>
       {/* Backdrop */}
@@ -107,6 +109,11 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
                   )}>
                     {room.roomType === "shared" ? "Shared" : "Individual"}
                   </span>
+                  {isSoldOut && (
+                    <span className="text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide bg-red-500/80 text-white">
+                      Sold Out
+                    </span>
+                  )}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="text-white/80 space-y-4">
@@ -157,14 +164,20 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
           {/* Book this room CTA */}
           <div className="mt-2" ref={bookingRef}>
             <button
-              onClick={handleBookRoomClick}
-              className="w-full px-4 py-3 bg-white text-black font-semibold rounded-lg hover:bg-white/90 transition-colors cursor-pointer"
+              onClick={isSoldOut ? undefined : handleBookRoomClick}
+              disabled={isSoldOut}
+              className={cn(
+                "w-full px-4 py-3 font-semibold rounded-lg transition-colors",
+                isSoldOut
+                  ? "bg-white/10 text-white/60 cursor-not-allowed"
+                  : "bg-white text-black hover:bg-white/90 cursor-pointer"
+              )}
             >
-              Book this room
+              {isSoldOut ? "Sold Out" : "Book this room"}
             </button>
 
             {/* Expanded booking information */}
-            {isBookingExpanded && (
+            {!isSoldOut && isBookingExpanded && (
               <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10 space-y-4">
                 <p className="text-white/80 text-sm">
                   To save the spot send the payment via Revolut full payment with "Your name  - Booking Room {room.number.replace("Habitación ", "")}".

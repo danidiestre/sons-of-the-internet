@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -11,14 +12,15 @@ export function Footer() {
             <p className="text-white/60 mr-12 mt-2" style={{ fontFamily: 'var(--font-space-mono)' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
             
             <div className="flex mt-4">
-              <pre className="text-white/40 text-xs font-mono whitespace-pre leading-tight">
-{`   _____  ____  _______  _____ 
-  / ____|/ __ \\|__   __||_   _|
- | (___ | |  | |  | |     | |  
-  \\___ \\| |  | |  | |     | |  
-  ____) | |__| |  | |    _| |_ 
- |_____/ \\____/   |_|   |_____|`}
-              </pre>
+              <div className="relative w-40 h-14">
+                <Image
+                  src="/logo-white.png"
+                  alt="SOTI Isotope"
+                  fill
+                  className="object-contain"
+                  priority={false}
+                />
+              </div>
             </div>
           </div>
 

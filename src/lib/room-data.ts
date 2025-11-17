@@ -3,6 +3,7 @@ export interface Room {
   number: string;
   capacity: number;
   hasPrivateBathroom: boolean;
+  isSoldOut?: boolean;
   coordinates: {
     x: number; // percentage of image width
     y: number; // percentage of image height
@@ -249,6 +250,7 @@ export const floorsData: FloorData[] = [
         number: "Habitación 6",
         capacity: 2,
         hasPrivateBathroom: false,
+        isSoldOut: true,
         floor: 1,
         bedType: "1 queen bed",
         bathroomNumber: 6,
@@ -274,6 +276,7 @@ export const floorsData: FloorData[] = [
         number: "Habitación 12",
         capacity: 2,
         hasPrivateBathroom: false,
+        isSoldOut: true,
         floor: 1,
         bedType: "2 single beds",
         bathroomNumber: 6,
@@ -330,6 +333,7 @@ export const floorsData: FloorData[] = [
         number: "Habitación 8",
         capacity: 2,
         hasPrivateBathroom: false,
+        isSoldOut: true,
         floor: 2,
         bedType: "1 queen bed",
         bathroomNumber: 8,
