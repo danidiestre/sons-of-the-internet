@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     url: "https://www.soti.house",
     images: [
       {
-        url: "/logo.png",
+        url: "https://www.soti.house/logo.png",
         width: 1200,
         height: 630,
         alt: "SOTI Family Logo",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SOTI Family",
     description: "We organize 1-week houses for people who builds things",
-    images: ["/logo.png"],
+    images: ["https://www.soti.house/logo.png"],
   },
   other: {
     "og:logo": "https://www.soti.house/logo.png",
