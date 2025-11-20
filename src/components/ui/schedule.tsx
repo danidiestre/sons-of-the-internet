@@ -39,7 +39,7 @@ export function ScheduleSection() {
                   <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
                   <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
                   <td className="px-4 py-4 text-sm text-white text-center h-20">Demo Day</td>
-                  <td className="px-4 py-4 text-sm text-white text-center h-20">Morning activity + Check out</td>
+                  <td className="px-4 py-4 text-sm text-white text-center h-20">Morning activity</td>
                 </tr>
                 {/* Lunch Row */}
                 <tr className="bg-orange-500/10 hover:bg-orange-500/15 transition-colors">
