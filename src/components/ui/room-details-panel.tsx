@@ -190,12 +190,12 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
                 <div className="space-y-2">
                   <div>
                     <a
-                      href={`https://revolut.me/sokram98?amount=${room.roomPrice * 100}`}
+                      href={`https://revolut.me/sokram98?amount=${room.id === "floor-2-room-7" ? room.pricePerPerson * 100 : room.roomPrice * 100}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-white underline hover:text-white/80 text-sm"
                     >
-                      https://revolut.me/sokram98?amount={room.roomPrice * 100}
+                      https://revolut.me/sokram98?amount={room.id === "floor-2-room-7" ? room.pricePerPerson * 100 : room.roomPrice * 100}
                     </a>
                   </div>
                   <div>
