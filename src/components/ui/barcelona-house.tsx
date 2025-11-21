@@ -64,7 +64,7 @@ export function BarcelonaHouseSection() {
             <div className="grid grid-cols-1 rounded-[2rem] p-2 shadow-md shadow-black/5">
               <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] md:aspect-[3/2] overflow-hidden rounded-[1rem] shadow-[inset_0_0_2px_1px_#ffffff4d] ring-1 ring-black/5">
                 <Image
-                  src="/events/barcelona-1.png"
+                  src="/events/barcelona.jpeg"
                   alt="Barcelona House"
                   fill
                   className="object-cover"
