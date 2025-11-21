@@ -132,7 +132,7 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
                     <p className="text-sm text-white/60 mb-1">Capacity</p>
                     <p className="text-base">
                       {room.currentOccupancy !== undefined && !isSoldOut 
-                        ? `${room.currentOccupancy}/${room.capacity} ${room.capacity === 1 ? "person" : "people"}`
+                        ? `${room.capacity - room.currentOccupancy} spot${room.capacity - room.currentOccupancy !== 1 ? 's' : ''} available`
                         : `${room.capacity} ${room.capacity === 1 ? "person" : "people"}`
                       }
                     </p>
