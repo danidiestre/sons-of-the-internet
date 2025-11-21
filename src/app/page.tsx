@@ -15,7 +15,7 @@ export default function Home() {
       {/* Builders Progress Section */}
       <section className="w-full py-8 sm:py-12">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <ExampleProgress value={65} />
+          <ExampleProgress value={75} />
         </div>
       </section>
       <ManifestoSection />
