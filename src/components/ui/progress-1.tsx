@@ -5,7 +5,7 @@ import { Progress } from "@base-ui-components/react/progress";
 const BARCELONA_DETAILS_URL =
   "https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link";
 
-export default function ExampleProgress({ value = 75 }: { value?: number }) {
+export default function ExampleProgress({ value = 80 }: { value?: number }) {
   return (
     <div className="flex flex-col items-center gap-6">
       <Progress.Root className="grid w-full grid-cols-2 gap-y-2" value={value}>
@@ -13,7 +13,7 @@ export default function ExampleProgress({ value = 75 }: { value?: number }) {
           className="text-sm font-medium text-white"
           style={{ fontFamily: "var(--font-space-mono)" }}
         >
-          15/20 builders are in
+          16/20 builders are in
         </Progress.Label>
         <Progress.Value
           className="col-start-2 text-right text-sm text-white"
