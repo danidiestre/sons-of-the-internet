@@ -316,6 +316,7 @@ export const floorsData: FloorData[] = [
         capacity: 2,
         hasPrivateBathroom: true,
         currentOccupancy: 1,
+        isSoldOut: true,
         floor: 2,
         bedType: "2 single beds",
         bathroomNumber: 7,
