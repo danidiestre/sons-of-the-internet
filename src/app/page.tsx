@@ -45,7 +45,7 @@ export default function Home() {
             />
             <ProfileCard
               name="Dani Diestre"
-              description="Co-Founder Autentic (350K€ pre-seed funding), Youtube Creator"
+              description="Co-Founder Autentic, Youtube Creator"
               imageUrl="/dani.png"
               githubUrl="https://github.com/danidiestre"
               linkedinUrl="https://www.linkedin.com/in/danidiestre/"
