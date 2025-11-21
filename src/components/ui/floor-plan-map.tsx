@@ -103,6 +103,9 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                     (isSelected || isHovered) ? "opacity-100 bg-black/10 text-sm" : "opacity-100"
                   )}>
                     Room {room.number.replace("Habitación ", "")}
+                    {room.currentOccupancy !== undefined && !isSoldOut && (
+                      <span className="ml-1.5 text-[10px]">({room.currentOccupancy}/{room.capacity})</span>
+                    )}
                   </span>
                   {/* Room type tag or sold out status */}
                   {isSoldOut ? (
