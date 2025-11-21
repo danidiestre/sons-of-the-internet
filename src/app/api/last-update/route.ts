@@ -10,7 +10,9 @@ export async function GET() {
     
     // Parse the date and format it nicely
     const date = new Date(commitDate);
-    const formattedDate = date.toLocaleString('en-US', {
+    // Add 1 hour for GMT+1
+    const dateWithOffset = new Date(date.getTime() + 60 * 60 * 1000);
+    const formattedDate = dateWithOffset.toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -28,9 +30,11 @@ export async function GET() {
   } catch (error) {
     // Fallback if git is not available
     const now = new Date();
+    // Add 1 hour for GMT+1
+    const nowWithOffset = new Date(now.getTime() + 60 * 60 * 1000);
     return NextResponse.json({
       commitHash: 'N/A',
-      commitDate: now.toLocaleString('en-US', {
+      commitDate: nowWithOffset.toLocaleString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
