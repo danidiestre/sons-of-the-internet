@@ -8,34 +8,10 @@ import { RoomDetailsPanel } from "@/components/ui/room-details-panel";
 import { LimelightNav } from "@/components/ui/limelight-nav";
 import { Room, floorsData } from "@/lib/room-data";
 
-interface LastUpdateInfo {
-  commitHash: string;
-  commitDate: string;
-  commitMessage: string;
-  timestamp: string;
-}
-
 export default function BookingsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
-  const [lastUpdate, setLastUpdate] = useState<LastUpdateInfo | null>(null);
-
-  // Fetch last update info
-  useEffect(() => {
-    fetch('/api/last-update')
-      .then(res => res.json())
-      .then(data => setLastUpdate(data))
-      .catch(() => {
-        // Fallback if API fails
-        setLastUpdate({
-          commitHash: 'N/A',
-          commitDate: new Date().toLocaleString(),
-          commitMessage: 'Build time',
-          timestamp: new Date().toISOString()
-        });
-      });
-  }, []);
 
   // Block body scroll when panel is open
   useEffect(() => {
@@ -154,15 +130,6 @@ export default function BookingsPage() {
               floorPlanPath={currentFloor.floorPlanPath}
               rooms={currentFloor.rooms}
             />
-          )}
-
-          {/* Last Updated Info */}
-          {lastUpdate && (
-            <div className="mt-6 text-center">
-              <p className="text-white/40 text-sm sm:text-base">
-                <span className="font-bold">Last updated:</span> {lastUpdate.commitDate}
-              </p>
-            </div>
           )}
         </div>
       </section>
