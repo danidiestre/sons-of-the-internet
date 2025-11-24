@@ -84,9 +84,6 @@ export default function BookingsPage() {
                   <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">Make your booking</h1>
                   <div className="flex items-center justify-center gap-3 flex-wrap">
                     <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Reserve your spot for the next Barcelona house (15th December 2025)</h2>
-                    <span className="px-3 py-1 text-xs sm:text-sm font-semibold uppercase tracking-wide text-white bg-red-500/20 border border-red-500/50 rounded-full" style={{ fontFamily: "var(--font-space-mono)" }}>
-                      Sold out
-                    </span>
                   </div>
                   <div className="relative group inline-block w-full sm:w-auto">
                     <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
