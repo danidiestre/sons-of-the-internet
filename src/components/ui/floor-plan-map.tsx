@@ -31,7 +31,7 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
   }, []);
 
   const handleRoomClick = (room: Room) => {
-    if (room.isSoldOut) return;
+    // Allow clicking on sold-out rooms to view details
     onRoomClick(room);
   };
 
@@ -83,7 +83,7 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                 className={cn(
                   "absolute transition-all duration-200 border-2 rounded z-20",
                   isSoldOut
-                    ? "cursor-not-allowed bg-red-500/20 border-red-400/80 opacity-80"
+                    ? "cursor-pointer bg-red-500/20 border-red-400/80 opacity-80 hover:bg-red-500/30 hover:border-red-400"
                     : "cursor-pointer",
                   !isSoldOut &&
                     (isSelected
@@ -94,7 +94,6 @@ export function FloorPlanMap({ onRoomClick, selectedRoomId, floorPlanPath, rooms
                 )}
                 style={getRoomStyle(room)}
                 aria-label={`Habitación ${room.number}${isSoldOut ? " (sold out)" : ""}`}
-                disabled={isSoldOut}
               >
                 {/* Room number label - always visible but more prominent on hover/select */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-1">
