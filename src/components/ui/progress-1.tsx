@@ -10,7 +10,7 @@ export default function ExampleProgress({ value = 80 }: { value?: number }) {
           className="text-sm font-medium text-white"
           style={{ fontFamily: "var(--font-space-mono)" }}
         >
-          20/20 builders are in
+          19/20 builders are in
         </Progress.Label>
         <Progress.Value
           className="col-start-2 text-right text-sm text-white"
