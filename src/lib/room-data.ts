@@ -207,7 +207,7 @@ export const floorsData: FloorData[] = [
         number: "Habitación 4",
         capacity: 2,
         hasPrivateBathroom: true,
-        isSoldOut: false,
+        isSoldOut: true,
         floor: 1,
         bedType: "2 single beds",
         bathroomNumber: 4,
