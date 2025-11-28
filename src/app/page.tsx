@@ -11,10 +11,10 @@ export default function Home() {
   return (
     <main className="bg-black">
       <HeroSection />
-      {/* Sponsored By Section */}
+      {/* Fuelled By Section */}
       <section className="w-full py-8 sm:py-12">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <p className="text-white/60 text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-space-mono)' }}>Sponsored by:</p>
+          <p className="text-white/60 text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-space-mono)' }}>Fueled by:</p>
           <div className="flex items-center justify-center">
             <a 
               href="https://www.blackbox.ai/" 
