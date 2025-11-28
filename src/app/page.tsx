@@ -11,6 +11,26 @@ export default function Home() {
   return (
     <main className="bg-black">
       <HeroSection />
+      {/* Sponsored By Section */}
+      <section className="w-full py-8 sm:py-12">
+        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
+          <p className="text-white/60 text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-space-mono)' }}>Sponsored by:</p>
+          <div className="flex items-center justify-center">
+            <a 
+              href="https://www.blackbox.ai/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <img 
+                src="/sponsors/blackbox.svg" 
+                alt="Blackbox" 
+                className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </div>
+        </div>
+      </section>
       <BarcelonaHouseSection />
       {/* Builders Progress Section */}
       <section className="w-full py-8 sm:py-12">
