@@ -10,7 +10,7 @@ export default function ExampleProgress({ value = 80 }: { value?: number }) {
           className="text-sm font-medium text-white"
           style={{ fontFamily: "var(--font-space-mono)" }}
         >
-          19/20 builders are in
+          20/20 builders are in
         </Progress.Label>
         <Progress.Value
           className="col-start-2 text-right text-sm text-white"
@@ -20,11 +20,11 @@ export default function ExampleProgress({ value = 80 }: { value?: number }) {
           <Progress.Indicator className="block bg-white transition-all duration-500" />
         </Progress.Track>
       </Progress.Root>
-      {value === 100 && (
-        <div className="text-white/80 text-sm font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
+      <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
+        <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
           Sold out
-        </div>
-      )}
+        </span>
+      </div>
     </div>
   );
 }
