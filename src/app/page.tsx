@@ -15,7 +15,7 @@ export default function Home() {
       <section className="w-full py-8 sm:py-12">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
           <p className="text-white/60 text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-space-mono)' }}>Fueled by:</p>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
             <a 
               href="https://www.blackbox.ai/" 
               target="_blank" 
@@ -25,6 +25,18 @@ export default function Home() {
               <img 
                 src="/sponsors/blackbox.svg" 
                 alt="Blackbox" 
+                className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity"
+              />
+            </a>
+            <a 
+              href="https://baobabventures.vc/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <img 
+                src="/sponsors/baobab.svg" 
+                alt="Baobab" 
                 className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity"
               />
             </a>
