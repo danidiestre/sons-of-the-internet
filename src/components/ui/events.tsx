@@ -123,10 +123,10 @@ function EventCard({ item }: { item: EventItem }) {
           ) : (
             <Image src={item.image} alt={item.alt} fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 opacity-0 transition-opacity duration-300 sm:group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 via-35% to-black/80 opacity-0 transition-opacity duration-300 sm:group-hover:opacity-100" />
           
           {/* Info overlay - always visible on mobile, shown on hover (desktop) */}
-          <div className={`absolute inset-0 bg-black/70 sm:bg-gradient-to-b sm:from-transparent sm:via-black/0 sm:to-black/80 transition-opacity duration-300 flex flex-col justify-end p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}>
+          <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-black/60 via-50% to-black/80 sm:bg-transparent sm:bg-gradient-to-b sm:from-transparent sm:via-black/50 sm:via-35% sm:to-black/90 transition-opacity duration-300 flex flex-col justify-end p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}>
             <div className="space-y-[6px] p-4 sm:p-5">
               <div className="flex items-center gap-2 flex-wrap">
                 {item.badge ? (
