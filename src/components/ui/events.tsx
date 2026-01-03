@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { GlowCard } from "@/components/ui/glow-card";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 type EventStatus = "FINISHED" | "UPCOMING" | "ENCRYPTED" | "CLASSIFIED";
 
@@ -21,16 +22,26 @@ interface EventItem {
 
 const EVENTS: EventItem[] = [
   {
-    id: "2",
+    id: "3",
     status: "UPCOMING",
+    date: "April 2026",
+    title: "Next Soti House",
+    location: "Ireland, Spain, France",
+    cta: "JOIN THE WAITLIST →",
+    image: "dot-pattern",
+    alt: "Interactive dot pattern",
+    href: "https://tally.so/r/n025Aj",
+  },
+  {
+    id: "2",
+    status: "FINISHED",
     date: "Dec 15, 2025",
     title: "Barcelona Winter Edition",
     location: "Barcelona, Spain",
-    cta: "VIEW DETAILS →",
+    cta: "VIEW EVENT →",
     image: "/events/barcelona.jpeg",
     alt: "Barcelona, Spain",
     href: "https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link",
-    badge: "SOLD OUT",
   },
   {
     id: "1",
@@ -44,7 +55,7 @@ const EVENTS: EventItem[] = [
     href: "https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link",
   },
   // {
-  //   id: "3",
+  //   id: "4",
   //   status: "UPCOMING",
   //   date: "Jan 13, 2026",
   //   title: "Bangkok Summit: Digital Nomads",
@@ -91,11 +102,31 @@ function EventCard({ item }: { item: EventItem }) {
         <div 
           className="relative w-full h-full aspect-square overflow-hidden"
         >
-          <Image src={item.image} alt={item.alt} fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/0 to-black/40" />
+          {item.image === "dot-pattern" ? (
+            <>
+              <DotPattern className="w-full h-full" />
+              <div className="pointer-events-none absolute inset-0 hidden sm:flex items-center justify-center transition-opacity duration-300 sm:group-hover:opacity-0">
+                <div className="text-center">
+                  <div
+                    className="text-white text-xl sm:text-xl font-semibold tracking-tight"
+                    style={{
+                      fontFamily: "var(--font-space-mono)",
+                      textShadow:
+                        "0 0 18px rgba(255,255,255,0.45), 0 0 40px rgba(167,139,250,0.25)",
+                    }}
+                  >
+                    Coming soon
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <Image src={item.image} alt={item.alt} fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 opacity-0 transition-opacity duration-300 sm:group-hover:opacity-100" />
           
           {/* Info overlay - always visible on mobile, shown on hover (desktop) */}
-          <div className={`absolute inset-0 bg-black/70 transition-opacity duration-300 flex flex-col justify-end p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}>
+          <div className={`absolute inset-0 bg-black/70 sm:bg-gradient-to-b sm:from-transparent sm:via-black/0 sm:to-black/80 transition-opacity duration-300 flex flex-col justify-end p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}>
             <div className="space-y-[6px] p-4 sm:p-5">
               <div className="flex items-center gap-2 flex-wrap">
                 {item.badge ? (
@@ -110,7 +141,7 @@ function EventCard({ item }: { item: EventItem }) {
               <h4 className="text-white text-base sm:text-lg font-medium">{item.title}</h4>
               <p className="text-white/60 text-sm">{item.location}</p>
               {item.href ? (
-                item.cta.includes("VIEW DETAILS") ? (
+                item.cta.includes("VIEW DETAILS") || item.cta.toLowerCase().includes("waitlist") || item.cta.toLowerCase().includes("join") ? (
                   <div className="mt-3">
                     <div className="relative inline-block">
                       <div className="absolute inset-0 -m-1 rounded-full bg-gray-100 opacity-30 filter blur-md pointer-events-none transition-all duration-300 ease-out group-hover:opacity-50 group-hover:blur-lg group-hover:-m-1.5"></div>
@@ -146,12 +177,12 @@ function EventCard({ item }: { item: EventItem }) {
 export function EventsSection() {
   return (
     <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
-      <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
+      <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
         <div className="mb-8 text-center">
           <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Houses</h3>
           <p className="text-white/60 mt-2">Mark your digital calendar. These moments only happen IRL.</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {EVENTS.map((e) => (
             <EventCard key={e.id} item={e} />
           ))}

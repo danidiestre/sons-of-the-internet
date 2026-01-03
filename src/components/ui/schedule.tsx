@@ -8,7 +8,7 @@ export function ScheduleSection() {
       <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
         <div className="mb-8 text-center">
           <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>
-            Schedule
+            Last Schedule
           </h3>
           <p className="text-white/60">Weekly program structure</p>
         </div>

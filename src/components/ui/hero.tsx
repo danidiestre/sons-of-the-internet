@@ -29,7 +29,8 @@ export function HeroSection({ className }: { className?: string }) {
               <div className="space-y-10">
                 <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">We host 1-week houses for people who build things</h1>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next house in Barcelona, 15th December 2025</h2>
+                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — April 2026</h2>
+                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Barcelona just happened. Sold out.</h2>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-6">
                   <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
