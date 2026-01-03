@@ -35,8 +35,8 @@ export function DotPattern({ className = "" }: DotPatternProps) {
             x: (j / (cols - 1)) * 100,
             y: (i / (rows - 1)) * 100,
             size: 2 + Math.round(Math.random()),
-            delay: Math.random() * 0.4,
-            duration: 0.15 + Math.random() * 0.55,
+            delay: Math.random() * 1.6,
+            duration: 1.2 + Math.random() * 2.4,
             a1,
             a2,
           });
