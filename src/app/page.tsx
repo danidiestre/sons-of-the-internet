@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/ui/hero";
 import { BarcelonaHouseSection } from "@/components/ui/barcelona-house";
 import { ManifestoSection } from "@/components/ui/manifesto";
+import { SotiCommunityProgress } from "@/components/ui/soti-community-progress";
 import { EventsSection } from "@/components/ui/events";
 import { ScheduleSection } from "@/components/ui/schedule";
 import { Footer } from "@/components/ui/footer";
@@ -45,12 +46,15 @@ export default function Home() {
       </section>
       <BarcelonaHouseSection />
       {/* Builders Progress Section */}
-      <section className="w-full py-8 sm:py-12">
+      <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
           <ExampleProgress value={100} />
         </div>
       </section>
       <ManifestoSection />
+      <section className="w-full">
+          <SotiCommunityProgress />
+      </section>
       <EventsSection />
       <ScheduleSection />
       {/* Led by Section */}

@@ -4,8 +4,8 @@ import { Progress } from "@base-ui-components/react/progress";
 
 export default function ExampleProgress({ value = 55 }: { value?: number }) {
   return (
-    <div className="flex w-full flex-col items-center gap-6">
-      <div className="mt-8 w-full pt-8 border-t border-white/10">
+    <div className="flex w-full flex-col items-center ">
+      <div className="w-full pt-8 border-t border-white/10">
         <div className="mx-auto w-full max-w-sm space-y-4">
           <Progress.Root className="w-full" value={100}>
             <div className="flex justify-between items-center mb-2">
@@ -24,11 +24,22 @@ export default function ExampleProgress({ value = 55 }: { value?: number }) {
               <Progress.Indicator className="block bg-white transition-all duration-500" />
             </Progress.Track>
           </Progress.Root>
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-4">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
               <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
                 Sold out
               </span>
+            </div>
+            <div className="relative group inline-block">
+              <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
+              <a
+                href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
+              >
+                View house recap
+              </a>
             </div>
           </div>
         </div>
