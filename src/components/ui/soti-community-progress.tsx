@@ -17,7 +17,7 @@ export function SotiCommunityProgress({
   const value = valueOverride ?? computedValue;
 
   return (
-    <div className="mx-auto w-full max-w-sm space-y-4">
+    <div className="w-full space-y-4">
       <h3
         className="text-center text-white text-2xl sm:text-3xl font-semibold tracking-tight"
         style={{ fontFamily: "var(--font-space-mono)" }}

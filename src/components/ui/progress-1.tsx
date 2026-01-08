@@ -24,7 +24,7 @@ export default function ExampleProgress({ value = 55 }: { value?: number }) {
               <Progress.Indicator className="block bg-white transition-all duration-500" />
             </Progress.Track>
           </Progress.Root>
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-6">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
               <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
                 Sold out
