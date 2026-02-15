@@ -104,6 +104,13 @@ export default function Home() {
               githubUrl="https://github.com/eddsaura"
               linkedinUrl="https://www.linkedin.com/in/jesauraoller/"
             />
+            <ProfileCard
+              name="Adrián Valera"
+              description="Engineer & Researcher. Building communities with love."
+              imageUrl="/adrian.png"
+              githubUrl="https://github.com/adrixo"
+              linkedinUrl="http://linkedin.com/in/adrian-valera"
+            />
           </div>
         </div>
       </section>
