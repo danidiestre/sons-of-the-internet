@@ -6,6 +6,7 @@ import { EventsSection } from "@/components/ui/events";
 import { ScheduleSection } from "@/components/ui/schedule";
 import { Footer } from "@/components/ui/footer";
 import ExampleProgress from "@/components/ui/progress-1";
+import { ValenciaProgress } from "@/components/ui/valencia-progress";
 import { ProfileCard } from "@/components/ui/profile-card";
 
 export default function Home() {
@@ -45,6 +46,12 @@ export default function Home() {
         </div>
       </section>
       <BarcelonaHouseSection />
+      {/* Valencia Progress Section */}
+      <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
+        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
+          <ValenciaProgress />
+        </div>
+      </section>
       {/* Builders Progress Section */}
       <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">

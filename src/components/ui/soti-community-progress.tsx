@@ -1,20 +1,28 @@
+"use client";
+
 import * as React from "react";
 import { Progress } from "@base-ui-components/react/progress";
 
-type SotiCommunityProgressProps = {
-  seatsFilled?: number;
-  totalSeats?: number;
-  valueOverride?: number;
-};
+const TOTAL_SEATS = 64;
+const API_URL = "/api/count";
 
-export function SotiCommunityProgress({
-  seatsFilled = 35,
-  totalSeats = 64,
-  valueOverride,
-}: SotiCommunityProgressProps) {
-  // Use override when provided, otherwise compute from seats
-  const computedValue = Math.round((seatsFilled / totalSeats) * 100);
-  const value = valueOverride ?? computedValue;
+export function SotiCommunityProgress() {
+  const [total, setTotal] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        setTotal(Math.min(data.total ?? 0, TOTAL_SEATS));
+      })
+      .catch(() => {
+        setTotal(0);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const value = Math.round((total / TOTAL_SEATS) * 100);
 
   return (
     <div className="w-full space-y-4">
@@ -24,13 +32,13 @@ export function SotiCommunityProgress({
       >
         SOTI Community
       </h3>
-      <Progress.Root className="w-full" value={value}>
+      <Progress.Root className="w-full" value={loading ? 0 : value}>
         <div className="flex justify-between items-center mb-2">
           <Progress.Label
             className="text-sm font-medium text-white flex-1"
             style={{ fontFamily: "var(--font-space-mono)" }}
           >
-            {seatsFilled} of {totalSeats} seats filled for 2026
+            {loading ? "…" : total} of {TOTAL_SEATS} seats filled for 2026
           </Progress.Label>
           <Progress.Value
             className="text-sm text-white ml-4"
@@ -57,4 +65,3 @@ export function SotiCommunityProgress({
     </div>
   );
 }
-
