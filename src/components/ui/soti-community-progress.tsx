@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Progress } from "@base-ui-components/react/progress";
 
-const TOTAL_SEATS = 64;
+const TOTAL_SEATS = 128;
 const API_URL = "/api/count";
 
 export function SotiCommunityProgress() {
@@ -38,7 +38,7 @@ export function SotiCommunityProgress() {
             className="text-sm font-medium text-white flex-1"
             style={{ fontFamily: "var(--font-space-mono)" }}
           >
-            {loading ? "…" : total} of {TOTAL_SEATS} seats filled for 2026
+            {loading ? "…" : total}/{TOTAL_SEATS} seats filled for 2026
           </Progress.Label>
           <Progress.Value
             className="text-sm text-white ml-4"
