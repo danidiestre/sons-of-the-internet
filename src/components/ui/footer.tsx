@@ -30,7 +30,7 @@ export function Footer() {
               <ul className="space-y-2 text-sm">
                 <li><Link href="/#1" className="text-white/70 hover:text-white transition-colors">&gt; Manifesto</Link></li>
                 <li><Link href="/#2" className="text-white/70 hover:text-white transition-colors">&gt; Houses</Link></li>
-                <li><a href="https://tally.so/r/n025Aj" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">&gt; Apply to become a member</a></li>
+                <li><a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">&gt; Apply to become a member</a></li>
               </ul>
             </div>
 

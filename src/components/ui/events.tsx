@@ -30,7 +30,7 @@ const EVENTS: EventItem[] = [
     cta: "JOIN THE WAITLIST →",
     image: "dot-pattern",
     alt: "Interactive dot pattern",
-    href: "https://tally.so/r/n025Aj",
+    href: "https://tally.so/r/BzXWgN",
   },
   {
     id: "2",
