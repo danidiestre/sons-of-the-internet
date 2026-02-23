@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Progress } from "@base-ui-components/react/progress";
 
-const TOTAL_SEATS = 128;
+const BASE_SEATS = 128;
 const API_URL = "/api/count";
 
 export function SotiCommunityProgress() {
@@ -14,7 +14,7 @@ export function SotiCommunityProgress() {
     fetch(API_URL)
       .then((res) => res.json())
       .then((data) => {
-        setTotal(Math.min(data.total ?? 0, TOTAL_SEATS));
+        setTotal(data.total ?? 0);
       })
       .catch(() => {
         setTotal(0);
@@ -22,7 +22,8 @@ export function SotiCommunityProgress() {
       .finally(() => setLoading(false));
   }, []);
 
-  const value = Math.round((total / TOTAL_SEATS) * 100);
+  const totalSeats = total > BASE_SEATS ? total + 5 : BASE_SEATS;
+  const value = Math.round((total / totalSeats) * 100);
 
   return (
     <div className="w-full space-y-4">
@@ -38,7 +39,7 @@ export function SotiCommunityProgress() {
             className="text-sm font-medium text-white flex-1"
             style={{ fontFamily: "var(--font-space-mono)" }}
           >
-            {loading ? "…" : total}/{TOTAL_SEATS} seats filled for 2026
+            {loading ? "…" : total}/{totalSeats} seats filled for 2026
           </Progress.Label>
           <Progress.Value
             className="text-sm text-white ml-4"
