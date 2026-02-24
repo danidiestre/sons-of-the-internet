@@ -12,6 +12,14 @@ export default function Home() {
   const textRefs = useRef<(HTMLDivElement | null)[]>([]);
   const arrowRef = useRef<HTMLDivElement>(null);
 
+  // Zone 2 transition refs
+  const zone2TriggerRef = useRef<HTMLDivElement>(null);
+  const flashRef = useRef<HTMLDivElement>(null);
+  const sunCanvasRef = useRef<HTMLCanvasElement>(null);
+  const zone2ContentRef = useRef<HTMLDivElement>(null);
+  const zone2Fired = useRef(false);
+  const sunAnimId = useRef<number>(0);
+
   // Rain config — sliders update this ref, animation reads it
   const rainCfg = useRef({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
   const [rainUI, setRainUI] = useState({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
@@ -333,6 +341,262 @@ export default function Home() {
     };
   }, []);
 
+  // Zone 2 flash + sun lens flare — fires once when trigger enters viewport
+  useEffect(() => {
+    const trigger = zone2TriggerRef.current;
+    const flash = flashRef.current;
+    const sunCanvas = sunCanvasRef.current;
+    const content = zone2ContentRef.current;
+    if (!trigger || !flash || !sunCanvas || !content) return;
+
+    // Sun + lens flare animation on canvas
+    function startSunAnimation(canvas: HTMLCanvasElement) {
+      const ctx = canvas.getContext('2d')!;
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.clientWidth;
+      const H = canvas.clientHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.scale(dpr, dpr);
+
+      // Sun position — pinned near top of screen
+      const sunX = W * 0.5;
+      const sunY = H * 0.06;
+
+      // Lens flare artifacts along a nearly horizontal line (~15° tilt)
+      const flares = [
+        { dist: 0.12, size: 40, color: 'rgba(255,209,102,0.55)' },
+        { dist: 0.22, size: 20, color: 'rgba(255,107,43,0.4)' },
+        { dist: 0.34, size: 55, color: 'rgba(255,209,102,0.25)' },
+        { dist: 0.46, size: 15, color: 'rgba(255,180,80,0.5)' },
+        { dist: 0.56, size: 70, color: 'rgba(255,209,102,0.18)' },
+        { dist: 0.68, size: 25, color: 'rgba(255,107,43,0.35)' },
+        { dist: 0.78, size: 45, color: 'rgba(255,255,255,0.15)' },
+        { dist: 0.90, size: 30, color: 'rgba(255,180,80,0.2)' },
+      ];
+      // Flare axis — nearly horizontal, ~15° tilt to the right
+      const axisAngle = Math.PI * (15 / 180);
+      const axisDist = W * 0.9;
+
+      let startTime = 0;
+      let globalAlpha = 1;
+
+      function draw(time: number) {
+        if (!startTime) startTime = time;
+        const elapsed = time - startTime;
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalAlpha = globalAlpha;
+
+        const rotation = elapsed * 0.0003;
+
+        // Sun core glow — massive warm aura
+        const coreR = 280;
+        const coreGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, coreR);
+        coreGrad.addColorStop(0, 'rgba(255,255,255,1)');
+        coreGrad.addColorStop(0.08, 'rgba(255,255,240,0.95)');
+        coreGrad.addColorStop(0.2, 'rgba(255,248,220,0.7)');
+        coreGrad.addColorStop(0.4, 'rgba(255,209,102,0.35)');
+        coreGrad.addColorStop(0.65, 'rgba(255,140,50,0.12)');
+        coreGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = coreGrad;
+        ctx.fillRect(sunX - coreR, sunY - coreR, coreR * 2, coreR * 2);
+
+        // Sun rays — prominent starburst with slow rotation
+        const rayCount = 16;
+        for (let i = 0; i < rayCount; i++) {
+          const angle = rotation + (i / rayCount) * Math.PI * 2;
+          const length = 220 + Math.sin(elapsed * 0.002 + i) * 60;
+          const width = 2.5;
+          ctx.save();
+          ctx.translate(sunX, sunY);
+          ctx.rotate(angle);
+          const rayGrad = ctx.createLinearGradient(0, 0, length, 0);
+          rayGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
+          rayGrad.addColorStop(0.2, 'rgba(255,248,220,0.5)');
+          rayGrad.addColorStop(0.5, 'rgba(255,209,102,0.2)');
+          rayGrad.addColorStop(1, 'transparent');
+          ctx.strokeStyle = rayGrad;
+          ctx.lineWidth = width;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(length, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Secondary thinner rays — counter-rotating
+        for (let i = 0; i < rayCount * 2; i++) {
+          const angle = -rotation * 0.5 + (i / (rayCount * 2)) * Math.PI * 2;
+          const length = 140 + Math.cos(elapsed * 0.0015 + i * 0.5) * 35;
+          ctx.save();
+          ctx.translate(sunX, sunY);
+          ctx.rotate(angle);
+          const rayGrad = ctx.createLinearGradient(0, 0, length, 0);
+          rayGrad.addColorStop(0, 'rgba(255,209,102,0.5)');
+          rayGrad.addColorStop(0.4, 'rgba(255,180,80,0.2)');
+          rayGrad.addColorStop(1, 'transparent');
+          ctx.strokeStyle = rayGrad;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(12, 0);
+          ctx.lineTo(length, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Bright inner core — hot white center
+        const innerR = 50;
+        const innerGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, innerR);
+        innerGrad.addColorStop(0, 'rgba(255,255,255,1)');
+        innerGrad.addColorStop(0.3, 'rgba(255,255,240,0.9)');
+        innerGrad.addColorStop(0.6, 'rgba(255,255,255,0.4)');
+        innerGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = innerGrad;
+        ctx.fillRect(sunX - innerR, sunY - innerR, innerR * 2, innerR * 2);
+
+        // Lens flare artifacts — bokeh circles along axis
+        for (const f of flares) {
+          const fx = sunX + Math.cos(axisAngle) * axisDist * f.dist;
+          const fy = sunY + Math.sin(axisAngle) * axisDist * f.dist;
+          // Subtle pulse
+          const pulse = 1 + Math.sin(elapsed * 0.003 + f.dist * 10) * 0.15;
+          const r = f.size * pulse;
+
+          // Outer ring
+          ctx.beginPath();
+          ctx.arc(fx, fy, r, 0, Math.PI * 2);
+          ctx.fillStyle = f.color;
+          ctx.fill();
+
+          // Inner bright spot
+          const spotGrad = ctx.createRadialGradient(fx, fy, 0, fx, fy, r * 0.4);
+          spotGrad.addColorStop(0, 'rgba(255,255,255,0.3)');
+          spotGrad.addColorStop(1, 'transparent');
+          ctx.fillStyle = spotGrad;
+          ctx.beginPath();
+          ctx.arc(fx, fy, r * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Hexagonal flare (camera aperture artifact) midway
+        const hexX = sunX + Math.cos(axisAngle) * axisDist * 0.35;
+        const hexY = sunY + Math.sin(axisAngle) * axisDist * 0.35;
+        const hexR = 40;
+        ctx.save();
+        ctx.translate(hexX, hexY);
+        ctx.rotate(rotation * 0.3);
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2;
+          const hx = Math.cos(a) * hexR;
+          const hy = Math.sin(a) * hexR;
+          if (i === 0) ctx.moveTo(hx, hy);
+          else ctx.lineTo(hx, hy);
+        }
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,209,102,0.15)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,209,102,0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+
+        sunAnimId.current = requestAnimationFrame(draw);
+      }
+
+      sunAnimId.current = requestAnimationFrame(draw);
+    }
+
+    // Reset content to hidden state
+    function resetContent() {
+      const children = content!.children;
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i] as HTMLElement;
+        child.style.transition = 'none';
+        child.style.opacity = '0';
+        child.style.transform = 'translateY(30px)';
+      }
+    }
+
+    // Guard: prevent exit observer from resetting during animation
+    let animGuard = false;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        if (zone2Fired.current) return;
+        zone2Fired.current = true;
+        animGuard = true;
+
+        // Lock scroll — snap to Valencia section and freeze
+        const section = content.closest('section');
+        if (section) {
+          const sectionTop = section.getBoundingClientRect().top + window.scrollY - 40;
+          window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+        }
+        document.body.style.overflow = 'hidden';
+
+        // t=0: bright flash ON + start sun canvas
+        flash.style.transition = 'opacity 0.12s ease-in';
+        flash.style.opacity = '1';
+        sunCanvas.style.opacity = '1';
+        startSunAnimation(sunCanvas);
+
+        // t=150ms: flash fades, sun stays permanently
+        setTimeout(() => {
+          flash.style.transition = 'opacity 0.5s ease-out';
+          flash.style.opacity = '0';
+        }, 150);
+
+        // t=350ms: reveal content with staggered animation
+        setTimeout(() => {
+          const children = content.children;
+          for (let i = 0; i < children.length; i++) {
+            const child = children[i] as HTMLElement;
+            child.style.transition = `opacity 0.6s ease-out ${i * 0.15}s, transform 0.6s ease-out ${i * 0.15}s`;
+            child.style.opacity = '1';
+            child.style.transform = 'translateY(0)';
+          }
+        }, 350);
+
+        // Unlock scroll after animation completes
+        setTimeout(() => {
+          document.body.style.overflow = '';
+        }, 1400);
+
+        // Allow exit observer to work after animation settles
+        setTimeout(() => {
+          animGuard = false;
+        }, 2500);
+      },
+      { threshold: 0.15 }
+    );
+
+    // When trigger exits viewport (user scrolls back up), reset everything
+    const exitObserver = new IntersectionObserver(
+      ([entry]) => {
+        // Don't reset during the animation sequence
+        if (animGuard) return;
+        if (entry.isIntersecting || !zone2Fired.current) return;
+        // Trigger left viewport — reset so it can fire again
+        zone2Fired.current = false;
+        cancelAnimationFrame(sunAnimId.current);
+        sunCanvas.style.opacity = '0';
+        flash.style.opacity = '0';
+        resetContent();
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(trigger);
+    exitObserver.observe(trigger);
+    return () => {
+      observer.disconnect();
+      exitObserver.disconnect();
+      cancelAnimationFrame(sunAnimId.current);
+    };
+  }, []);
+
   return (
     <main style={{ background: '#0a0a0c' }}>
 
@@ -446,7 +710,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Rain Controls */}
+          {/* Rain Controls — disabled for now
           <div className="mx-auto w-full max-w-2xl pt-6 pb-2">
             <div className="border border-[#3a3a48] rounded-lg p-4 space-y-3" style={{ background: '#111114' }}>
               <p className="text-xs uppercase tracking-widest mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>Rain config</p>
@@ -475,532 +739,514 @@ export default function Home() {
               ))}
             </div>
           </div>
+          */}
         </div>
       </section>
       </div>
 
       {/* ============================================= */}
-      {/* SECTION: Event Showcase Image                 */}
+      {/* ZONE 2: Valencia — Warm Mediterranean          */}
       {/* ============================================= */}
-      <section className="w-full overflow-hidden">
-        <div className="relative w-full flex justify-center items-center px-6 sm:px-10">
-          <div className="w-full max-w-4xl">
-            <div className="rounded-3xl bg-card shadow-2xl ring-1 ring-black/5">
-              <div className="grid grid-cols-1 rounded-[2rem] p-2 shadow-md shadow-black/5">
-                <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] md:aspect-[3/2] overflow-hidden rounded-[1rem] shadow-[inset_0_0_2px_1px_#ffffff4d] ring-1 ring-black/5">
-                  <Image
-                    src="/events/barcelona-social.png"
-                    alt="SOTI House"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, 80vw"
-                    quality={100}
-                    priority
-                  />
-                </div>
+      <div style={{ background: '#FFF8F0' }}>
+
+        {/* Flash overlay — fills the entire viewport on trigger */}
+        <div
+          ref={flashRef}
+          className="fixed inset-0 pointer-events-none z-50"
+          style={{
+            background: 'radial-gradient(ellipse at center 30%, #ffffff 0%, #FFF8F0 20%, #FFD166 45%, #FF6B2B60 70%, transparent 100%)',
+            opacity: 0,
+          }}
+        />
+
+        {/* Sun lens flare canvas — fixed overlay */}
+        <canvas
+          ref={sunCanvasRef}
+          className="fixed inset-0 pointer-events-none z-40"
+          style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in' }}
+        />
+
+        {/* Transition: sharp dark → cream cutoff */}
+        <div ref={zone2TriggerRef} className="relative" style={{ height: '80px', background: 'linear-gradient(to bottom, #0a0a0c 0%, #0a0a0c 20%, #1a1410 45%, #FFF8F0 100%)' }}>
+          {/* Static warm glow underneath */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #FFD16640 0%, #FF6B2B15 35%, transparent 65%)' }} />
+        </div>
+
+        {/* ============================================= */}
+        {/* SECTION: Valencia Hero Intro                   */}
+        {/* ============================================= */}
+        <section className="relative w-full min-h-screen flex flex-col justify-center pt-10 sm:pt-16 pb-10 sm:pb-14">
+          <div ref={zone2ContentRef} className="mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
+            <p className="text-sm uppercase tracking-[0.3em] mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
+              Welcome to
+            </p>
+            <div className="flex justify-center mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+              <div className="relative w-36 h-16 sm:w-48 sm:h-20">
+                <Image src="/logo.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+            <p className="text-xs uppercase tracking-[0.2em] mb-1" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+              connect beyond the web
+            </p>
+            <h2 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
+              Valencia.
+            </h2>
+            <p className="mt-4 text-lg sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+              20 builders. One villa. Seven days of sun.
+            </p>
 
-      {/* ============================================= */}
-      {/* SECTION: Progress Tracker                     */}
-      {/* ============================================= */}
-      <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <div className="flex w-full flex-col items-center">
-            <div className="w-full pt-8 border-t border-white/10">
-              <div className="mx-auto w-full max-w-sm space-y-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
-                    0/20 builders on Valencia 2026
+            {/* Progress + Apply — inside hero so it fills the viewport */}
+            <div className="mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
+                    0/20 builders
                   </span>
                 </div>
-                <div className="h-1 w-full overflow-hidden rounded bg-white/10">
-                  <div className="h-full bg-white transition-all duration-500" style={{ width: "0%" }}></div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: '0%', background: '#FF6B2B' }} />
                 </div>
-                <div className="flex flex-col items-center gap-6">
+                <div className="flex flex-col items-center gap-4 pt-2">
                   <div className="relative group inline-block">
-                    <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
+                    <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
                     <a
                       href="https://tally.so/r/BzXWgN"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
+                      className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
+                      style={{ background: '#FF6B2B', color: '#FFF8F0' }}
                     >
-                      Apply to join the family
+                      Apply to join
                     </a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============================================= */}
-      {/* SECTION: Builders Progress (Barcelona 2025)   */}
-      {/* ============================================= */}
-      <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <div className="flex w-full flex-col items-center">
-            <div className="w-full pt-8 border-t border-white/10">
-              <div className="mx-auto w-full max-w-sm space-y-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
-                    20/20 builders on Barcelona 2025
+        {/* ============================================= */}
+        {/* SECTION: Manifesto                             */}
+        {/* ============================================= */}
+        <section id="1" className="relative z-10 w-full scroll-mt-32 md:scroll-mt-40">
+          <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
+            <div className="mb-8 text-center">
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Our Manifesto</h3>
+            </div>
+            <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto" style={{ color: '#6b5e52' }}>
+              <p>We grew up online, through forums, pixels and late-night calls.</p>
+              <p>We build in public, meet offline, and chase that first feeling of discovering the internet.</p>
+              <p>We&apos;re digital natives who enjoy disconnecting with other passionate builders.</p>
+              <p>Our community is global, our connections are real, and our gatherings never forget.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================= */}
+        {/* SECTION: SOTI Community Progress               */}
+        {/* ============================================= */}
+        <section className="w-full pb-10 sm:pb-14 pt-6 sm:pt-8">
+          <div className="mx-auto w-full max-w-md px-6 sm:px-10">
+            <div className="w-full space-y-4">
+              <h3 className="text-center text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
+                SOTI Community
+              </h3>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
+                  0/128 seats filled for 2026
+                </span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: '0%', background: '#FF8C42' }} />
+              </div>
+              <div className="flex justify-center pt-3">
+                <div className="relative group inline-block">
+                  <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
+                  <a
+                    href="https://tally.so/r/BzXWgN"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
+                    style={{ background: '#FF6B2B', color: '#FFF8F0' }}
+                  >
+                    Apply to join the family
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div className="mx-auto max-w-xs h-px" style={{ background: 'linear-gradient(to right, transparent, #FF6B2B30, transparent)' }} />
+
+        {/* ============================================= */}
+        {/* SECTION: Barcelona 2025 (past event)           */}
+        {/* ============================================= */}
+        <section className="w-full py-10 sm:py-14">
+          <div className="mx-auto w-full max-w-md px-6 sm:px-10">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
+                  20/20 builders on Barcelona 2025
+                </span>
+                <span className="text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>100%</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: '100%', background: '#FF8C42' }} />
+              </div>
+              <div className="flex flex-col items-center gap-4 pt-2">
+                <div className="inline-flex items-center px-3 py-1 rounded-full" style={{ background: '#FF6B2B15', border: '1px solid #FF6B2B40' }}>
+                  <span className="text-xs font-medium uppercase tracking-wide" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>
+                    Sold out
                   </span>
-                  <span className="text-sm text-white ml-4" style={{ fontFamily: "var(--font-dm-mono)" }}>100%</span>
                 </div>
-                <div className="h-1 w-full overflow-hidden rounded bg-white/10">
-                  <div className="h-full bg-white transition-all duration-500" style={{ width: "100%" }}></div>
-                </div>
-                <div className="flex flex-col items-center gap-6">
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
-                    <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-dm-mono)" }}>
-                      Sold out
-                    </span>
-                  </div>
-                  <div className="relative group inline-block">
-                    <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-                    <a
-                      href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
-                    >
-                      View house recap
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================= */}
-      {/* SECTION: Manifesto                            */}
-      {/* ============================================= */}
-      <section id="1" className="relative z-10 flex flex-col gap-10 mb-16 w-full scroll-mt-32 md:scroll-mt-40">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Our Manifesto</h3>
-          </div>
-          <div className="text-center text-balance text-2xl leading-normal max-w-2xl flex flex-col gap-4 mx-auto text-white/80">
-            <p>We grew up online, through forums, pixels and late-night calls.</p>
-            <p>We build in public, meet offline, and chase that first feeling of discovering the internet.</p>
-            <p>We&apos;re digital natives who enjoy disconnecting with other passionate builders.</p>
-            <p>Our community is global, our connections are real, and our gatherings never forget.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================= */}
-      {/* SECTION: SOTI Community Progress              */}
-      {/* ============================================= */}
-      <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <div className="w-full space-y-4">
-            <h3 className="text-center text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-dm-mono)" }}>
-              SOTI Community
-            </h3>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
-                0/128 seats filled for 2026
-              </span>
-            </div>
-            <div className="h-1 w-full overflow-hidden rounded bg-white/10">
-              <div className="h-full bg-white transition-all duration-500" style={{ width: "0%" }}></div>
-            </div>
-            <div className="flex justify-center pt-5">
-              <div className="relative group inline-block">
-                <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
                 <a
-                  href="https://tally.so/r/BzXWgN"
+                  href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
+                  className="px-6 py-3 text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer border"
+                  style={{ color: '#FF6B2B', borderColor: '#FF6B2B', background: 'transparent' }}
                 >
-                  Apply to join the family
+                  View house recap
                 </a>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============================================= */}
-      {/* SECTION: Houses / Events                      */}
-      {/* ============================================= */}
-      <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
-        <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
-          <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Houses</h3>
-            <p className="text-white/60 mt-2">Mark your digital calendar. These moments only happen IRL.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        {/* ============================================= */}
+        {/* SECTION: Houses / Events                       */}
+        {/* ============================================= */}
+        <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
+          <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
+            <div className="mb-10 text-center">
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Houses</h3>
+              <p className="mt-3 text-base" style={{ color: '#6b5e52' }}>Mark your digital calendar. These moments only happen IRL.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
 
-            {/* Event Card: Next House */}
-            <div className="w-full aspect-square rounded-2xl border border-white/10 overflow-hidden relative group bg-white/5">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 via-50% to-black/80 flex flex-col justify-end p-4 sm:p-5">
-                <div className="space-y-[6px]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] tracking-wide text-amber-300/80 border-amber-300/20">UPCOMING</span>
-                    <span className="text-xs text-white/50">April 2026</span>
+              {/* Event Card: Next House */}
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ background: 'linear-gradient(135deg, #FF6B2B15 0%, #FFD16620 100%)', border: '1px solid #FF6B2B20' }}>
+                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide" style={{ background: '#FF6B2B20', color: '#FF6B2B', border: '1px solid #FF6B2B30' }}>UPCOMING</span>
+                      <span className="text-xs" style={{ color: '#6b5e52' }}>April 2026</span>
+                    </div>
+                    <h4 className="text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Next Soti House</h4>
+                    <p className="text-sm" style={{ color: '#6b5e52' }}>Ireland, Spain or France</p>
+                    <div className="mt-3">
+                      <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-200 inline-block" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>
+                        JOIN THE WAITLIST
+                      </a>
+                    </div>
                   </div>
-                  <h4 className="text-white text-base sm:text-lg font-medium">Next Soti House</h4>
-                  <p className="text-white/60 text-sm">Ireland, Spain or France</p>
-                  <div className="mt-3">
-                    <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 inline-block">
-                      JOIN THE WAITLIST
+                </div>
+              </div>
+
+              {/* Event Card: Barcelona */}
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #1a1a1a10' }}>
+                <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">FINISHED</span>
+                      <span className="text-xs text-white/60">Dec 15, 2025</span>
+                    </div>
+                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)' }}>Barcelona Winter Edition</h4>
+                    <p className="text-white/70 text-sm">Barcelona, Spain</p>
+                    <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold" style={{ color: '#FFD166' }}>
+                      VIEW EVENT &rarr;
                     </a>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Event Card: Barcelona */}
-            <div className="w-full aspect-square rounded-2xl border border-white/10 overflow-hidden relative group">
-              <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 via-50% to-black/80 flex flex-col justify-end p-4 sm:p-5">
-                <div className="space-y-[6px]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] tracking-wide text-emerald-300/80 border-emerald-300/20">FINISHED</span>
-                    <span className="text-xs text-white/50">Dec 15, 2025</span>
+              {/* Event Card: Italy */}
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #1a1a1a10' }}>
+                <Image src="/events/italia.jpg" alt="Taranto, Italy" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">FINISHED</span>
+                      <span className="text-xs text-white/60">Sept 21, 2025</span>
+                    </div>
+                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)' }}>La Settimana: Great Minds</h4>
+                    <p className="text-white/70 text-sm">Taranto, Italy</p>
+                    <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold" style={{ color: '#FFD166' }}>
+                      VIEW EVENT &rarr;
+                    </a>
                   </div>
-                  <h4 className="text-white text-base sm:text-lg font-medium">Barcelona Winter Edition</h4>
-                  <p className="text-white/60 text-sm">Barcelona, Spain</p>
-                  <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-white/80 hover:text-white transition-colors">
-                    VIEW EVENT →
-                  </a>
                 </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================= */}
+        {/* SECTION: Schedule                              */}
+        {/* ============================================= */}
+        <section className="w-full py-8 sm:py-12">
+          <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
+            <div className="mb-8 text-center">
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
+                Last Schedule
+              </h3>
+              <p style={{ color: '#6b5e52' }}>Weekly program structure</p>
+            </div>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <div className="min-w-full rounded-xl overflow-hidden" style={{ border: '1px solid #1a1a1a10' }}>
+                <table className="w-full table-fixed">
+                  <thead>
+                    <tr style={{ background: '#FF6B2B08', borderBottom: '1px solid #1a1a1a10' }}>
+                      <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: '#1a1a1a' }}>Time</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Mon</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Tue</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Wed</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Thu</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Fri</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Sat</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Sun</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ background: '#FF6B2B06', borderBottom: '1px solid #1a1a1a08' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>09:00–13:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Check In</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Demo Day</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Morning activity</td>
+                    </tr>
+                    <tr style={{ background: '#FF8C4206', borderBottom: '1px solid #1a1a1a08' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>13:00–15:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Public Event – Paella (60 Attendees)</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                    </tr>
+                    <tr style={{ background: '#FFD16606', borderBottom: '1px solid #1a1a1a08' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>15:00–18:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>DJ + Drinks</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Reflect & Harvest</td>
+                    </tr>
+                    <tr style={{ background: '#FF6B2B04' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>18:00+</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Intros & Goals</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Inspiration talk</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Network Afternoon</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Chef Dinner</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Demo Day</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>DJ + Drinks</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Check out</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* Event Card: Italy */}
-            <div className="w-full aspect-square rounded-2xl border border-white/10 overflow-hidden relative group">
-              <Image src="/events/italia.jpg" alt="Taranto, Italy" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 via-50% to-black/80 flex flex-col justify-end p-4 sm:p-5">
-                <div className="space-y-[6px]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] tracking-wide text-emerald-300/80 border-emerald-300/20">FINISHED</span>
-                    <span className="text-xs text-white/50">Sept 21, 2025</span>
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {[
+                { day: 'Monday', slots: ['09:00–13:00 → Check In', '13:00–15:00 → Lunch', '15:00–18:00 → Work Time', '18:00+ → Intros & Goals'] },
+                { day: 'Tuesday', slots: ['09:00–13:00 → Work Time', '13:00–15:00 → Lunch', '15:00–18:00 → Work Time', '18:00+ → Inspiration talk'] },
+                { day: 'Wednesday', slots: ['09:00–13:00 → Work Time', '13:00–15:00 → Lunch', '15:00–18:00 → Work Time', '18:00+ → Network Afternoon'] },
+                { day: 'Thursday', slots: ['09:00–13:00 → Work Time', '13:00–15:00 → Lunch', '15:00–18:00 → Work Time', '18:00+ → Chef Dinner'] },
+                { day: 'Friday', slots: ['09:00–13:00 → Work Time', '13:00–15:00 → Lunch', '15:00–18:00 → Work Time', '18:00+ → Demo Day'] },
+                { day: 'Saturday', slots: ['09:00–13:00 → Demo Day', '13:00–15:00 → Public Event – Paella', '15:00–18:00 → DJ + Drinks', '18:00+ → DJ + Drinks'] },
+                { day: 'Sunday', slots: ['09:00–13:00 → Morning activity + Check out', '13:00–15:00 → Lunch', '15:00–18:00 → Reflect & Harvest', '18:00+ → Check out'] },
+              ].map((d) => (
+                <div key={d.day} className="rounded-xl p-4" style={{ background: '#FF6B2B06', border: '1px solid #FF6B2B15' }}>
+                  <h4 className="font-bold text-base mb-3" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>{d.day}</h4>
+                  <div className="space-y-2 text-sm" style={{ color: '#6b5e52' }}>
+                    {d.slots.map((slot, j) => {
+                      const colors = ['#FF6B2B10', '#FF8C4210', '#FFD16610', '#FF6B2B08'];
+                      return (
+                        <div key={j} className="px-3 py-3 rounded-lg h-14 flex items-center" style={{ background: colors[j] }}>
+                          {slot}
+                        </div>
+                      );
+                    })}
                   </div>
-                  <h4 className="text-white text-base sm:text-lg font-medium">La Settimana: Great Minds</h4>
-                  <p className="text-white/60 text-sm">Taranto, Italy</p>
-                  <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-white/80 hover:text-white transition-colors">
-                    VIEW EVENT →
-                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================= */}
+        {/* SECTION: Led By (Team)                         */}
+        {/* ============================================= */}
+        <section className="w-full">
+          <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Led by</h3>
+            <p className="mb-12 text-center text-base" style={{ color: '#6b5e52' }}>Meet the builders behind SOTI</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+              {/* Marcos */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Marcos Valera</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>YT</a>
+                    <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
+                    <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>GTM, community. 10k youtube + 25k linkedin. Startups and builders audience.</p>
                 </div>
               </div>
-            </div>
 
+              {/* Juan Pablo */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/juan-pablo.jpeg" alt="Juan Pablo" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Juan Pablo</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
+                    <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
+                    <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Researcher and CTO. how research AI works</p>
+                </div>
+              </div>
+
+              {/* Dani */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Dani Diestre</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>YT</a>
+                    <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
+                    <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Co-Founder Autentic, Youtube Creator</p>
+                </div>
+              </div>
+
+              {/* Aniol */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Aniol Carreras</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
+                    <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>COO at The Hero Camp (Product School Leader in Spain) , Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
+                </div>
+              </div>
+
+              {/* Saura */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Jose Saura</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
+                    <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
+                    <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
+                </div>
+              </div>
+
+              {/* Adrian */}
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                    <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
+                  </div>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Adrian Valera</h4>
+                  <div className="flex gap-4 items-center">
+                    <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
+                    <a href="http://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Engineer & Researcher. Building communities with love.</p>
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============================================= */}
-      {/* SECTION: Schedule                             */}
-      {/* ============================================= */}
-      <section className="w-full py-8 sm:py-12">
-        <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
-          <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-2" style={{ fontFamily: 'var(--font-dm-mono)' }}>
-              Last Schedule
-            </h3>
-            <p className="text-white/60">Weekly program structure</p>
-          </div>
-
-          {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
-            <div className="min-w-full border border-white/10 rounded-lg overflow-hidden">
-              <table className="w-full table-fixed">
-                <thead>
-                  <tr className="bg-white/5 border-b border-white/10">
-                    <th className="w-32 px-4 py-4 text-left text-sm font-semibold text-white">Time</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Mon</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Tue</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Wed</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Thu</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Fri</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Sat</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold text-white">Sun</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  <tr className="bg-blue-500/10 hover:bg-blue-500/15 transition-colors">
-                    <td className="px-4 py-4 text-sm font-medium text-white bg-white/5">09:00–13:00</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Check In</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Demo Day</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Morning activity</td>
-                  </tr>
-                  <tr className="bg-orange-500/10 hover:bg-orange-500/15 transition-colors">
-                    <td className="px-4 py-4 text-sm font-medium text-white bg-white/5">13:00–15:00</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Public Event – Paella (60 Attendees)</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Lunch</td>
-                  </tr>
-                  <tr className="bg-purple-500/10 hover:bg-purple-500/15 transition-colors">
-                    <td className="px-4 py-4 text-sm font-medium text-white bg-white/5">15:00–18:00</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Work Time</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">DJ + Drinks</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Reflect & Harvest</td>
-                  </tr>
-                  <tr className="bg-pink-500/10 hover:bg-pink-500/15 transition-colors">
-                    <td className="px-4 py-4 text-sm font-medium text-white bg-white/5">18:00+</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Intros & Goals</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Inspiration talk</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Network Afternoon</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Chef Dinner</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Demo Day</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">DJ + Drinks</td>
-                    <td className="px-4 py-4 text-sm text-white text-center h-20">Check out</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="md:hidden space-y-4">
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Monday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Check In</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Work Time</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Intros & Goals</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Tuesday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Work Time</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Work Time</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Inspiration talk</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Wednesday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Work Time</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Work Time</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Network Afternoon</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Thursday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Work Time</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Work Time</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Chef Dinner</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Friday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Work Time</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Work Time</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Demo Day</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Saturday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Demo Day</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Public Event – Paella</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → DJ + Drinks</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → DJ + Drinks</div>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h4 className="text-white font-semibold text-base mb-3">Sunday</h4>
-              <div className="space-y-2 text-sm text-white">
-                <div className="bg-blue-500/10 px-3 py-3 rounded h-14 flex items-center">09:00–13:00 → Morning activity + Check out</div>
-                <div className="bg-orange-500/10 px-3 py-3 rounded h-14 flex items-center">13:00–15:00 → Lunch</div>
-                <div className="bg-purple-500/10 px-3 py-3 rounded h-14 flex items-center">15:00–18:00 → Reflect & Harvest</div>
-                <div className="bg-pink-500/10 px-3 py-3 rounded h-14 flex items-center">18:00+ → Check out</div>
+        {/* ============================================= */}
+        {/* SECTION: Final CTA                             */}
+        {/* ============================================= */}
+        <section className="w-full">
+          <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Build something that matters</h3>
+            <p className="mt-4 text-lg" style={{ color: '#6b5e52' }}>Not another community.</p>
+            <p style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
+            <div className="mt-8">
+              <div className="relative group inline-block">
+                <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
+                <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>Apply to join the family</a>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============================================= */}
-      {/* SECTION: Led By (Team)                        */}
-      {/* ============================================= */}
-      <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-dm-mono)' }}>Led by:</h3>
-          <p className="text-white/60 mb-12 text-center">Meet the builders behind SOTI</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-            {/* Marcos */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Marcos Valera</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">YT</a>
-                  <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
-                  <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>GTM, community. 10k youtube + 25k linkedin. Startups and builders audience.</p>
-              </div>
-            </div>
-
-            {/* Juan Pablo */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/juan-pablo.jpeg" alt="Juan Pablo" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Juan Pablo</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
-                  <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
-                  <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Researcher and CTO. how research AI works</p>
-              </div>
-            </div>
-
-            {/* Dani */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Dani Diestre</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">YT</a>
-                  <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
-                  <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Co-Founder Autentic, Youtube Creator</p>
-              </div>
-            </div>
-
-            {/* Aniol */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Aniol Carreras</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
-                  <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>COO at The Hero Camp (Product School Leader in Spain) , Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
-              </div>
-            </div>
-
-            {/* Saura */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Jose Saura</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
-                  <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
-                  <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
-              </div>
-            </div>
-
-            {/* Adrian */}
-            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
-                  <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
-                </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Adrian Valera</h4>
-                <div className="flex gap-4 items-center">
-                  <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
-                  <a href="http://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
-                </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Engineer & Researcher. Building communities with love.</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================= */}
-      {/* SECTION: Final CTA                            */}
-      {/* ============================================= */}
-      <section className="w-full">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Build something that matters</h3>
-          <p className="text-white/70 mt-3">Not another community.</p>
-          <p className="text-white/70">Join the new generation of builders now</p>
-          <div className="mt-8">
-            <div className="relative group inline-block">
-              <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-              <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200">Apply to join the family</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================= */}
-      {/* SECTION: Footer                               */}
-      {/* ============================================= */}
-      <footer className="w-full border-t border-white/10">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
-          <div className="space-y-8">
-            <div>
-              <h4 className="text-white text-lg sm:text-xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>SOTI Family</h4>
-              <p className="text-white/60 mr-12 mt-2" style={{ fontFamily: 'var(--font-dm-mono)' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
-              <div className="flex mt-4">
-                <div className="relative w-40 h-14">
-                  <Image src="/logo-white.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        {/* ============================================= */}
+        {/* SECTION: Footer                                */}
+        {/* ============================================= */}
+        <footer className="w-full" style={{ borderTop: '1px solid #1a1a1a10' }}>
+          <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
+            <div className="space-y-8">
               <div>
-                <h5 className="text-white/80 text-xs tracking-wider mb-3">QUICK_LINKS</h5>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href="/#1" className="text-white/70 hover:text-white transition-colors">&gt; Manifesto</Link></li>
-                  <li><Link href="/#2" className="text-white/70 hover:text-white transition-colors">&gt; Houses</Link></li>
-                  <li><a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">&gt; Apply to become a member</a></li>
-                </ul>
+                <h4 className="text-lg sm:text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>SOTI Family</h4>
+                <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
+                <div className="flex mt-4">
+                  <div className="relative w-40 h-14">
+                    <Image src="/logo.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
+                  </div>
+                </div>
               </div>
-              <div>
-                <h5 className="text-white/80 text-xs tracking-wider mb-3">FIND_US</h5>
-                <p className="text-white/50 text-sm mt-2">Only in real life.<br />We don&apos;t do social media.<br />We do moments that matter.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div>
+                  <h5 className="text-xs tracking-wider mb-3" style={{ color: '#FF6B2B' }}>QUICK_LINKS</h5>
+                  <ul className="space-y-2 text-sm">
+                    <li><Link href="/#1" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Manifesto</Link></li>
+                    <li><Link href="/#2" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Houses</Link></li>
+                    <li><a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Apply to become a member</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="text-xs tracking-wider mb-3" style={{ color: '#FF6B2B' }}>FIND_US</h5>
+                  <p className="text-sm mt-2" style={{ color: '#6b5e52' }}>Only in real life.<br />We don&apos;t do social media.<br />We do moments that matter.</p>
+                </div>
               </div>
+              <div className="pt-6 text-xs" style={{ color: '#6b5e5240' }}>&copy; {new Date().getFullYear()} SOTI</div>
             </div>
-            <div className="pt-6 text-white/30 text-xs">&copy; {new Date().getFullYear()} SOTI</div>
           </div>
-        </div>
-      </footer>
+        </footer>
+
+      </div>
 
     </main>
   );
