@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Geist_Mono, Space_Mono } from "next/font/google";
+import { Manrope, Geist_Mono, Space_Mono, Instrument_Serif, DM_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { OgLogo } from "@/components/og-logo";
@@ -21,6 +21,20 @@ const spaceMono = Space_Mono({
   variable: "--font-space-mono",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap",
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -74,7 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} antialiased bg-black`}
+        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} antialiased bg-black`}
       >
         <OgLogo />
         {children}

@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
+const HOUSE_COLOR = "#1a1a1a";
+
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -15,12 +17,20 @@ export default function Home() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const ROOF_H = 80;
     let w = 0,
       h = 0,
       boxTop = 0,
       boxLeft = 0,
-      boxRight = 0;
+      boxRight = 0,
+      centerX = 0,
+      roofBaseY = 0;
     let animationId: number;
+
+    // Thunder state
+    let thunderAlpha = 0;
+    let thunderFlashes = 0;
+    let nextThunder = performance.now() + (5000 + Math.random() * 3000);
 
     const rain: { x: number; y: number; vy: number; l: number }[] = [];
     const splashes: {
@@ -43,6 +53,20 @@ export default function Home() {
       boxTop = br.top - sr.top;
       boxLeft = br.left - sr.left;
       boxRight = br.right - sr.left;
+      centerX = (boxLeft + boxRight) / 2;
+      roofBaseY = boxTop + ROOF_H;
+    }
+
+    // Get the roof surface Y at a given X position
+    function getRoofY(x: number): number {
+      if (x < boxLeft || x > boxRight) return Infinity;
+      if (x <= centerX) {
+        const t = (x - boxLeft) / (centerX - boxLeft);
+        return roofBaseY - t * ROOF_H;
+      } else {
+        const t = (x - centerX) / (boxRight - centerX);
+        return boxTop + t * ROOF_H;
+      }
     }
 
     const observer = new ResizeObserver(updateLayout);
@@ -51,6 +75,27 @@ export default function Home() {
     function animate() {
       ctx!.clearRect(0, 0, w, h);
       ctx!.lineCap = "round";
+
+      // Thunder logic
+      const now = performance.now();
+      if (thunderFlashes === 0 && now >= nextThunder) {
+        thunderFlashes = Math.random() < 0.5 ? 1 : 2;
+        thunderAlpha = 0.9;
+      }
+      if (thunderAlpha > 0) {
+        ctx!.fillStyle = `rgba(255,255,255,${thunderAlpha})`;
+        ctx!.fillRect(0, 0, w, h);
+        thunderAlpha -= 0.06;
+        if (thunderAlpha <= 0) {
+          thunderAlpha = 0;
+          thunderFlashes--;
+          if (thunderFlashes > 0) {
+            thunderAlpha = 0.6;
+          } else {
+            nextThunder = now + 5000 + Math.random() * 3000;
+          }
+        }
+      }
 
       // Generate rain
       for (let k = 0; k < 4; k++) {
@@ -64,8 +109,8 @@ export default function Home() {
         }
       }
 
-      // Rain rendering & collision
-      ctx!.strokeStyle = "#ffffff";
+      // Rain rendering & collision with roof slopes
+      ctx!.strokeStyle = "#aec2e0";
       ctx!.lineWidth = 3;
       for (let i = rain.length - 1; i >= 0; i--) {
         const r = rain[i];
@@ -75,19 +120,18 @@ export default function Home() {
         ctx!.lineTo(r.x, r.y - r.l);
         ctx!.stroke();
 
-        // Collision with box top edge
-        if (
-          r.y >= boxTop &&
-          r.y - r.vy <= boxTop &&
-          r.x > boxLeft &&
-          r.x < boxRight
-        ) {
+        const surfaceY = getRoofY(r.x);
+        if (surfaceY < Infinity && r.y >= surfaceY && r.y - r.vy <= surfaceY) {
+          // Splash outward based on which slope was hit
+          const isLeft = r.x <= centerX;
           for (let k = 0; k < 6; k++) {
             splashes.push({
               x: r.x,
-              y: boxTop,
-              vx: (Math.random() - 0.5) * 5,
-              vy: -Math.random() * 3 - 1,
+              y: surfaceY,
+              vx: isLeft
+                ? -(Math.random() * 4 + 1)
+                : Math.random() * 4 + 1,
+              vy: -Math.random() * 2 - 0.5,
               life: 1,
               size: 3 + Math.random() * 5,
             });
@@ -98,19 +142,26 @@ export default function Home() {
         }
       }
 
-      // Splash physics
-      ctx!.fillStyle = "#ffffff";
+      // Splash physics — slide along roof surface
+      ctx!.fillStyle = "#aec2e0";
       for (let i = splashes.length - 1; i >= 0; i--) {
         const s = splashes[i];
         s.x += s.vx;
         s.y += s.vy;
         s.vy += 0.25; // Gravity
 
-        // Pool at the top edge of the box
-        if (s.y > boxTop) {
-          s.y = boxTop;
+        // Pool on roof surface and slide down the slope
+        const roofY = getRoofY(s.x);
+        if (roofY < Infinity && s.y > roofY) {
+          s.y = roofY;
           s.vy = 0;
-          s.vx *= 0.85; // Friction
+          // Slide along the slope direction
+          if (s.x <= centerX) {
+            s.vx -= 0.3;
+          } else {
+            s.vx += 0.3;
+          }
+          s.vx *= 0.9;
         }
 
         s.life -= 0.02;
@@ -139,7 +190,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="bg-black">
+    <main style={{ background: '#0a0a0c' }}>
 
       {/* SVG Goo Filter */}
       <svg className="hidden absolute w-0 h-0">
@@ -155,7 +206,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
-      <section className="relative flex flex-col min-h-[50vh] md:min-h-[55vh] bg-black overflow-hidden">
+      <section className="relative flex flex-col min-h-[50vh] md:min-h-[55vh] overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Rain canvas with goo filter */}
         <canvas
           ref={canvasRef}
@@ -163,72 +214,83 @@ export default function Home() {
           style={{ filter: "url(#goo)" }}
         />
 
-        {/* Hero box */}
-        <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-16 sm:pt-28">
-          <div
-            ref={boxRef}
-            className="relative border border-white/10 rounded-2xl bg-black/80 backdrop-blur-sm mx-auto w-full max-w-2xl"
-          >
-            <div className="px-6 pt-6 pb-16 sm:pb-24">
-              {/* Navbar */}
-              <nav className="flex items-center justify-between w-full mb-8">
-                <div className="relative w-28 h-10">
+        {/* Hero house */}
+        <div className="relative z-10 flex flex-col flex-1 justify-center px-6 sm:px-10 py-10 sm:py-16">
+          <div ref={boxRef} className="relative mx-auto w-full max-w-2xl">
+
+            {/* Triangular Roof */}
+            <div className="relative w-full" style={{ height: '80px' }}>
+              {/* Roof fill */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+                  background: HOUSE_COLOR,
+                  backdropFilter: 'blur(4px)',
+                }}
+              />
+              {/* Roof border lines */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <line x1="50" y1="0" x2="0" y2="100" stroke="#3a3a48" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                <line x1="50" y1="0" x2="100" y2="100" stroke="#3a3a48" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              </svg>
+              {/* SOTI logo at the peak */}
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10">
+                <div className="relative w-40 h-14">
                   <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
                 </div>
-                <a
-                  href="https://tally.so/r/BzXWgN"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 text-xs font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200"
-                >
-                  Apply
-                </a>
-              </nav>
+              </div>
+            </div>
 
-              {/* Hero text + CTA */}
-              <div className="flex flex-col items-center justify-center py-12 sm:py-16">
-                <div className="w-full text-center">
-                  <div className="space-y-10">
-                    <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">
-                      We host 1-week houses for people who build things
-                    </h1>
-                    <div className="flex items-center justify-center gap-3 flex-wrap">
-                      <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — April 2026</h2>
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-6">
-                      <div className="relative group inline-block">
-                        <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-                        <a
-                          href="https://tally.so/r/BzXWgN"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
-                        >
-                          Apply to join the family
-                        </a>
+            {/* House Body */}
+            <div className="border-x border-b backdrop-blur-sm" style={{ background: HOUSE_COLOR, borderColor: '#3a3a48' }}>
+              <div className="px-6 pt-6 pb-4 sm:pb-6">
+                {/* Hero text + CTA */}
+                <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+                  <div className="w-full text-center">
+                    <div className="space-y-10">
+                      <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
+                        We host 1-week houses for<br />
+                        <span style={{ color: '#9a9aaa' }}>people who build things</span>
+                      </h1>
+                      <div className="flex items-center justify-center gap-3 flex-wrap">
+                        <h2 className="text-[1.2rem] sm:text-[1.4rem] font-light" style={{ color: '#8a8a9a' }}>The rain hits the window. Your screen is the only light in the room. Another night.</h2>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              {/* Bouncing arrow at bottom of house */}
+              <div className="flex justify-center pb-8">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#5a5a6a"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-bounce"
+                >
+                  <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ============================================= */}
-      {/* SECTION: Fueled By                            */}
-      {/* ============================================= */}
-      <section className="w-full py-8 sm:py-12">
-        <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
-          <p className="text-white/60 text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-space-mono)' }}>Fueled by:</p>
-          <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
-            <a href="https://www.blackbox.ai/" target="_blank" rel="noopener noreferrer" className="inline-block">
-              <img src="/sponsors/blackbox.svg" alt="Blackbox" className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity" />
-            </a>
-            <a href="https://baobabventures.vc/" target="_blank" rel="noopener noreferrer" className="inline-block">
-              <img src="/sponsors/baobab.svg" alt="Baobab" className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity" />
-            </a>
+          </div>
+
+          {/* Fueled by — outside house but sheltered from rain */}
+          <div className="mx-auto w-full max-w-2xl pt-8 pb-4">
+            <p className="text-sm sm:text-base text-center mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>Fueled by:</p>
+            <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
+              <a href="https://www.blackbox.ai/" target="_blank" rel="noopener noreferrer" className="inline-block">
+                <img src="/sponsors/blackbox.svg" alt="Blackbox" className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity" />
+              </a>
+              <a href="https://baobabventures.vc/" target="_blank" rel="noopener noreferrer" className="inline-block">
+                <img src="/sponsors/baobab.svg" alt="Baobab" className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -267,7 +329,7 @@ export default function Home() {
             <div className="w-full pt-8 border-t border-white/10">
               <div className="mx-auto w-full max-w-sm space-y-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-space-mono)" }}>
+                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
                     0/20 builders on Valencia 2026
                   </span>
                 </div>
@@ -302,17 +364,17 @@ export default function Home() {
             <div className="w-full pt-8 border-t border-white/10">
               <div className="mx-auto w-full max-w-sm space-y-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-space-mono)" }}>
+                  <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
                     20/20 builders on Barcelona 2025
                   </span>
-                  <span className="text-sm text-white ml-4" style={{ fontFamily: "var(--font-space-mono)" }}>100%</span>
+                  <span className="text-sm text-white ml-4" style={{ fontFamily: "var(--font-dm-mono)" }}>100%</span>
                 </div>
                 <div className="h-1 w-full overflow-hidden rounded bg-white/10">
                   <div className="h-full bg-white transition-all duration-500" style={{ width: "100%" }}></div>
                 </div>
                 <div className="flex flex-col items-center gap-6">
                   <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
-                    <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
+                    <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-dm-mono)" }}>
                       Sold out
                     </span>
                   </div>
@@ -340,7 +402,7 @@ export default function Home() {
       <section id="1" className="relative z-10 flex flex-col gap-10 mb-16 w-full scroll-mt-32 md:scroll-mt-40">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
           <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Our Manifesto</h3>
+            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Our Manifesto</h3>
           </div>
           <div className="text-center text-balance text-2xl leading-normal max-w-2xl flex flex-col gap-4 mx-auto text-white/80">
             <p>We grew up online, through forums, pixels and late-night calls.</p>
@@ -357,11 +419,11 @@ export default function Home() {
       <section className="w-full pb-8 sm:pb-12 pt-6 sm:pt-8">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10">
           <div className="w-full space-y-4">
-            <h3 className="text-center text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-space-mono)" }}>
+            <h3 className="text-center text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-dm-mono)" }}>
               SOTI Community
             </h3>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-space-mono)" }}>
+              <span className="text-sm font-medium text-white flex-1" style={{ fontFamily: "var(--font-dm-mono)" }}>
                 0/128 seats filled for 2026
               </span>
             </div>
@@ -391,7 +453,7 @@ export default function Home() {
       <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
         <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
           <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Houses</h3>
+            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Houses</h3>
             <p className="text-white/60 mt-2">Mark your digital calendar. These moments only happen IRL.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
@@ -461,7 +523,7 @@ export default function Home() {
       <section className="w-full py-8 sm:py-12">
         <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
           <div className="mb-8 text-center">
-            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>
+            <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-2" style={{ fontFamily: 'var(--font-dm-mono)' }}>
               Last Schedule
             </h3>
             <p className="text-white/60">Weekly program structure</p>
@@ -603,7 +665,7 @@ export default function Home() {
       {/* ============================================= */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-space-mono)' }}>Led by:</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-dm-mono)' }}>Led by:</h3>
           <p className="text-white/60 mb-12 text-center">Meet the builders behind SOTI</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
@@ -613,13 +675,13 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Marcos Valera</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Marcos Valera</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">YT</a>
                   <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
                   <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>GTM, community. 10k youtube + 25k linkedin. Startups and builders audience.</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>GTM, community. 10k youtube + 25k linkedin. Startups and builders audience.</p>
               </div>
             </div>
 
@@ -629,13 +691,13 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/juan-pablo.jpeg" alt="Juan Pablo" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Juan Pablo</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Juan Pablo</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
                   <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
                   <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>Researcher and CTO. how research AI works</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Researcher and CTO. how research AI works</p>
               </div>
             </div>
 
@@ -645,13 +707,13 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Dani Diestre</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Dani Diestre</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">YT</a>
                   <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
                   <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>Co-Founder Autentic, Youtube Creator</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Co-Founder Autentic, Youtube Creator</p>
               </div>
             </div>
 
@@ -661,12 +723,12 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Aniol Carreras</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Aniol Carreras</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
                   <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>COO at The Hero Camp (Product School Leader in Spain) , Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>COO at The Hero Camp (Product School Leader in Spain) , Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
               </div>
             </div>
 
@@ -676,13 +738,13 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Jose Saura</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Jose Saura</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">X</a>
                   <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
                   <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
               </div>
             </div>
 
@@ -692,12 +754,12 @@ export default function Home() {
                 <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/10">
                   <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
                 </div>
-                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-space-mono)' }}>Adrian Valera</h4>
+                <h4 className="text-white text-lg font-semibold" style={{ fontFamily: 'var(--font-dm-mono)' }}>Adrian Valera</h4>
                 <div className="flex gap-4 items-center">
                   <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">GH</a>
                   <a href="http://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors text-sm">LI</a>
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-space-mono)' }}>Engineer & Researcher. Building communities with love.</p>
+                <p className="text-white/70 text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)' }}>Engineer & Researcher. Building communities with love.</p>
               </div>
             </div>
 
@@ -710,7 +772,7 @@ export default function Home() {
       {/* ============================================= */}
       <section className="w-full">
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>Build something that matters</h3>
+          <h3 className="text-white text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>Build something that matters</h3>
           <p className="text-white/70 mt-3">Not another community.</p>
           <p className="text-white/70">Join the new generation of builders now</p>
           <div className="mt-8">
@@ -729,8 +791,8 @@ export default function Home() {
         <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
           <div className="space-y-8">
             <div>
-              <h4 className="text-white text-lg sm:text-xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)' }}>SOTI Family</h4>
-              <p className="text-white/60 mr-12 mt-2" style={{ fontFamily: 'var(--font-space-mono)' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
+              <h4 className="text-white text-lg sm:text-xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-dm-mono)' }}>SOTI Family</h4>
+              <p className="text-white/60 mr-12 mt-2" style={{ fontFamily: 'var(--font-dm-mono)' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
               <div className="flex mt-4">
                 <div className="relative w-40 h-14">
                   <Image src="/logo-white.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
