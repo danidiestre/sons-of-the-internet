@@ -1,50 +1,213 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export default function Home() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const box = boxRef.current;
+    if (!canvas || !box) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let w = 0,
+      h = 0,
+      boxTop = 0,
+      boxLeft = 0,
+      boxRight = 0;
+    let animationId: number;
+
+    const rain: { x: number; y: number; vy: number; l: number }[] = [];
+    const splashes: {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      size: number;
+    }[] = [];
+
+    function updateLayout() {
+      const section = canvas!.parentElement!;
+      const sr = section.getBoundingClientRect();
+      canvas!.width = sr.width;
+      canvas!.height = sr.height;
+      w = sr.width;
+      h = sr.height;
+      const br = box!.getBoundingClientRect();
+      boxTop = br.top - sr.top;
+      boxLeft = br.left - sr.left;
+      boxRight = br.right - sr.left;
+    }
+
+    const observer = new ResizeObserver(updateLayout);
+    observer.observe(canvas!.parentElement!);
+
+    function animate() {
+      ctx!.clearRect(0, 0, w, h);
+      ctx!.lineCap = "round";
+
+      // Generate rain
+      for (let k = 0; k < 4; k++) {
+        if (Math.random() < 0.6) {
+          rain.push({
+            x: Math.random() * w,
+            y: -50,
+            vy: 18 + Math.random() * 8,
+            l: 40 + Math.random() * 80,
+          });
+        }
+      }
+
+      // Rain rendering & collision
+      ctx!.strokeStyle = "#ffffff";
+      ctx!.lineWidth = 3;
+      for (let i = rain.length - 1; i >= 0; i--) {
+        const r = rain[i];
+        r.y += r.vy;
+        ctx!.beginPath();
+        ctx!.moveTo(r.x, r.y);
+        ctx!.lineTo(r.x, r.y - r.l);
+        ctx!.stroke();
+
+        // Collision with box top edge
+        if (
+          r.y >= boxTop &&
+          r.y - r.vy <= boxTop &&
+          r.x > boxLeft &&
+          r.x < boxRight
+        ) {
+          for (let k = 0; k < 6; k++) {
+            splashes.push({
+              x: r.x,
+              y: boxTop,
+              vx: (Math.random() - 0.5) * 5,
+              vy: -Math.random() * 3 - 1,
+              life: 1,
+              size: 3 + Math.random() * 5,
+            });
+          }
+          rain.splice(i, 1);
+        } else if (r.y > h) {
+          rain.splice(i, 1);
+        }
+      }
+
+      // Splash physics
+      ctx!.fillStyle = "#ffffff";
+      for (let i = splashes.length - 1; i >= 0; i--) {
+        const s = splashes[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.25; // Gravity
+
+        // Pool at the top edge of the box
+        if (s.y > boxTop) {
+          s.y = boxTop;
+          s.vy = 0;
+          s.vx *= 0.85; // Friction
+        }
+
+        s.life -= 0.02;
+        if (s.life <= 0) {
+          splashes.splice(i, 1);
+          continue;
+        }
+
+        ctx!.beginPath();
+        ctx!.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    updateLayout();
+    window.addEventListener("resize", updateLayout);
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", updateLayout);
+      observer.disconnect();
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
   return (
     <main className="bg-black">
+
+      {/* SVG Goo Filter */}
+      <svg className="hidden absolute w-0 h-0">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </defs>
+      </svg>
 
       {/* ============================================= */}
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
-      <section className="relative flex flex-col min-h-[50vh] md:min-h-[55vh] bg-black">
-        <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-16 sm:pt-28">
-          {/* Navbar */}
-          <nav className="flex items-center justify-between w-full max-w-2xl mx-auto mb-8">
-            <div className="relative w-28 h-10">
-              <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
-            </div>
-            <a
-              href="https://tally.so/r/BzXWgN"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 text-xs font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200"
-            >
-              Apply
-            </a>
-          </nav>
+      <section className="relative flex flex-col min-h-[50vh] md:min-h-[55vh] bg-black overflow-hidden">
+        {/* Rain canvas with goo filter */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none z-0"
+          style={{ filter: "url(#goo)" }}
+        />
 
-          <div className="flex flex-col items-center justify-center h-full py-16 sm:py-24">
-            <div className="w-full mx-auto max-w-2xl py-8 sm:py-12 text-center">
-              <div className="space-y-10">
-                <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">
-                  We host 1-week houses for people who build things
-                </h1>
-                <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — April 2026</h2>
+        {/* Hero box */}
+        <div className="relative z-10 flex flex-col flex-1 px-6 sm:px-10 pt-16 sm:pt-28">
+          <div
+            ref={boxRef}
+            className="relative border border-white/10 rounded-2xl bg-black/80 backdrop-blur-sm mx-auto w-full max-w-2xl"
+          >
+            <div className="px-6 pt-6 pb-16 sm:pb-24">
+              {/* Navbar */}
+              <nav className="flex items-center justify-between w-full mb-8">
+                <div className="relative w-28 h-10">
+                  <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
                 </div>
-                <div className="flex flex-col items-center justify-center gap-6">
-                  <div className="relative group inline-block">
-                    <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-                    <a
-                      href="https://tally.so/r/BzXWgN"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
-                    >
-                      Apply to join the family
-                    </a>
+                <a
+                  href="https://tally.so/r/BzXWgN"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 text-xs font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200"
+                >
+                  Apply
+                </a>
+              </nav>
+
+              {/* Hero text + CTA */}
+              <div className="flex flex-col items-center justify-center py-12 sm:py-16">
+                <div className="w-full text-center">
+                  <div className="space-y-10">
+                    <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">
+                      We host 1-week houses for people who build things
+                    </h1>
+                    <div className="flex items-center justify-center gap-3 flex-wrap">
+                      <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — April 2026</h2>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-6">
+                      <div className="relative group inline-block">
+                        <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
+                        <a
+                          href="https://tally.so/r/BzXWgN"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
+                        >
+                          Apply to join the family
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
