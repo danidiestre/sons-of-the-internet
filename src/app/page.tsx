@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const HOUSE_COLOR = "#1a1a1a";
 
@@ -11,6 +11,14 @@ export default function Home() {
   const heroWrapperRef = useRef<HTMLDivElement>(null);
   const textRefs = useRef<(HTMLDivElement | null)[]>([]);
   const arrowRef = useRef<HTMLDivElement>(null);
+
+  // Rain config — sliders update this ref, animation reads it
+  const rainCfg = useRef({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
+  const [rainUI, setRainUI] = useState({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
+  const updateRain = (key: string, val: number) => {
+    (rainCfg.current as Record<string, number>)[key] = val;
+    setRainUI(prev => ({ ...prev, [key]: val }));
+  };
 
   const heroMessages = [
     {
@@ -139,21 +147,24 @@ export default function Home() {
         }
       }
 
-      // Generate rain
-      for (let k = 0; k < 4; k++) {
-        if (Math.random() < 0.6) {
+      // Generate rain — reads from config ref
+      const cfg = rainCfg.current;
+      const spawnCount = Math.max(1, Math.ceil(cfg.density / 20));
+      const spawnProb = cfg.density / 100;
+      for (let k = 0; k < spawnCount; k++) {
+        if (Math.random() < spawnProb) {
           rain.push({
             x: Math.random() * w,
             y: -50,
-            vy: 18 + Math.random() * 8,
-            l: 40 + Math.random() * 80,
+            vy: cfg.speed + Math.random() * (cfg.speed * 0.4),
+            l: cfg.length + Math.random() * (cfg.length * 2),
           });
         }
       }
 
       // Rain rendering & collision with roof slopes
       ctx!.strokeStyle = "#aec2e0";
-      ctx!.lineWidth = 3;
+      ctx!.lineWidth = cfg.width;
       for (let i = rain.length - 1; i >= 0; i--) {
         const r = rain[i];
         r.y += r.vy;
@@ -166,14 +177,15 @@ export default function Home() {
         if (surfaceY < Infinity && r.y >= surfaceY && r.y - r.vy <= surfaceY) {
           // Splash outward based on which slope was hit
           const isLeft = r.x <= centerX;
+          const sf = cfg.splash / 100;
           for (let k = 0; k < 6; k++) {
             splashes.push({
               x: r.x,
               y: surfaceY,
               vx: isLeft
-                ? -(Math.random() * 4 + 1)
-                : Math.random() * 4 + 1,
-              vy: -Math.random() * 2 - 0.5,
+                ? -(Math.random() * 4 * sf + 1)
+                : Math.random() * 4 * sf + 1,
+              vy: -(Math.random() * 3 * sf + 0.5),
               life: 1,
               size: 3 + Math.random() * 5,
             });
@@ -233,6 +245,9 @@ export default function Home() {
 
   // Scroll-driven hero message transitions (no React re-renders — direct DOM)
   useEffect(() => {
+    let isSnapping = false;
+    let snapTimeout: ReturnType<typeof setTimeout>;
+
     const handleScroll = () => {
       const wrapper = heroWrapperRef.current;
       if (!wrapper) return;
@@ -280,11 +295,42 @@ export default function Home() {
           arrowRef.current.style.opacity = '0';
         }
       }
+
+      // Snap to nearest phase when user stops scrolling
+      if (!isSnapping) {
+        clearTimeout(snapTimeout);
+        snapTimeout = setTimeout(() => {
+          const w = heroWrapperRef.current;
+          if (!w) return;
+          const r = w.getBoundingClientRect();
+          const s = -r.top;
+          const sh = w.offsetHeight - window.innerHeight;
+          if (s <= 0 || s >= sh) return;
+
+          const phaseSize = sh / totalPhases;
+          // Round to nearest phase CENTER (where text is fully visible), not boundary
+          const nearestPhase = Math.max(0, Math.min(Math.round(s / phaseSize - 0.5), totalPhases - 1));
+          // Don't snap if user is scrolling past the hero
+          if (nearestPhase === totalPhases - 1 && s > (nearestPhase + 0.75) * phaseSize) return;
+          // Phase 0 snaps to top; others snap to center of phase
+          const targetScrolled = nearestPhase === 0 ? 0 : (nearestPhase + 0.5) * phaseSize;
+          const target = targetScrolled + w.offsetTop;
+
+          if (Math.abs(window.scrollY - target) < 5) return;
+
+          isSnapping = true;
+          window.scrollTo({ top: target, behavior: 'smooth' });
+          setTimeout(() => { isSnapping = false; }, 600);
+        }, 120);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(snapTimeout);
+    };
   }, []);
 
   return (
@@ -397,6 +443,36 @@ export default function Home() {
               <a href="https://baobabventures.vc/" target="_blank" rel="noopener noreferrer" className="inline-block">
                 <img src="/sponsors/baobab.svg" alt="Baobab" className="h-8 sm:h-12 w-auto opacity-80 hover:opacity-100 transition-opacity" />
               </a>
+            </div>
+          </div>
+
+          {/* Rain Controls */}
+          <div className="mx-auto w-full max-w-2xl pt-6 pb-2">
+            <div className="border border-[#3a3a48] rounded-lg p-4 space-y-3" style={{ background: '#111114' }}>
+              <p className="text-xs uppercase tracking-widest mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>Rain config</p>
+              {[
+                { key: 'speed', label: 'Speed', min: 1, max: 30, step: 1 },
+                { key: 'density', label: 'Density', min: 5, max: 100, step: 5 },
+                { key: 'length', label: 'Drop length', min: 5, max: 120, step: 5 },
+                { key: 'width', label: 'Stroke', min: 1, max: 6, step: 0.5 },
+                { key: 'splash', label: 'Splash', min: 0, max: 300, step: 10 },
+              ].map(s => (
+                <div key={s.key} className="flex items-center gap-3">
+                  <span className="text-xs w-24 shrink-0" style={{ fontFamily: 'var(--font-dm-mono)', color: '#8a8a9a' }}>{s.label}</span>
+                  <input
+                    type="range"
+                    min={s.min}
+                    max={s.max}
+                    step={s.step}
+                    value={rainUI[s.key as keyof typeof rainUI]}
+                    onChange={e => updateRain(s.key, Number(e.target.value))}
+                    className="flex-1 h-1 appearance-none bg-[#3a3a48] rounded cursor-pointer accent-[#aec2e0]"
+                  />
+                  <span className="text-xs w-8 text-right tabular-nums" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>
+                    {rainUI[s.key as keyof typeof rainUI]}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
