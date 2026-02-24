@@ -8,6 +8,48 @@ const HOUSE_COLOR = "#1a1a1a";
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const heroWrapperRef = useRef<HTMLDivElement>(null);
+  const textRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const arrowRef = useRef<HTMLDivElement>(null);
+
+  const heroMessages = [
+    {
+      title: (
+        <>
+          We host 1-week houses for<br />
+          <span style={{ color: '#9a9aaa' }}>people who build things</span>
+        </>
+      ),
+      subtitle: "The rain hits the window. Your screen is the only light in the room. Another night.",
+    },
+    {
+      title: (
+        <>
+          You shipped at midnight.<br />
+          <span style={{ color: '#9a9aaa' }}>Again.</span>
+        </>
+      ),
+      subtitle: "Nobody saw it. Nobody clapped. But you know it works. That's enough. For now.",
+    },
+    {
+      title: (
+        <>
+          Your friends don&apos;t get it.<br />
+          <span style={{ color: '#9a9aaa' }}>They never did.</span>
+        </>
+      ),
+      subtitle: `"Get a normal job?" Because normal jobs don't keep you up at 3AM with a pulse.`,
+    },
+    {
+      title: (
+        <>
+          The screen is warm.<br />
+          <span style={{ color: '#9a9aaa' }}>The room is cold.</span>
+        </>
+      ),
+      subtitle: "You build alone. You celebrate alone. It doesn't have to be this way.",
+    },
+  ];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -189,6 +231,62 @@ export default function Home() {
     };
   }, []);
 
+  // Scroll-driven hero message transitions (no React re-renders — direct DOM)
+  useEffect(() => {
+    const handleScroll = () => {
+      const wrapper = heroWrapperRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      const scrolled = -rect.top;
+      const scrollableHeight = wrapper.offsetHeight - window.innerHeight;
+
+      if (scrolled <= 0 || scrollableHeight <= 0) {
+        textRefs.current.forEach((el, i) => {
+          if (el) el.style.opacity = i === 0 ? '1' : '0';
+        });
+        if (arrowRef.current) arrowRef.current.style.opacity = '1';
+        return;
+      }
+
+      const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1);
+      const totalPhases = 4;
+      const phaseFloat = progress * totalPhases;
+      const phase = Math.min(Math.floor(phaseFloat), totalPhases - 1);
+      const within = phaseFloat - phase;
+
+      textRefs.current.forEach((el, i) => {
+        if (!el) return;
+        if (i === phase) {
+          let opacity = 1;
+          if (phase < totalPhases - 1 && within > 0.75) {
+            opacity = (1 - within) / 0.25;
+          }
+          if (phase > 0 && within < 0.2) {
+            opacity = within / 0.2;
+          }
+          if (phase === 0 && within < 0.2) opacity = 1;
+          el.style.opacity = String(opacity);
+        } else {
+          el.style.opacity = '0';
+        }
+      });
+
+      if (arrowRef.current) {
+        if (phase === 0) {
+          const arrowOp = within < 0.4 ? 1 : Math.max(0, 1 - (within - 0.4) / 0.2);
+          arrowRef.current.style.opacity = String(arrowOp);
+        } else {
+          arrowRef.current.style.opacity = '0';
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <main style={{ background: '#0a0a0c' }}>
 
@@ -206,7 +304,8 @@ export default function Home() {
       {/* ============================================= */}
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
-      <section className="relative flex flex-col min-h-[50vh] md:min-h-[55vh] overflow-hidden" style={{ background: '#0a0a0c' }}>
+      <div ref={heroWrapperRef} style={{ height: '400vh' }}>
+      <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Rain canvas with goo filter */}
         <canvas
           ref={canvasRef}
@@ -236,7 +335,7 @@ export default function Home() {
               </svg>
               {/* SOTI logo at the peak */}
               <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10">
-                <div className="relative w-40 h-14">
+                <div className="relative w-24 h-10">
                   <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
                 </div>
               </div>
@@ -247,21 +346,29 @@ export default function Home() {
               <div className="px-6 pt-6 pb-4 sm:pb-6">
                 {/* Hero text + CTA */}
                 <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-                  <div className="w-full text-center">
-                    <div className="space-y-10">
-                      <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
-                        We host 1-week houses for<br />
-                        <span style={{ color: '#9a9aaa' }}>people who build things</span>
-                      </h1>
-                      <div className="flex items-center justify-center gap-3 flex-wrap">
-                        <h2 className="text-[1.2rem] sm:text-[1.4rem] font-light" style={{ color: '#8a8a9a' }}>The rain hits the window. Your screen is the only light in the room. Another night.</h2>
+                  <div className="relative w-full text-center">
+                    {heroMessages.map((msg, i) => (
+                      <div
+                        key={i}
+                        ref={(el) => { textRefs.current[i] = el; }}
+                        className={i === 0 ? '' : 'absolute inset-0'}
+                        style={{ opacity: i === 0 ? 1 : 0 }}
+                      >
+                        <div className="space-y-10">
+                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
+                            {msg.title}
+                          </h1>
+                          <div className="flex items-center justify-center gap-3 flex-wrap">
+                            <h2 className="text-[1.2rem] sm:text-[1.4rem] font-light" style={{ color: '#8a8a9a' }}>{msg.subtitle}</h2>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
               {/* Bouncing arrow at bottom of house */}
-              <div className="flex justify-center pb-8">
+              <div ref={arrowRef} className="flex justify-center pb-8">
                 <svg
                   width="20"
                   height="20"
@@ -294,6 +401,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* ============================================= */}
       {/* SECTION: Event Showcase Image                 */}
