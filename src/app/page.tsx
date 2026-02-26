@@ -257,6 +257,23 @@ export default function Home() {
   useEffect(() => {
     let isSnapping = false;
     let snapTimeout: ReturnType<typeof setTimeout>;
+    // Clamp wheel delta so large scroll gestures only advance one phase at a time
+    const MAX_WHEEL_DELTA = 80;
+    const handleWheel = (e: WheelEvent) => {
+      const wrapper = heroWrapperRef.current;
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      const scrolled = -rect.top;
+      const scrollableHeight = wrapper.offsetHeight - window.innerHeight;
+      // Only intercept when inside the hero scroll zone
+      if (scrolled < -50 || scrolled > scrollableHeight + 50) return;
+      if (Math.abs(e.deltaY) > MAX_WHEEL_DELTA) {
+        e.preventDefault();
+        const clampedDelta = Math.sign(e.deltaY) * MAX_WHEEL_DELTA;
+        window.scrollBy({ top: clampedDelta, behavior: 'auto' });
+      }
+    };
+    window.addEventListener('wheel', handleWheel, { passive: false });
 
     const handleScroll = () => {
       const wrapper = heroWrapperRef.current;
@@ -334,6 +351,7 @@ export default function Home() {
     handleScroll();
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('wheel', handleWheel);
       clearTimeout(snapTimeout);
     };
   }, []);
