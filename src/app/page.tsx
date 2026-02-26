@@ -298,12 +298,7 @@ export default function Home() {
       });
 
       if (arrowRef.current) {
-        if (phase === 0) {
-          const arrowOp = within < 0.4 ? 1 : Math.max(0, 1 - (within - 0.4) / 0.2);
-          arrowRef.current.style.opacity = String(arrowOp);
-        } else {
-          arrowRef.current.style.opacity = '0';
-        }
+        arrowRef.current.style.opacity = '1';
       }
 
       // Snap to nearest phase when user stops scrolling
@@ -361,9 +356,9 @@ export default function Home() {
       canvas.height = H * dpr;
       ctx.scale(dpr, dpr);
 
-      // Sun position — pinned at the bottom of canvas (= transition boundary)
+      // Sun position — pinned at the top center of canvas
       const sunX = W * 0.5;
-      const sunY = H;
+      const sunY = 0;
 
       // Flare axis: ~20° from horizontal, going lower-right
       const axisAngle = 20 * Math.PI / 180;
@@ -422,14 +417,7 @@ export default function Home() {
       let startTime = 0;
       const globalAlpha = 1;
 
-      // Mouse tracking for subtle sun drift
-      const mouse = { x: W * 0.5, y: H * 0.5, sx: W * 0.5, sy: H * 0.5 };
-      const maxDrift = 30; // max pixels the sun can drift
-      function onMouseMove(e: MouseEvent) {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-      }
-      window.addEventListener('mousemove', onMouseMove);
+      // Sun stays fixed at center (no mouse drift)
 
       // Hex path helper
       function drawHexPath(r: number) {
@@ -451,13 +439,9 @@ export default function Home() {
         ctx.globalAlpha = globalAlpha;
         ctx.lineCap = 'round';
 
-        // Smooth mouse tracking — lerp toward target
-        const targetSx = sunX + ((mouse.x - W * 0.5) / (W * 0.5)) * maxDrift;
-        const targetSy = sunY + ((mouse.y - H * 0.5) / (H * 0.5)) * maxDrift * 0.5;
-        mouse.sx += (targetSx - mouse.sx) * 0.04;
-        mouse.sy += (targetSy - mouse.sy) * 0.04;
-        const sx = mouse.sx;
-        const sy = mouse.sy;
+        // Fixed sun position (no mouse drift)
+        const sx = sunX;
+        const sy = sunY;
 
         const rotation = elapsed * 0.00015;
 
@@ -728,7 +712,7 @@ export default function Home() {
       }
 
       sunAnimId.current = requestAnimationFrame(draw);
-      sunCleanup.current = () => window.removeEventListener('mousemove', onMouseMove);
+      sunCleanup.current = null;
     }
 
 
@@ -786,23 +770,36 @@ export default function Home() {
       { threshold: 0.15 }
     );
 
-    // Scroll-based sun fade: as user scrolls back toward the dark zone,
-    // progressively hide the sun and reset when fully past the trigger
+    // Scroll-based sun fade: hide sun when scrolling away from the transition zone
+    // (either up toward rain or far above the trigger)
     let didReset = false;
     const handleSunScroll = () => {
       if (animGuard || !zone2Fired.current) return;
       const triggerRect = trigger.getBoundingClientRect();
       const triggerBottom = triggerRect.bottom;
-      // fadeRange: sun starts fading when trigger bottom is within 300px of viewport top
+      const triggerTop = triggerRect.top;
+      const viewportH = window.innerHeight;
       const fadeRange = 300;
-      if (triggerBottom > fadeRange) {
-        // Trigger is well below — sun fully visible
-        sunCanvas.style.opacity = '1';
-        didReset = false;
+
+      // Scrolled UP past the trigger (trigger is below viewport) — fade out sun
+      if (triggerTop > viewportH) {
+        const distBelow = triggerTop - viewportH;
+        const opacity = Math.max(0, 1 - distBelow / fadeRange);
+        sunCanvas.style.transition = 'none';
+        sunCanvas.style.opacity = String(opacity);
+        if (opacity <= 0 && !didReset) {
+          didReset = true;
+          flash.style.opacity = '0';
+          setTimeout(() => {
+            cancelAnimationFrame(sunAnimId.current);
+            sunCleanup.current?.();
+          }, 100);
+        }
         return;
       }
+
+      // Scrolled DOWN past the trigger (trigger is above viewport) — fade out sun
       if (triggerBottom <= 0) {
-        // Trigger is above viewport — hide sun but keep content visible
         sunCanvas.style.opacity = '0';
         if (!didReset) {
           didReset = true;
@@ -814,10 +811,19 @@ export default function Home() {
         }
         return;
       }
-      // Progressive fade between 0 and fadeRange
-      const opacity = triggerBottom / fadeRange;
-      sunCanvas.style.transition = 'none';
-      sunCanvas.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+
+      // Trigger is near top of viewport — progressive fade
+      if (triggerBottom < fadeRange) {
+        const opacity = triggerBottom / fadeRange;
+        sunCanvas.style.transition = 'none';
+        sunCanvas.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+        didReset = false;
+        return;
+      }
+
+      // Trigger is in view — sun fully visible
+      sunCanvas.style.opacity = '1';
+      didReset = false;
     };
     window.addEventListener('scroll', handleSunScroll, { passive: true });
 
@@ -994,12 +1000,6 @@ export default function Home() {
 
         {/* Transition: sharp dark → cream cutoff + sun canvas anchored here */}
         <div ref={zone2TriggerRef} className="relative" style={{ height: '80px', background: 'linear-gradient(to bottom, #0a0a0c 0%, #0a0a0c 20%, #1a1410 45%, #FFF8F0 100%)' }}>
-          {/* Sun lens flare canvas — anchored at the dark/light transition */}
-          <canvas
-            ref={sunCanvasRef}
-            className="absolute bottom-0 left-0 pointer-events-none z-30"
-            style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', transform: 'translateY(0)' }}
-          />
           {/* Static warm glow underneath */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #FFD16640 0%, #FF6B2B15 35%, transparent 65%)' }} />
         </div>
@@ -1007,6 +1007,13 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Valencia Hero Intro                   */}
         {/* ============================================= */}
+        {/* Sun lens flare canvas — fixed overlay above all content */}
+        <canvas
+          ref={sunCanvasRef}
+          className="fixed top-0 left-0 pointer-events-none"
+          style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', zIndex: 9999 }}
+        />
+
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-10 sm:pt-16 pb-10 sm:pb-14">
           <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
             <p className="text-sm uppercase tracking-[0.3em] mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
