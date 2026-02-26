@@ -1050,7 +1050,7 @@ export default function Home() {
         />
 
         {/* Transition: sharp dark → cream cutoff + sun canvas anchored here */}
-        <div ref={zone2TriggerRef} className="relative" style={{ height: '80px', background: 'linear-gradient(to bottom, #0a0a0c 0%, #0a0a0c 20%, #1a1410 45%, #FFF8F0 100%)' }}>
+        <div ref={zone2TriggerRef} className="relative overflow-hidden" style={{ height: '80px', background: 'linear-gradient(to bottom, #0a0a0c 0%, #0a0a0c 20%, #1a1410 45%, #FFF8F0 100%)' }}>
           {/* Static warm glow underneath */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #FFD16640 0%, #FF6B2B15 35%, transparent 65%)' }} />
         </div>
