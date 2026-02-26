@@ -365,8 +365,8 @@ export default function Home() {
           const phaseSize = sh / totalPhases;
           // Round to nearest phase CENTER (where text is fully visible), not boundary
           const nearestPhase = Math.max(0, Math.min(Math.round(s / phaseSize - 0.5), totalPhases - 1));
-          // Don't snap if user is scrolling past the hero
-          if (nearestPhase === totalPhases - 1 && s > (nearestPhase + 0.75) * phaseSize) return;
+          // Don't snap if user is scrolling past the hero (lower threshold for mobile touch)
+          if (nearestPhase === totalPhases - 1 && s > (nearestPhase + 0.55) * phaseSize) return;
           // Phase 0 snaps to top; others snap to center of phase
           const targetScrolled = nearestPhase === 0 ? 0 : (nearestPhase + 0.5) * phaseSize;
           const target = targetScrolled + w.offsetTop;
@@ -1067,24 +1067,24 @@ export default function Home() {
 
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-10 sm:pt-16 pb-10 sm:pb-14">
           <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
+            <p className="text-sm uppercase tracking-[0.3em] mb-2 sm:mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
               Welcome to
             </p>
-            <div className="flex justify-center mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+            <div className="flex justify-center mb-2 sm:mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="relative w-36 h-16 sm:w-48 sm:h-20">
                 <Image src="/logo.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-            <h2 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
+            <h2 className="mt-2 sm:mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
               Val<span style={{ color: '#E87A2A' }}>e</span>ncia.
             </h2>
-            <p className="mt-4 text-lg sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+            <p className="mt-2 sm:mt-4 text-lg sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
               We host 1-week houses for people who build things
             </p>
 
             {/* Image Carousel */}
             <div
-              className="mt-8 mb-4 relative w-full overflow-hidden"
+              className="mt-4 sm:mt-8 mb-2 sm:mb-4 relative w-full overflow-hidden"
               style={{ height: '260px', perspective: '1200px', opacity: 0, transform: 'translateY(30px)' }}
               onTouchStart={(e) => { (e.currentTarget as HTMLElement).dataset.touchX = String(e.touches[0].clientX); }}
               onTouchEnd={(e) => {
@@ -1135,7 +1135,7 @@ export default function Home() {
             </div>
 
             {/* Progress + Apply — inside hero so it fills the viewport */}
-            <div className="mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+            <div className="mt-3 sm:mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
