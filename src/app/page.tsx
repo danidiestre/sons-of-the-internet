@@ -87,6 +87,13 @@ export default function Home() {
       roofBaseY = 0;
     let animationId: number;
 
+    // Reduce rain on mobile to 1/3
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      rainCfg.current.density = Math.round(rainCfg.current.density / 3);
+      rainCfg.current.splash = Math.round(rainCfg.current.splash / 3);
+    }
+
     // Thunder state
     let thunderAlpha = 0;
     let thunderFlashes = 0;
