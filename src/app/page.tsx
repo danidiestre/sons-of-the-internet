@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { RevealText } from "@/components/ui/manifesto";
 
 const HOUSE_COLOR = "#1a1a1a";
 
@@ -19,6 +20,7 @@ export default function Home() {
   const zone2ContentRef = useRef<HTMLDivElement>(null);
   const zone2Fired = useRef(false);
   const sunAnimId = useRef<number>(0);
+  const sunCleanup = useRef<(() => void) | null>(null);
 
   // Rain config — sliders update this ref, animation reads it
   const rainCfg = useRef({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
@@ -28,25 +30,25 @@ export default function Home() {
     setRainUI(prev => ({ ...prev, [key]: val }));
   };
 
+  // Image carousel
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const carouselImages = ['/landing-house.jpg', '/landing-people.png', '/landing-paella.png'];
+
+  // API data for builder/seat counts
+  const [valenciaCount, setValenciaCount] = useState(0);
+  const [totalSeats, setTotalSeats] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/count')
+      .then(res => res.json())
+      .then(data => {
+        setValenciaCount(Math.min(data.by_event?.["Valencia, Spain"] ?? 0, 20));
+        setTotalSeats(data.total ?? 0);
+      })
+      .catch(() => {});
+  }, []);
+
   const heroMessages = [
-    {
-      title: (
-        <>
-          We host 1-week houses for<br />
-          <span style={{ color: '#9a9aaa' }}>people who build things</span>
-        </>
-      ),
-      subtitle: "The rain hits the window. Your screen is the only light in the room. Another night.",
-    },
-    {
-      title: (
-        <>
-          You shipped at midnight.<br />
-          <span style={{ color: '#9a9aaa' }}>Again.</span>
-        </>
-      ),
-      subtitle: "Nobody saw it. Nobody clapped. But you know it works. That's enough. For now.",
-    },
     {
       title: (
         <>
@@ -273,7 +275,7 @@ export default function Home() {
       }
 
       const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1);
-      const totalPhases = 4;
+      const totalPhases = 2;
       const phaseFloat = progress * totalPhases;
       const phase = Math.min(Math.floor(phaseFloat), totalPhases - 1);
       const within = phaseFloat - phase;
@@ -359,64 +361,174 @@ export default function Home() {
       canvas.height = H * dpr;
       ctx.scale(dpr, dpr);
 
-      // Sun position — pinned near top of screen
+      // Sun position — pinned at the bottom of canvas (= transition boundary)
       const sunX = W * 0.5;
-      const sunY = H * 0.06;
+      const sunY = H;
 
-      // Lens flare artifacts along a nearly horizontal line (~15° tilt)
-      const flares = [
-        { dist: 0.12, size: 40, color: 'rgba(255,209,102,0.55)' },
-        { dist: 0.22, size: 20, color: 'rgba(255,107,43,0.4)' },
-        { dist: 0.34, size: 55, color: 'rgba(255,209,102,0.25)' },
-        { dist: 0.46, size: 15, color: 'rgba(255,180,80,0.5)' },
-        { dist: 0.56, size: 70, color: 'rgba(255,209,102,0.18)' },
-        { dist: 0.68, size: 25, color: 'rgba(255,107,43,0.35)' },
-        { dist: 0.78, size: 45, color: 'rgba(255,255,255,0.15)' },
-        { dist: 0.90, size: 30, color: 'rgba(255,180,80,0.2)' },
-      ];
-      // Flare axis — nearly horizontal, ~15° tilt to the right
-      const axisAngle = Math.PI * (15 / 180);
+      // Flare axis: ~20° from horizontal, going lower-right
+      const axisAngle = 20 * Math.PI / 180;
       const axisDist = W * 0.9;
 
+      // Pre-compute random ray data (once, not per frame)
+      const primaryRays = Array.from({ length: 12 }, (_, i) => ({
+        baseAngle: (i / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.15,
+        baseLength: 180 + Math.random() * 120,
+        baseWidth: 1.5 + Math.random() * 3.5,
+        phase1: Math.random() * Math.PI * 2,
+        phase2: Math.random() * Math.PI * 2,
+        brightness: 0.5 + Math.random() * 0.5,
+      }));
+
+      const secondaryRays = Array.from({ length: 20 }, (_, i) => ({
+        baseAngle: (i / 20) * Math.PI * 2 + (Math.random() - 0.5) * 0.2,
+        baseLength: 90 + Math.random() * 80,
+        phase: Math.random() * Math.PI * 2,
+      }));
+
+      // 6 diffraction spikes (6-blade aperture simulation)
+      const spikeAngles = Array.from({ length: 6 }, (_, i) => (i / 6) * Math.PI + 0.26);
+
+      // Chromatic lens flare elements along the axis
+      const flareElements: { dist: number; size: number; type: 'filled' | 'ring' | 'chromatic'; alpha: number; color: number[] }[] = [
+        { dist: 0.25, size: 22, type: 'chromatic', alpha: 0.12, color: [255, 200, 120] },
+        { dist: 0.4,  size: 40, type: 'ring',      alpha: 0.06, color: [200, 220, 255] },
+        { dist: 0.55, size: 14, type: 'filled',     alpha: 0.10, color: [180, 220, 255] },
+        { dist: 0.7,  size: 55, type: 'chromatic', alpha: 0.08, color: [255, 220, 160] },
+        { dist: 0.9,  size: 28, type: 'ring',      alpha: 0.05, color: [220, 200, 255] },
+        { dist: 1.1,  size: 70, type: 'filled',     alpha: 0.04, color: [200, 180, 255] },
+        { dist: 1.3,  size: 18, type: 'chromatic', alpha: 0.10, color: [120, 220, 180] },
+        { dist: 1.5,  size: 45, type: 'ring',      alpha: 0.04, color: [180, 200, 255] },
+        { dist: 1.8,  size: 30, type: 'filled',     alpha: 0.06, color: [120, 255, 180] },
+        { dist: 2.1,  size: 80, type: 'chromatic', alpha: 0.04, color: [200, 180, 255] },
+      ];
+
+      // Hexagonal aperture ghosts
+      const hexGhosts = [
+        { dist: 0.5,  size: 32, filled: true,  rotMul: 0.2 },
+        { dist: 1.05, size: 50, filled: false, rotMul: -0.15 },
+        { dist: 1.6,  size: 22, filled: true,  rotMul: 0.3 },
+      ];
+
+      // Iris rainbow ring spectral colors
+      const irisColors = [
+        [180, 100, 255], // violet
+        [100, 100, 255], // blue
+        [80, 200, 120],  // green
+        [255, 255, 100], // yellow
+        [255, 180, 80],  // orange
+        [255, 100, 80],  // red
+      ];
+
       let startTime = 0;
-      let globalAlpha = 1;
+      const globalAlpha = 1;
+
+      // Mouse tracking for subtle sun drift
+      const mouse = { x: W * 0.5, y: H * 0.5, sx: W * 0.5, sy: H * 0.5 };
+      const maxDrift = 30; // max pixels the sun can drift
+      function onMouseMove(e: MouseEvent) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      }
+      window.addEventListener('mousemove', onMouseMove);
+
+      // Hex path helper
+      function drawHexPath(r: number) {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2;
+          const hx = Math.cos(a) * r;
+          const hy = Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(hx, hy);
+          else ctx.lineTo(hx, hy);
+        }
+        ctx.closePath();
+      }
 
       function draw(time: number) {
         if (!startTime) startTime = time;
         const elapsed = time - startTime;
         ctx.clearRect(0, 0, W, H);
         ctx.globalAlpha = globalAlpha;
+        ctx.lineCap = 'round';
 
-        const rotation = elapsed * 0.0003;
+        // Smooth mouse tracking — lerp toward target
+        const targetSx = sunX + ((mouse.x - W * 0.5) / (W * 0.5)) * maxDrift;
+        const targetSy = sunY + ((mouse.y - H * 0.5) / (H * 0.5)) * maxDrift * 0.5;
+        mouse.sx += (targetSx - mouse.sx) * 0.04;
+        mouse.sy += (targetSy - mouse.sy) * 0.04;
+        const sx = mouse.sx;
+        const sy = mouse.sy;
 
-        // Sun core glow — massive warm aura
-        const coreR = 280;
-        const coreGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, coreR);
-        coreGrad.addColorStop(0, 'rgba(255,255,255,1)');
-        coreGrad.addColorStop(0.08, 'rgba(255,255,240,0.95)');
-        coreGrad.addColorStop(0.2, 'rgba(255,248,220,0.7)');
-        coreGrad.addColorStop(0.4, 'rgba(255,209,102,0.35)');
-        coreGrad.addColorStop(0.65, 'rgba(255,140,50,0.12)');
-        coreGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = coreGrad;
-        ctx.fillRect(sunX - coreR, sunY - coreR, coreR * 2, coreR * 2);
+        const rotation = elapsed * 0.00015;
 
-        // Sun rays — prominent starburst with slow rotation
-        const rayCount = 16;
-        for (let i = 0; i < rayCount; i++) {
-          const angle = rotation + (i / rayCount) * Math.PI * 2;
-          const length = 220 + Math.sin(elapsed * 0.002 + i) * 60;
-          const width = 2.5;
+        // ── LAYER 1: Screen-space haze ──
+        ctx.globalCompositeOperation = 'source-over';
+        const hazeR = Math.max(W, H) * 0.8;
+        const hazeAlpha = 0.06 * (0.9 + 0.1 * Math.sin(elapsed * 0.0004));
+        const hazeGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, hazeR);
+        hazeGrad.addColorStop(0, `rgba(255,240,200,${hazeAlpha})`);
+        hazeGrad.addColorStop(0.3, `rgba(255,220,160,${hazeAlpha * 0.5})`);
+        hazeGrad.addColorStop(0.7, `rgba(255,200,120,${hazeAlpha * 0.17})`);
+        hazeGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = hazeGrad;
+        ctx.fillRect(sx - hazeR, sy - hazeR, hazeR * 2, hazeR * 2);
+
+        // Switch to additive blending for all light
+        ctx.globalCompositeOperation = 'lighter';
+
+        // ── LAYER 2: Multi-layer glow (3 shells) ──
+        // Outer halo
+        const outerR = 450 + 15 * Math.sin(elapsed * 0.0003);
+        const outerGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, outerR);
+        outerGrad.addColorStop(0, 'rgba(255,200,120,0.15)');
+        outerGrad.addColorStop(0.15, 'rgba(255,180,80,0.08)');
+        outerGrad.addColorStop(0.4, 'rgba(255,140,50,0.03)');
+        outerGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = outerGrad;
+        ctx.fillRect(sx - outerR, sy - outerR, outerR * 2, outerR * 2);
+
+        // Mid glow
+        const midR = 200 + 8 * Math.sin(elapsed * 0.0005 + 1.0);
+        const midGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, midR);
+        midGrad.addColorStop(0, 'rgba(255,250,230,0.6)');
+        midGrad.addColorStop(0.1, 'rgba(255,240,200,0.4)');
+        midGrad.addColorStop(0.3, 'rgba(255,220,150,0.15)');
+        midGrad.addColorStop(0.6, 'rgba(255,180,80,0.04)');
+        midGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = midGrad;
+        ctx.fillRect(sx - midR, sy - midR, midR * 2, midR * 2);
+
+        // Inner hot glow
+        const hotR = 80 + 3 * Math.sin(elapsed * 0.0007 + 2.0);
+        const hotGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, hotR);
+        hotGrad.addColorStop(0, 'rgba(255,255,255,1)');
+        hotGrad.addColorStop(0.15, 'rgba(255,255,245,0.9)');
+        hotGrad.addColorStop(0.4, 'rgba(255,250,220,0.5)');
+        hotGrad.addColorStop(0.7, 'rgba(255,240,180,0.15)');
+        hotGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = hotGrad;
+        ctx.fillRect(sx - hotR, sy - hotR, hotR * 2, hotR * 2);
+
+        // ── LAYER 3: Non-uniform primary rays ──
+        for (const ray of primaryRays) {
+          const angle = ray.baseAngle + rotation * 0.8
+            + Math.sin(elapsed * 0.001 + ray.phase1) * 0.02;
+          const length = ray.baseLength
+            + Math.sin(elapsed * 0.002 + ray.phase1) * 40
+            + Math.sin(elapsed * 0.005 + ray.phase2) * 15;
+          const w = ray.baseWidth * (0.85 + 0.15 * Math.sin(elapsed * 0.003 + ray.phase2));
+          const b = ray.brightness;
+
           ctx.save();
-          ctx.translate(sunX, sunY);
+          ctx.translate(sx, sy);
           ctx.rotate(angle);
-          const rayGrad = ctx.createLinearGradient(0, 0, length, 0);
-          rayGrad.addColorStop(0, 'rgba(255,255,255,0.85)');
-          rayGrad.addColorStop(0.2, 'rgba(255,248,220,0.5)');
-          rayGrad.addColorStop(0.5, 'rgba(255,209,102,0.2)');
-          rayGrad.addColorStop(1, 'transparent');
-          ctx.strokeStyle = rayGrad;
-          ctx.lineWidth = width;
+          const rg = ctx.createLinearGradient(0, 0, length, 0);
+          rg.addColorStop(0, `rgba(255,255,255,${0.7 * b})`);
+          rg.addColorStop(0.15, `rgba(255,248,220,${0.4 * b})`);
+          rg.addColorStop(0.4, `rgba(255,220,150,${0.12 * b})`);
+          rg.addColorStop(1, 'transparent');
+          ctx.strokeStyle = rg;
+          ctx.lineWidth = w;
           ctx.beginPath();
           ctx.moveTo(0, 0);
           ctx.lineTo(length, 0);
@@ -424,99 +536,201 @@ export default function Home() {
           ctx.restore();
         }
 
-        // Secondary thinner rays — counter-rotating
-        for (let i = 0; i < rayCount * 2; i++) {
-          const angle = -rotation * 0.5 + (i / (rayCount * 2)) * Math.PI * 2;
-          const length = 140 + Math.cos(elapsed * 0.0015 + i * 0.5) * 35;
+        // ── LAYER 4: Secondary shimmer rays ──
+        for (const ray of secondaryRays) {
+          const angle = ray.baseAngle - rotation * 0.4;
+          const length = ray.baseLength + Math.sin(elapsed * 0.0025 + ray.phase) * 25;
+          const w = 0.5 + Math.sin(elapsed * 0.004 + ray.phase) * 0.4;
+
           ctx.save();
-          ctx.translate(sunX, sunY);
+          ctx.translate(sx, sy);
           ctx.rotate(angle);
-          const rayGrad = ctx.createLinearGradient(0, 0, length, 0);
-          rayGrad.addColorStop(0, 'rgba(255,209,102,0.5)');
-          rayGrad.addColorStop(0.4, 'rgba(255,180,80,0.2)');
-          rayGrad.addColorStop(1, 'transparent');
-          ctx.strokeStyle = rayGrad;
-          ctx.lineWidth = 1.2;
+          const rg = ctx.createLinearGradient(0, 0, length, 0);
+          rg.addColorStop(0, 'rgba(255,230,180,0.3)');
+          rg.addColorStop(0.3, 'rgba(255,200,120,0.1)');
+          rg.addColorStop(1, 'transparent');
+          ctx.strokeStyle = rg;
+          ctx.lineWidth = w;
           ctx.beginPath();
-          ctx.moveTo(12, 0);
+          ctx.moveTo(20, 0);
           ctx.lineTo(length, 0);
           ctx.stroke();
           ctx.restore();
         }
 
-        // Bright inner core — hot white center
-        const innerR = 50;
-        const innerGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, innerR);
-        innerGrad.addColorStop(0, 'rgba(255,255,255,1)');
-        innerGrad.addColorStop(0.3, 'rgba(255,255,240,0.9)');
-        innerGrad.addColorStop(0.6, 'rgba(255,255,255,0.4)');
-        innerGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = innerGrad;
-        ctx.fillRect(sunX - innerR, sunY - innerR, innerR * 2, innerR * 2);
+        // ── LAYER 5: Diffraction spikes ──
+        for (let i = 0; i < spikeAngles.length; i++) {
+          const spikeAngle = spikeAngles[i] + elapsed * 0.00003;
+          const spikeLen = 500 + Math.sin(elapsed * 0.0006 + i) * 40;
 
-        // Lens flare artifacts — bokeh circles along axis
-        for (const f of flares) {
-          const fx = sunX + Math.cos(axisAngle) * axisDist * f.dist;
-          const fy = sunY + Math.sin(axisAngle) * axisDist * f.dist;
-          // Subtle pulse
-          const pulse = 1 + Math.sin(elapsed * 0.003 + f.dist * 10) * 0.15;
+          ctx.save();
+          ctx.translate(sx, sy);
+          ctx.rotate(spikeAngle);
+
+          // Draw spike in both directions
+          const sg = ctx.createLinearGradient(-spikeLen, 0, spikeLen, 0);
+          sg.addColorStop(0, 'transparent');
+          sg.addColorStop(0.2, 'rgba(255,230,180,0.08)');
+          sg.addColorStop(0.45, 'rgba(255,250,230,0.3)');
+          sg.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+          sg.addColorStop(0.55, 'rgba(255,250,230,0.3)');
+          sg.addColorStop(0.8, 'rgba(255,230,180,0.08)');
+          sg.addColorStop(1, 'transparent');
+          ctx.strokeStyle = sg;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(-spikeLen, 0);
+          ctx.lineTo(spikeLen, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // ── LAYER 6: Anamorphic streak — tilted ~20° right ──
+        const streakW = W * 1.2;
+        const streakH = 3 + 2.5 * Math.sin(elapsed * 0.0008);
+        const streakAlpha = 0.85 + 0.15 * Math.sin(elapsed * 0.0006);
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.rotate(20 * Math.PI / 180);
+        const sg2 = ctx.createLinearGradient(-streakW / 2, 0, streakW / 2, 0);
+        sg2.addColorStop(0, 'transparent');
+        sg2.addColorStop(0.15, `rgba(200,220,255,${0.03 * streakAlpha})`);
+        sg2.addColorStop(0.35, `rgba(255,240,220,${0.1 * streakAlpha})`);
+        sg2.addColorStop(0.45, `rgba(255,255,255,${0.25 * streakAlpha})`);
+        sg2.addColorStop(0.5, `rgba(255,255,255,${0.4 * streakAlpha})`);
+        sg2.addColorStop(0.55, `rgba(255,255,255,${0.25 * streakAlpha})`);
+        sg2.addColorStop(0.65, `rgba(255,240,220,${0.1 * streakAlpha})`);
+        sg2.addColorStop(0.85, `rgba(200,220,255,${0.03 * streakAlpha})`);
+        sg2.addColorStop(1, 'transparent');
+        ctx.fillStyle = sg2;
+        ctx.fillRect(-streakW / 2, -streakH, streakW, streakH * 2);
+        ctx.restore();
+
+        // ── LAYER 7: Bright core disc ──
+        const coreDiscR = 35;
+        const cdGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, coreDiscR);
+        cdGrad.addColorStop(0, 'rgba(255,255,255,1)');
+        cdGrad.addColorStop(0.3, 'rgba(255,255,250,0.95)');
+        cdGrad.addColorStop(0.6, 'rgba(255,255,240,0.5)');
+        cdGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = cdGrad;
+        ctx.fillRect(sx - coreDiscR, sy - coreDiscR, coreDiscR * 2, coreDiscR * 2);
+
+        // ── LAYER 8: Iris rainbow ring ──
+        const irisBaseR = 140 + 5 * Math.sin(elapsed * 0.0005);
+        const irisAlpha = 0.7 + 0.3 * Math.sin(elapsed * 0.0003 + 1.5);
+        for (let i = 0; i < irisColors.length; i++) {
+          const [cr, cg, cb] = irisColors[i];
+          const a = [0.04, 0.05, 0.05, 0.04, 0.04, 0.03][i] * irisAlpha;
+          ctx.beginPath();
+          ctx.arc(sx, sy, irisBaseR - 2.5 + i, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${a})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // ── LAYER 9: Chromatic lens flares ──
+        const cosA = Math.cos(axisAngle);
+        const sinA = Math.sin(axisAngle);
+
+        for (const f of flareElements) {
+          const fx = sx + cosA * axisDist * f.dist;
+          const fy = sy + sinA * axisDist * f.dist;
+
+          // Skip if off screen
+          if (fx < -f.size * 2 || fx > W + f.size * 2 || fy < -f.size * 2 || fy > H + f.size * 2) continue;
+
+          const pulse = 1 + Math.sin(elapsed * 0.002 + f.dist * 8) * 0.1;
           const r = f.size * pulse;
 
-          // Outer ring
-          ctx.beginPath();
-          ctx.arc(fx, fy, r, 0, Math.PI * 2);
-          ctx.fillStyle = f.color;
-          ctx.fill();
-
-          // Inner bright spot
-          const spotGrad = ctx.createRadialGradient(fx, fy, 0, fx, fy, r * 0.4);
-          spotGrad.addColorStop(0, 'rgba(255,255,255,0.3)');
-          spotGrad.addColorStop(1, 'transparent');
-          ctx.fillStyle = spotGrad;
-          ctx.beginPath();
-          ctx.arc(fx, fy, r * 0.4, 0, Math.PI * 2);
-          ctx.fill();
+          if (f.type === 'filled') {
+            const fg = ctx.createRadialGradient(fx, fy, 0, fx, fy, r);
+            fg.addColorStop(0, `rgba(${f.color[0]},${f.color[1]},${f.color[2]},${f.alpha})`);
+            fg.addColorStop(0.6, `rgba(${f.color[0]},${f.color[1]},${f.color[2]},${f.alpha * 0.3})`);
+            fg.addColorStop(1, 'transparent');
+            ctx.fillStyle = fg;
+            ctx.beginPath();
+            ctx.arc(fx, fy, r, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (f.type === 'ring') {
+            ctx.beginPath();
+            ctx.arc(fx, fy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${f.color[0]},${f.color[1]},${f.color[2]},${f.alpha})`;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          } else {
+            // Chromatic: 3 RGB-separated circles
+            const offset = 3;
+            // Red channel — offset backward along axis
+            ctx.beginPath();
+            ctx.arc(fx - cosA * offset, fy - sinA * offset, r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,80,60,${f.alpha})`;
+            ctx.fill();
+            // Green channel — center
+            ctx.beginPath();
+            ctx.arc(fx, fy, r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(80,255,120,${f.alpha * 0.8})`;
+            ctx.fill();
+            // Blue channel — offset forward along axis
+            ctx.beginPath();
+            ctx.arc(fx + cosA * offset, fy + sinA * offset, r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(80,120,255,${f.alpha})`;
+            ctx.fill();
+          }
         }
 
-        // Hexagonal flare (camera aperture artifact) midway
-        const hexX = sunX + Math.cos(axisAngle) * axisDist * 0.35;
-        const hexY = sunY + Math.sin(axisAngle) * axisDist * 0.35;
-        const hexR = 40;
-        ctx.save();
-        ctx.translate(hexX, hexY);
-        ctx.rotate(rotation * 0.3);
-        ctx.beginPath();
-        for (let i = 0; i < 6; i++) {
-          const a = (i / 6) * Math.PI * 2;
-          const hx = Math.cos(a) * hexR;
-          const hy = Math.sin(a) * hexR;
-          if (i === 0) ctx.moveTo(hx, hy);
-          else ctx.lineTo(hx, hy);
+        // ── LAYER 10: Hexagonal aperture ghosts ──
+        for (const hex of hexGhosts) {
+          const hx = sx + cosA * axisDist * hex.dist;
+          const hy = sy + sinA * axisDist * hex.dist;
+
+          if (hx < -hex.size * 2 || hx > W + hex.size * 2 || hy < -hex.size * 2 || hy > H + hex.size * 2) continue;
+
+          const hPulse = hex.size * (1 + Math.sin(elapsed * 0.0015 + hex.dist * 5) * 0.08);
+
+          ctx.save();
+          ctx.translate(hx, hy);
+          ctx.rotate(rotation * hex.rotMul);
+
+          if (hex.filled) {
+            // Filled with radial gradient
+            const hg = ctx.createRadialGradient(0, 0, 0, 0, 0, hPulse);
+            hg.addColorStop(0, 'rgba(255,240,200,0.08)');
+            hg.addColorStop(1, 'transparent');
+            drawHexPath(hPulse);
+            ctx.fillStyle = hg;
+            ctx.fill();
+          }
+
+          // Chromatic fringe: 3 slightly offset outlines
+          const fringeColors = ['rgba(255,100,80,0.06)', 'rgba(80,255,120,0.05)', 'rgba(80,100,255,0.06)'];
+          for (let fi = 0; fi < 3; fi++) {
+            drawHexPath(hPulse - 1 + fi);
+            ctx.strokeStyle = fringeColors[fi];
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+
+          ctx.restore();
         }
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(255,209,102,0.15)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255,209,102,0.25)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
+
+        // ── LAYER 11: Innermost core overburn ──
+        ctx.globalCompositeOperation = 'source-over';
+        const burnR = 15;
+        const burnGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, burnR);
+        burnGrad.addColorStop(0, 'rgba(255,255,255,1)');
+        burnGrad.addColorStop(0.5, 'rgba(255,255,255,0.8)');
+        burnGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = burnGrad;
+        ctx.fillRect(sx - burnR, sy - burnR, burnR * 2, burnR * 2);
 
         sunAnimId.current = requestAnimationFrame(draw);
       }
 
       sunAnimId.current = requestAnimationFrame(draw);
+      sunCleanup.current = () => window.removeEventListener('mousemove', onMouseMove);
     }
 
-    // Reset content to hidden state
-    function resetContent() {
-      const children = content!.children;
-      for (let i = 0; i < children.length; i++) {
-        const child = children[i] as HTMLElement;
-        child.style.transition = 'none';
-        child.style.opacity = '0';
-        child.style.transform = 'translateY(30px)';
-      }
-    }
 
     // Guard: prevent exit observer from resetting during animation
     let animGuard = false;
@@ -548,12 +762,12 @@ export default function Home() {
           flash.style.opacity = '0';
         }, 150);
 
-        // t=350ms: reveal content with staggered animation
+        // t=350ms: reveal all content with a single 0.5s fade
         setTimeout(() => {
           const children = content.children;
           for (let i = 0; i < children.length; i++) {
             const child = children[i] as HTMLElement;
-            child.style.transition = `opacity 0.6s ease-out ${i * 0.15}s, transform 0.6s ease-out ${i * 0.15}s`;
+            child.style.transition = 'opacity 0.5s ease-out';
             child.style.opacity = '1';
             child.style.transform = 'translateY(0)';
           }
@@ -572,28 +786,47 @@ export default function Home() {
       { threshold: 0.15 }
     );
 
-    // When trigger exits viewport (user scrolls back up), reset everything
-    const exitObserver = new IntersectionObserver(
-      ([entry]) => {
-        // Don't reset during the animation sequence
-        if (animGuard) return;
-        if (entry.isIntersecting || !zone2Fired.current) return;
-        // Trigger left viewport — reset so it can fire again
-        zone2Fired.current = false;
-        cancelAnimationFrame(sunAnimId.current);
+    // Scroll-based sun fade: as user scrolls back toward the dark zone,
+    // progressively hide the sun and reset when fully past the trigger
+    let didReset = false;
+    const handleSunScroll = () => {
+      if (animGuard || !zone2Fired.current) return;
+      const triggerRect = trigger.getBoundingClientRect();
+      const triggerBottom = triggerRect.bottom;
+      // fadeRange: sun starts fading when trigger bottom is within 300px of viewport top
+      const fadeRange = 300;
+      if (triggerBottom > fadeRange) {
+        // Trigger is well below — sun fully visible
+        sunCanvas.style.opacity = '1';
+        didReset = false;
+        return;
+      }
+      if (triggerBottom <= 0) {
+        // Trigger is above viewport — hide sun but keep content visible
         sunCanvas.style.opacity = '0';
-        flash.style.opacity = '0';
-        resetContent();
-      },
-      { threshold: 0 }
-    );
+        if (!didReset) {
+          didReset = true;
+          flash.style.opacity = '0';
+          setTimeout(() => {
+            cancelAnimationFrame(sunAnimId.current);
+            sunCleanup.current?.();
+          }, 100);
+        }
+        return;
+      }
+      // Progressive fade between 0 and fadeRange
+      const opacity = triggerBottom / fadeRange;
+      sunCanvas.style.transition = 'none';
+      sunCanvas.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+    };
+    window.addEventListener('scroll', handleSunScroll, { passive: true });
 
     observer.observe(trigger);
-    exitObserver.observe(trigger);
     return () => {
       observer.disconnect();
-      exitObserver.disconnect();
+      window.removeEventListener('scroll', handleSunScroll);
       cancelAnimationFrame(sunAnimId.current);
+      sunCleanup.current?.();
     };
   }, []);
 
@@ -614,7 +847,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
-      <div ref={heroWrapperRef} style={{ height: '400vh' }}>
+      <div ref={heroWrapperRef} className="relative z-10" style={{ height: '200vh', background: '#0a0a0c' }}>
       <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Rain canvas with goo filter */}
         <canvas
@@ -747,7 +980,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* ZONE 2: Valencia — Warm Mediterranean          */}
       {/* ============================================= */}
-      <div style={{ background: '#FFF8F0' }}>
+      <div className="relative" style={{ background: '#FFF8F0' }}>
 
         {/* Flash overlay — fills the entire viewport on trigger */}
         <div
@@ -759,15 +992,14 @@ export default function Home() {
           }}
         />
 
-        {/* Sun lens flare canvas — fixed overlay */}
-        <canvas
-          ref={sunCanvasRef}
-          className="fixed inset-0 pointer-events-none z-40"
-          style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in' }}
-        />
-
-        {/* Transition: sharp dark → cream cutoff */}
+        {/* Transition: sharp dark → cream cutoff + sun canvas anchored here */}
         <div ref={zone2TriggerRef} className="relative" style={{ height: '80px', background: 'linear-gradient(to bottom, #0a0a0c 0%, #0a0a0c 20%, #1a1410 45%, #FFF8F0 100%)' }}>
+          {/* Sun lens flare canvas — anchored at the dark/light transition */}
+          <canvas
+            ref={sunCanvasRef}
+            className="absolute bottom-0 left-0 pointer-events-none z-30"
+            style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', transform: 'translateY(0)' }}
+          />
           {/* Static warm glow underneath */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[400px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, #FFD16640 0%, #FF6B2B15 35%, transparent 65%)' }} />
         </div>
@@ -776,7 +1008,7 @@ export default function Home() {
         {/* SECTION: Valencia Hero Intro                   */}
         {/* ============================================= */}
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-10 sm:pt-16 pb-10 sm:pb-14">
-          <div ref={zone2ContentRef} className="mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
+          <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
             <p className="text-sm uppercase tracking-[0.3em] mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
               Welcome to
             </p>
@@ -785,26 +1017,75 @@ export default function Home() {
                 <Image src="/logo.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-            <p className="text-xs uppercase tracking-[0.2em] mb-1" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              connect beyond the web
-            </p>
             <h2 className="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
-              Valencia.
+              Val<span style={{ color: '#E87A2A' }}>e</span>ncia.
             </h2>
             <p className="mt-4 text-lg sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              20 builders. One villa. Seven days of sun.
+              We host 1-week houses for people who build things
             </p>
+
+            {/* Image Carousel */}
+            <div
+              className="mt-8 mb-4 relative w-full overflow-hidden"
+              style={{ height: '260px', perspective: '1200px', opacity: 0, transform: 'translateY(30px)' }}
+              onTouchStart={(e) => { (e.currentTarget as HTMLElement).dataset.touchX = String(e.touches[0].clientX); }}
+              onTouchEnd={(e) => {
+                const startX = Number((e.currentTarget as HTMLElement).dataset.touchX);
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+                if (Math.abs(diff) > 40) {
+                  setCarouselIdx(prev => diff > 0 ? (prev + 1) % 3 : (prev + 2) % 3);
+                }
+              }}
+            >
+              <div className="relative w-full h-full" style={{ transformStyle: 'preserve-3d' }}>
+                {carouselImages.map((src, i) => {
+                  const pos = (i - carouselIdx + 3) % 3; // 0=center, 1=right, 2=left
+                  const isCenter = pos === 0;
+                  const isRight = pos === 1;
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => !isCenter && setCarouselIdx(i)}
+                      className="absolute top-1/2 left-1/2 transition-all duration-500 ease-in-out rounded-2xl overflow-hidden"
+                      style={{
+                        width: isCenter ? '300px' : '220px',
+                        height: isCenter ? '200px' : '155px',
+                        transform: `translate(-50%, -50%) translateX(${isCenter ? '0px' : isRight ? '120px' : '-120px'}) translateZ(${isCenter ? '60px' : '-20px'}) rotateY(${isCenter ? '0deg' : isRight ? '-12deg' : '12deg'})`,
+                        zIndex: isCenter ? 5 : 10,
+                        cursor: isCenter ? 'default' : 'pointer',
+                        boxShadow: 'none',
+                        opacity: isCenter ? 1 : 0.6,
+                      }}
+                    >
+                      <Image src={src} alt="" fill className="object-cover" sizes="(min-width: 640px) 300px, 220px" />
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Dots */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                {carouselImages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCarouselIdx(i)}
+                    className="w-2.5 h-2.5 rounded-full transition-all duration-300"
+                    style={{ background: i === carouselIdx ? '#FF6B2B' : '#1a1a1a30' }}
+                  />
+                ))}
+              </div>
+            </div>
 
             {/* Progress + Apply — inside hero so it fills the viewport */}
             <div className="mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                    0/20 builders
+                    {valenciaCount}/20 builders
                   </span>
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: '0%', background: '#FF6B2B' }} />
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((valenciaCount / 20) * 100)}%`, background: '#FF6B2B' }} />
                 </div>
                 <div className="flex flex-col items-center gap-4 pt-2">
                   <div className="relative group inline-block">
@@ -828,16 +1109,16 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Manifesto                             */}
         {/* ============================================= */}
-        <section id="1" className="relative z-10 w-full scroll-mt-32 md:scroll-mt-40">
+        <section id="1" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-8 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Our Manifesto</h3>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Our Manif<span style={{ color: '#FF6B2B' }}>e</span>sto</h3>
             </div>
             <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto" style={{ color: '#6b5e52' }}>
-              <p>We grew up online, through forums, pixels and late-night calls.</p>
-              <p>We build in public, meet offline, and chase that first feeling of discovering the internet.</p>
-              <p>We&apos;re digital natives who enjoy disconnecting with other passionate builders.</p>
-              <p>Our community is global, our connections are real, and our gatherings never forget.</p>
+              <RevealText text="We grew up online, through forums, pixels and late-night calls." className="text-[#6b5e52]" />
+              <RevealText text="We build in public, meet offline, and chase that first feeling of discovering the internet." className="text-[#6b5e52]" />
+              <RevealText text="We're digital natives who enjoy disconnecting with other passionate builders." className="text-[#6b5e52]" />
+              <RevealText text="Our community is global, our connections are real, and our gatherings never forget." className="text-[#6b5e52]" />
             </div>
           </div>
         </section>
@@ -845,7 +1126,7 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: SOTI Community Progress               */}
         {/* ============================================= */}
-        <section className="w-full pb-10 sm:pb-14 pt-6 sm:pt-8">
+        <section className="relative z-40 w-full pb-10 sm:pb-14 pt-6 sm:pt-8" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-md px-6 sm:px-10">
             <div className="w-full space-y-4">
               <h3 className="text-center text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
@@ -853,11 +1134,11 @@ export default function Home() {
               </h3>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                  0/128 seats filled for 2026
+                  {totalSeats}/{totalSeats > 128 ? totalSeats + 5 : 128} seats filled for 2026
                 </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: '0%', background: '#FF8C42' }} />
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((totalSeats / (totalSeats > 128 ? totalSeats + 5 : 128)) * 100)}%`, background: '#FF8C42' }} />
               </div>
               <div className="flex justify-center pt-3">
                 <div className="relative group inline-block">
@@ -881,61 +1162,27 @@ export default function Home() {
         <div className="mx-auto max-w-xs h-px" style={{ background: 'linear-gradient(to right, transparent, #FF6B2B30, transparent)' }} />
 
         {/* ============================================= */}
-        {/* SECTION: Barcelona 2025 (past event)           */}
-        {/* ============================================= */}
-        <section className="w-full py-10 sm:py-14">
-          <div className="mx-auto w-full max-w-md px-6 sm:px-10">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                  20/20 builders on Barcelona 2025
-                </span>
-                <span className="text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>100%</span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: '100%', background: '#FF8C42' }} />
-              </div>
-              <div className="flex flex-col items-center gap-4 pt-2">
-                <div className="inline-flex items-center px-3 py-1 rounded-full" style={{ background: '#FF6B2B15', border: '1px solid #FF6B2B40' }}>
-                  <span className="text-xs font-medium uppercase tracking-wide" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>
-                    Sold out
-                  </span>
-                </div>
-                <a
-                  href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer border"
-                  style={{ color: '#FF6B2B', borderColor: '#FF6B2B', background: 'transparent' }}
-                >
-                  View house recap
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================= */}
         {/* SECTION: Houses / Events                       */}
         {/* ============================================= */}
-        <section id="2" className="w-full scroll-mt-32 md:scroll-mt-40">
+        <section id="2" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-10 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Houses</h3>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Hous<span style={{ color: '#FF6B2B' }}>e</span>s</h3>
               <p className="mt-3 text-base" style={{ color: '#6b5e52' }}>Mark your digital calendar. These moments only happen IRL.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
 
-              {/* Event Card: Next House */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ background: 'linear-gradient(135deg, #FF6B2B15 0%, #FFD16620 100%)', border: '1px solid #FF6B2B20' }}>
-                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-6">
+              {/* Event Card: Valencia */}
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #FF6B2B20' }}>
+                <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide" style={{ background: '#FF6B2B20', color: '#FF6B2B', border: '1px solid #FF6B2B30' }}>UPCOMING</span>
-                      <span className="text-xs" style={{ color: '#6b5e52' }}>April 2026</span>
+                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">UPCOMING</span>
+                      <span className="text-xs text-white/60">April 2026</span>
                     </div>
-                    <h4 className="text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Next Soti House</h4>
-                    <p className="text-sm" style={{ color: '#6b5e52' }}>Ireland, Spain or France</p>
+                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)' }}>Valencia April Edition</h4>
+                    <p className="text-white/70 text-sm">Valencia, Spain</p>
                     <div className="mt-3">
                       <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-200 inline-block" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>
                         JOIN THE WAITLIST
@@ -988,11 +1235,11 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Schedule                              */}
         {/* ============================================= */}
-        <section className="w-full py-8 sm:py-12">
+        <section className="relative z-40 w-full py-8 sm:py-12" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
             <div className="mb-8 text-center">
               <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
-                Last Schedule
+                Last Sch<span style={{ color: '#FF6B2B' }}>e</span>dule
               </h3>
               <p style={{ color: '#6b5e52' }}>Weekly program structure</p>
             </div>
@@ -1002,20 +1249,20 @@ export default function Home() {
               <div className="min-w-full rounded-xl overflow-hidden" style={{ border: '1px solid #1a1a1a10' }}>
                 <table className="w-full table-fixed">
                   <thead>
-                    <tr style={{ background: '#FF6B2B08', borderBottom: '1px solid #1a1a1a10' }}>
-                      <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: '#1a1a1a' }}>Time</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Mon</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Tue</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Wed</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Thu</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Fri</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Sat</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#1a1a1a' }}>Sun</th>
+                    <tr style={{ background: '#FF6B2B20', borderBottom: '1px solid #FF6B2B30' }}>
+                      <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: '#FF6B2B' }}>Time</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Mon</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Tue</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Wed</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Thu</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Fri</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Sat</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Sun</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ background: '#FF6B2B06', borderBottom: '1px solid #1a1a1a08' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>09:00–13:00</td>
+                    <tr style={{ background: '#FF6B2B10', borderBottom: '1px solid #FF6B2B15' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B18' }}>09:00–13:00</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Check In</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
@@ -1024,8 +1271,8 @@ export default function Home() {
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Demo Day</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Morning activity</td>
                     </tr>
-                    <tr style={{ background: '#FF8C4206', borderBottom: '1px solid #1a1a1a08' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>13:00–15:00</td>
+                    <tr style={{ background: '#FFD16610', borderBottom: '1px solid #FF6B2B15' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FFD16618' }}>13:00–15:00</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
@@ -1034,8 +1281,8 @@ export default function Home() {
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Public Event – Paella (60 Attendees)</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
                     </tr>
-                    <tr style={{ background: '#FFD16606', borderBottom: '1px solid #1a1a1a08' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>15:00–18:00</td>
+                    <tr style={{ background: '#FF6B2B10', borderBottom: '1px solid #FF6B2B15' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B18' }}>15:00–18:00</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
@@ -1044,8 +1291,8 @@ export default function Home() {
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>DJ + Drinks</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Reflect & Harvest</td>
                     </tr>
-                    <tr style={{ background: '#FF6B2B04' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B08' }}>18:00+</td>
+                    <tr style={{ background: '#FFD16610' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FFD16618' }}>18:00+</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Intros & Goals</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Inspiration talk</td>
                       <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Network Afternoon</td>
@@ -1091,9 +1338,9 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Led By (Team)                         */}
         {/* ============================================= */}
-        <section className="w-full">
+        <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Led by</h3>
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>L<span style={{ color: '#FF6B2B' }}>e</span>d by</h3>
             <p className="mb-12 text-center text-base" style={{ color: '#6b5e52' }}>Meet the builders behind SOTI</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
@@ -1103,11 +1350,11 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Marcos Valera</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Marcos Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>YT</a>
-                    <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
-                    <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                    <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>GTM, community. 10k youtube + 25k linkedin. Startups and builders audience.</p>
                 </div>
@@ -1121,9 +1368,9 @@ export default function Home() {
                   </div>
                   <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Juan Pablo</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
-                    <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
-                    <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Researcher and CTO. how research AI works</p>
                 </div>
@@ -1135,11 +1382,11 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Dani Diestre</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Dani Di<span style={{ color: '#FF6B2B' }}>e</span>stre</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>YT</a>
-                    <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
-                    <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                    <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Co-Founder Autentic, Youtube Creator</p>
                 </div>
@@ -1151,10 +1398,10 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Aniol Carreras</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Aniol Carr<span style={{ color: '#FF6B2B' }}>e</span>ras</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
-                    <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>COO at The Hero Camp (Product School Leader in Spain) , Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
                 </div>
@@ -1166,11 +1413,11 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Jose Saura</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Jos<span style={{ color: '#FF6B2B' }}>e</span> Saura</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>X</a>
-                    <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
-                    <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
                 </div>
@@ -1182,10 +1429,10 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Adrian Valera</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Adrian Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>GH</a>
-                    <a href="http://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="text-sm transition-colors" style={{ color: '#6b5e52' }}>LI</a>
+                    <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Engineer & Researcher. Building communities with love.</p>
                 </div>
@@ -1198,9 +1445,9 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Final CTA                             */}
         {/* ============================================= */}
-        <section className="w-full">
+        <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Build something that matters</h3>
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Build som<span style={{ color: '#FF6B2B' }}>e</span>thing that matters</h3>
             <p className="mt-4 text-lg" style={{ color: '#6b5e52' }}>Not another community.</p>
             <p style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
             <div className="mt-8">
@@ -1220,7 +1467,7 @@ export default function Home() {
             <div className="space-y-8">
               <div>
                 <h4 className="text-lg sm:text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>SOTI Family</h4>
-                <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect beyond the web.</p>
+                <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
                 <div className="flex mt-4">
                   <div className="relative w-40 h-14">
                     <Image src="/logo.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
