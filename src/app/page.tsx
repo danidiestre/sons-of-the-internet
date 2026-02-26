@@ -101,8 +101,8 @@ export default function Home() {
     // Pre-allocated particle pools
     const MAX_RAIN = 300;
     const MAX_SPLASH = 160;
-    const SPLASH_PER_HIT = 2;
-    const SPLASH_DECAY = 0.06;
+    const SPLASH_PER_HIT = 3;
+    const SPLASH_DECAY = 0.04;
 
     const rainX = new Float32Array(MAX_RAIN);
     const rainY = new Float32Array(MAX_RAIN);
@@ -229,7 +229,7 @@ export default function Home() {
             splVX[j] = isLeft ? -(Math.random() * 4 * sf + 1) : Math.random() * 4 * sf + 1;
             splVY[j] = -(Math.random() * 3 * sf + 0.5);
             splLife[j] = 1;
-            splSize[j] = 2 + Math.random() * 3;
+            splSize[j] = 3 + Math.random() * 4;
           }
           remove = true;
         } else if (ry > h) {
