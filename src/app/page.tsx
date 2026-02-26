@@ -95,15 +95,25 @@ export default function Home() {
     let thunderFlashes = 0;
     let nextThunder = performance.now() + (5000 + Math.random() * 3000);
 
-    const rain: { x: number; y: number; vy: number; l: number }[] = [];
-    const splashes: {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      life: number;
-      size: number;
-    }[] = [];
+    // Pre-allocated particle pools (no push/splice — swap-and-shrink)
+    const MAX_RAIN = isMobile ? 150 : 400;
+    const MAX_SPLASH = isMobile ? 80 : 300;
+    const SPLASH_PER_HIT = isMobile ? 2 : 3;
+    const SPLASH_DECAY = isMobile ? 0.06 : 0.04;
+
+    const rainX = new Float32Array(MAX_RAIN);
+    const rainY = new Float32Array(MAX_RAIN);
+    const rainVY = new Float32Array(MAX_RAIN);
+    const rainL = new Float32Array(MAX_RAIN);
+    let rainCount = 0;
+
+    const splX = new Float32Array(MAX_SPLASH);
+    const splY = new Float32Array(MAX_SPLASH);
+    const splVX = new Float32Array(MAX_SPLASH);
+    const splVY = new Float32Array(MAX_SPLASH);
+    const splLife = new Float32Array(MAX_SPLASH);
+    const splSize = new Float32Array(MAX_SPLASH);
+    let splCount = 0;
 
     function updateLayout() {
       const section = canvas!.parentElement!;
@@ -120,24 +130,21 @@ export default function Home() {
       roofBaseY = boxTop + ROOF_H;
     }
 
-    // Get the roof surface Y at a given X position
+    // Inline roof Y — avoid function call overhead
     function getRoofY(x: number): number {
       if (x < boxLeft || x > boxRight) return Infinity;
       if (x <= centerX) {
-        const t = (x - boxLeft) / (centerX - boxLeft);
-        return roofBaseY - t * ROOF_H;
-      } else {
-        const t = (x - centerX) / (boxRight - centerX);
-        return boxTop + t * ROOF_H;
+        return roofBaseY - ((x - boxLeft) / (centerX - boxLeft)) * ROOF_H;
       }
+      return boxTop + ((x - centerX) / (boxRight - centerX)) * ROOF_H;
     }
 
     const observer = new ResizeObserver(updateLayout);
     observer.observe(canvas!.parentElement!);
 
     function animate() {
-      ctx!.clearRect(0, 0, w, h);
-      ctx!.lineCap = "round";
+      const c = ctx!;
+      c.clearRect(0, 0, w, h);
 
       // Thunder logic
       const now = performance.now();
@@ -146,8 +153,8 @@ export default function Home() {
         thunderAlpha = 0.9;
       }
       if (thunderAlpha > 0) {
-        ctx!.fillStyle = `rgba(255,255,255,${thunderAlpha})`;
-        ctx!.fillRect(0, 0, w, h);
+        c.fillStyle = `rgba(255,255,255,${thunderAlpha})`;
+        c.fillRect(0, 0, w, h);
         thunderAlpha -= 0.06;
         if (thunderAlpha <= 0) {
           thunderAlpha = 0;
@@ -160,88 +167,94 @@ export default function Home() {
         }
       }
 
-      // Generate rain — reads from config ref
+      // Spawn rain
       const cfg = rainCfg.current;
       const spawnCount = Math.max(1, Math.ceil(cfg.density / 20));
       const spawnProb = cfg.density / 100;
       for (let k = 0; k < spawnCount; k++) {
-        if (Math.random() < spawnProb) {
-          rain.push({
-            x: Math.random() * w,
-            y: -50,
-            vy: cfg.speed + Math.random() * (cfg.speed * 0.4),
-            l: cfg.length + Math.random() * (cfg.length * 2),
-          });
+        if (rainCount < MAX_RAIN && Math.random() < spawnProb) {
+          const i = rainCount++;
+          rainX[i] = Math.random() * w;
+          rainY[i] = -50;
+          rainVY[i] = cfg.speed + Math.random() * (cfg.speed * 0.4);
+          rainL[i] = cfg.length + Math.random() * (cfg.length * 2);
         }
       }
 
-      // Rain rendering & collision with roof slopes
-      ctx!.strokeStyle = "#aec2e0";
-      ctx!.lineWidth = cfg.width;
-      for (let i = rain.length - 1; i >= 0; i--) {
-        const r = rain[i];
-        r.y += r.vy;
-        ctx!.beginPath();
-        ctx!.moveTo(r.x, r.y);
-        ctx!.lineTo(r.x, r.y - r.l);
-        ctx!.stroke();
+      // Update + draw all rain in ONE batched path
+      c.strokeStyle = "#aec2e0";
+      c.lineWidth = cfg.width;
+      c.lineCap = "round";
+      c.beginPath();
+      const sf = cfg.splash / 100;
+      let i = 0;
+      while (i < rainCount) {
+        rainY[i] += rainVY[i];
+        const rx = rainX[i], ry = rainY[i];
 
-        const surfaceY = getRoofY(r.x);
-        if (surfaceY < Infinity && r.y >= surfaceY && r.y - r.vy <= surfaceY) {
-          // Splash outward based on which slope was hit
-          const isLeft = r.x <= centerX;
-          const sf = cfg.splash / 100;
-          const splashCount = isMobile ? 2 : 6;
-          for (let k = 0; k < splashCount; k++) {
-            splashes.push({
-              x: r.x,
-              y: surfaceY,
-              vx: isLeft
-                ? -(Math.random() * 4 * sf + 1)
-                : Math.random() * 4 * sf + 1,
-              vy: -(Math.random() * 3 * sf + 0.5),
-              life: isMobile ? 0.6 : 1,
-              size: 3 + Math.random() * 5,
-            });
+        // Add line to batch
+        c.moveTo(rx, ry);
+        c.lineTo(rx, ry - rainL[i]);
+
+        // Check roof collision
+        const surfaceY = getRoofY(rx);
+        let remove = false;
+        if (surfaceY < Infinity && ry >= surfaceY && ry - rainVY[i] <= surfaceY) {
+          // Spawn splashes
+          const isLeft = rx <= centerX;
+          for (let k = 0; k < SPLASH_PER_HIT && splCount < MAX_SPLASH; k++) {
+            const j = splCount++;
+            splX[j] = rx;
+            splY[j] = surfaceY;
+            splVX[j] = isLeft ? -(Math.random() * 4 * sf + 1) : Math.random() * 4 * sf + 1;
+            splVY[j] = -(Math.random() * 3 * sf + 0.5);
+            splLife[j] = 1;
+            splSize[j] = 2 + Math.random() * 3;
           }
-          rain.splice(i, 1);
-        } else if (r.y > h) {
-          rain.splice(i, 1);
+          remove = true;
+        } else if (ry > h) {
+          remove = true;
+        }
+
+        if (remove) {
+          // Swap with last element (O(1) removal)
+          const last = --rainCount;
+          rainX[i] = rainX[last];
+          rainY[i] = rainY[last];
+          rainVY[i] = rainVY[last];
+          rainL[i] = rainL[last];
+        } else {
+          i++;
         }
       }
+      c.stroke();
 
-      // Splash physics — slide along roof surface
-      ctx!.fillStyle = "#aec2e0";
-      for (let i = splashes.length - 1; i >= 0; i--) {
-        const s = splashes[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.25; // Gravity
+      // Update + draw all splashes as simple rects in ONE batch
+      c.fillStyle = "#aec2e0";
+      c.beginPath();
+      let si = 0;
+      while (si < splCount) {
+        splX[si] += splVX[si];
+        splY[si] += splVY[si];
+        splVY[si] += 0.25;
 
-        // Pool on roof surface and slide down the slope
-        const roofY = getRoofY(s.x);
-        if (roofY < Infinity && s.y > roofY) {
-          s.y = roofY;
-          s.vy = 0;
-          // Slide along the slope direction
-          if (s.x <= centerX) {
-            s.vx -= 0.3;
-          } else {
-            s.vx += 0.3;
-          }
-          s.vx *= 0.9;
+        splLife[si] -= SPLASH_DECAY;
+        if (splLife[si] <= 0) {
+          const last = --splCount;
+          splX[si] = splX[last];
+          splY[si] = splY[last];
+          splVX[si] = splVX[last];
+          splVY[si] = splVY[last];
+          splLife[si] = splLife[last];
+          splSize[si] = splSize[last];
+        } else {
+          // Draw as rect (much cheaper than arc)
+          const sz = splSize[si] * splLife[si];
+          c.rect(splX[si] - sz * 0.5, splY[si] - sz * 0.5, sz, sz);
+          si++;
         }
-
-        s.life -= 0.02;
-        if (s.life <= 0) {
-          splashes.splice(i, 1);
-          continue;
-        }
-
-        ctx!.beginPath();
-        ctx!.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
-        ctx!.fill();
       }
+      c.fill();
 
       animationId = requestAnimationFrame(animate);
     }
