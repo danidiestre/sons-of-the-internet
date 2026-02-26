@@ -89,6 +89,9 @@ export default function Home() {
 
     // Reduce compute cost on mobile
     const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      rainCfg.current.density = 15;
+    }
 
     // Thunder state
     let thunderAlpha = 0;
