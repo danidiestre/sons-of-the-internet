@@ -99,8 +99,8 @@ export default function Home() {
     let nextThunder = performance.now() + (5000 + Math.random() * 3000);
 
     // Pre-allocated particle pools
-    const MAX_RAIN = 150;
-    const MAX_SPLASH = 80;
+    const MAX_RAIN = 300;
+    const MAX_SPLASH = 160;
     const SPLASH_PER_HIT = 2;
     const SPLASH_DECAY = 0.06;
 
