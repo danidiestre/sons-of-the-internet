@@ -87,12 +87,8 @@ export default function Home() {
       roofBaseY = 0;
     let animationId: number;
 
-    // Reduce rain on mobile to 1/3
+    // Reduce compute cost on mobile
     const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      rainCfg.current.density = Math.round(rainCfg.current.density / 3);
-      rainCfg.current.splash = Math.round(rainCfg.current.splash / 3);
-    }
 
     // Thunder state
     let thunderAlpha = 0;
@@ -195,7 +191,8 @@ export default function Home() {
           // Splash outward based on which slope was hit
           const isLeft = r.x <= centerX;
           const sf = cfg.splash / 100;
-          for (let k = 0; k < 6; k++) {
+          const splashCount = isMobile ? 2 : 6;
+          for (let k = 0; k < splashCount; k++) {
             splashes.push({
               x: r.x,
               y: surfaceY,
@@ -203,7 +200,7 @@ export default function Home() {
                 ? -(Math.random() * 4 * sf + 1)
                 : Math.random() * 4 * sf + 1,
               vy: -(Math.random() * 3 * sf + 0.5),
-              life: 1,
+              life: isMobile ? 0.6 : 1,
               size: 3 + Math.random() * 5,
             });
           }
@@ -751,13 +748,13 @@ export default function Home() {
         zone2Fired.current = true;
         animGuard = true;
 
-        // Lock scroll — snap to Valencia section and freeze
+        // Lock scroll — instantly jump to Valencia section and freeze
+        document.body.style.overflow = 'hidden';
         const section = content.closest('section');
         if (section) {
-          const sectionTop = section.getBoundingClientRect().top + window.scrollY - 40;
-          window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: sectionTop, behavior: 'instant' });
         }
-        document.body.style.overflow = 'hidden';
 
         // t=0: bright flash ON + start sun canvas
         flash.style.transition = 'opacity 0.12s ease-in';
