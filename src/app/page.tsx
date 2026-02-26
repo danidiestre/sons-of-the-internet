@@ -34,6 +34,10 @@ export default function Home() {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const carouselImages = ['/landing-house.jpg', '/landing-people.png', '/landing-paella.png'];
 
+  // Mobile detection for disabling expensive effects
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => { setIsMobile(window.innerWidth < 640); }, []);
+
   // API data for builder/seat counts
   const [valenciaCount, setValenciaCount] = useState(0);
   const [totalSeats, setTotalSeats] = useState(0);
@@ -918,7 +922,7 @@ export default function Home() {
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full pointer-events-none z-0"
-          style={{ filter: "url(#goo)" }}
+          style={isMobile ? undefined : { filter: 'url(#goo)' }}
         />
 
         {/* Hero house */}
