@@ -23,8 +23,8 @@ export default function Home() {
   const sunCleanup = useRef<(() => void) | null>(null);
 
   // Rain config — sliders update this ref, animation reads it
-  const rainCfg = useRef({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
-  const [rainUI, setRainUI] = useState({ speed: 18, density: 60, length: 40, width: 3, splash: 100 });
+  const rainCfg = useRef({ speed: 18, density: 60, length: 40, width: 1.5, splash: 100 });
+  const [rainUI, setRainUI] = useState({ speed: 18, density: 60, length: 40, width: 1.5, splash: 100 });
   const updateRain = (key: string, val: number) => {
     (rainCfg.current as Record<string, number>)[key] = val;
     setRainUI(prev => ({ ...prev, [key]: val }));
@@ -113,14 +113,20 @@ export default function Home() {
     const splLife = new Float32Array(MAX_SPLASH);
     const splSize = new Float32Array(MAX_SPLASH);
     let splCount = 0;
+    let lastTime = 0;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     function updateLayout() {
       const section = canvas!.parentElement!;
       const sr = section.getBoundingClientRect();
-      canvas!.width = sr.width;
-      canvas!.height = sr.height;
       w = sr.width;
       h = sr.height;
+      canvas!.width = w * dpr;
+      canvas!.height = h * dpr;
+      canvas!.style.width = w + 'px';
+      canvas!.style.height = h + 'px';
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       const br = box!.getBoundingClientRect();
       boxTop = br.top - sr.top;
       boxLeft = br.left - sr.left;
@@ -141,9 +147,19 @@ export default function Home() {
     const observer = new ResizeObserver(updateLayout);
     observer.observe(canvas!.parentElement!);
 
-    function animate() {
+    function animate(timestamp: number) {
       const c = ctx!;
       c.clearRect(0, 0, w, h);
+
+      // Delta time normalized to 60fps (1.0 at 60fps, 2.0 at 30fps, etc.)
+      const dt60 = lastTime > 0 ? Math.min((timestamp - lastTime) / 16.667, 3) : 1;
+      lastTime = timestamp;
+
+      // Skip rendering if layout isn't ready
+      if (w === 0 || h === 0) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
 
       // Thunder logic
       const now = performance.now();
@@ -154,7 +170,7 @@ export default function Home() {
       if (thunderAlpha > 0) {
         c.fillStyle = `rgba(255,255,255,${thunderAlpha})`;
         c.fillRect(0, 0, w, h);
-        thunderAlpha -= 0.06;
+        thunderAlpha -= 0.06 * dt60;
         if (thunderAlpha <= 0) {
           thunderAlpha = 0;
           thunderFlashes--;
@@ -169,7 +185,7 @@ export default function Home() {
       // Spawn rain
       const cfg = rainCfg.current;
       const spawnCount = Math.max(1, Math.ceil(cfg.density / 20));
-      const spawnProb = cfg.density / 100;
+      const spawnProb = Math.min((cfg.density / 100) * dt60, 1);
       for (let k = 0; k < spawnCount; k++) {
         if (rainCount < MAX_RAIN && Math.random() < spawnProb) {
           const i = rainCount++;
@@ -188,7 +204,8 @@ export default function Home() {
       const sf = cfg.splash / 100;
       let i = 0;
       while (i < rainCount) {
-        rainY[i] += rainVY[i];
+        const move = rainVY[i] * dt60;
+        rainY[i] += move;
         const rx = rainX[i], ry = rainY[i];
 
         // Add line to batch
@@ -198,7 +215,7 @@ export default function Home() {
         // Check roof collision
         const surfaceY = getRoofY(rx);
         let remove = false;
-        if (surfaceY < Infinity && ry >= surfaceY && ry - rainVY[i] <= surfaceY) {
+        if (surfaceY < Infinity && ry >= surfaceY && ry - move <= surfaceY) {
           // Spawn splashes
           const isLeft = rx <= centerX;
           for (let k = 0; k < SPLASH_PER_HIT && splCount < MAX_SPLASH; k++) {
@@ -233,11 +250,11 @@ export default function Home() {
       c.beginPath();
       let si = 0;
       while (si < splCount) {
-        splX[si] += splVX[si];
-        splY[si] += splVY[si];
-        splVY[si] += 0.25;
+        splX[si] += splVX[si] * dt60;
+        splY[si] += splVY[si] * dt60;
+        splVY[si] += 0.25 * dt60;
 
-        splLife[si] -= SPLASH_DECAY;
+        splLife[si] -= SPLASH_DECAY * dt60;
         if (splLife[si] <= 0) {
           const last = --splCount;
           splX[si] = splX[last];
@@ -260,7 +277,7 @@ export default function Home() {
 
     updateLayout();
     window.addEventListener("resize", updateLayout);
-    animate();
+    animationId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", updateLayout);
