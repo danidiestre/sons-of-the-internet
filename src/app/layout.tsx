@@ -93,9 +93,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} ${syne.variable} antialiased bg-black overflow-x-hidden`}
+        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} ${syne.variable} antialiased bg-black`}
+        style={{ overflowX: 'clip' }}
       >
         <OgLogo />
         {children}
