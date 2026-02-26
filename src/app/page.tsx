@@ -87,22 +87,18 @@ export default function Home() {
       roofBaseY = 0;
     let animationId: number;
 
-    // Reduce compute cost on mobile
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      rainCfg.current.density = 15;
-    }
+    rainCfg.current.density = 15;
 
     // Thunder state
     let thunderAlpha = 0;
     let thunderFlashes = 0;
     let nextThunder = performance.now() + (5000 + Math.random() * 3000);
 
-    // Pre-allocated particle pools (no push/splice — swap-and-shrink)
-    const MAX_RAIN = isMobile ? 150 : 400;
-    const MAX_SPLASH = isMobile ? 80 : 300;
-    const SPLASH_PER_HIT = isMobile ? 2 : 3;
-    const SPLASH_DECAY = isMobile ? 0.06 : 0.04;
+    // Pre-allocated particle pools
+    const MAX_RAIN = 150;
+    const MAX_SPLASH = 80;
+    const SPLASH_PER_HIT = 2;
+    const SPLASH_DECAY = 0.06;
 
     const rainX = new Float32Array(MAX_RAIN);
     const rainY = new Float32Array(MAX_RAIN);
