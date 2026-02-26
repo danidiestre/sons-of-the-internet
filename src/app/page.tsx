@@ -91,7 +91,7 @@ export default function Home() {
       roofBaseY = 0;
     let animationId: number;
 
-    rainCfg.current.density = 15;
+    rainCfg.current.density = 30;
 
     // Thunder state
     let thunderAlpha = 0;
