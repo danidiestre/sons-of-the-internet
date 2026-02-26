@@ -777,13 +777,16 @@ export default function Home() {
         zone2Fired.current = true;
         animGuard = true;
 
-        // Lock scroll — instantly jump to Valencia section and freeze
-        document.body.style.overflow = 'hidden';
+        // Lock scroll — iOS Safari ignores overflow:hidden, so use position:fixed
         const section = content.closest('section');
-        if (section) {
-          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo(0, sectionTop);
-        }
+        const targetScrollY = section
+          ? section.getBoundingClientRect().top + window.scrollY
+          : window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${targetScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.overflow = 'hidden';
 
         // t=0: bright flash ON + start sun canvas
         flash.style.transition = 'opacity 0.12s ease-in';
@@ -810,7 +813,12 @@ export default function Home() {
 
         // Unlock scroll after animation completes
         setTimeout(() => {
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
           document.body.style.overflow = '';
+          window.scrollTo(0, targetScrollY);
         }, 1400);
 
         // Allow exit observer to work after animation settles
