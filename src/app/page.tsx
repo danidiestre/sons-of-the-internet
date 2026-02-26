@@ -766,7 +766,7 @@ export default function Home() {
         const section = content.closest('section');
         if (section) {
           const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({ top: sectionTop, behavior: 'instant' });
+          window.scrollTo(0, sectionTop);
         }
 
         // t=0: bright flash ON + start sun canvas
