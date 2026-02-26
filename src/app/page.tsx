@@ -955,9 +955,9 @@ export default function Home() {
 
             {/* House Body */}
             <div className="border-x border-b backdrop-blur-sm" style={{ background: HOUSE_COLOR, borderColor: '#3a3a48' }}>
-              <div className="px-6 pt-6 pb-4 sm:pb-6">
+              <div className="px-6 pt-3 sm:pt-6 pb-2 sm:pb-6">
                 {/* Hero text + CTA */}
-                <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+                <div className="flex flex-col items-center justify-center py-4 sm:py-12">
                   <div className="relative w-full text-center">
                     {heroMessages.map((msg, i) => (
                       <div
@@ -966,7 +966,7 @@ export default function Home() {
                         className={i === 0 ? '' : 'absolute inset-0'}
                         style={{ opacity: i === 0 ? 1 : 0 }}
                       >
-                        <div className="space-y-10">
+                        <div className="space-y-6 sm:space-y-10">
                           <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
                             {msg.title}
                           </h1>
@@ -980,7 +980,7 @@ export default function Home() {
                 </div>
               </div>
               {/* Bouncing arrow at bottom of house */}
-              <div ref={arrowRef} className="flex justify-center pb-8">
+              <div ref={arrowRef} className="flex justify-center pb-4 sm:pb-8">
                 <svg
                   width="20"
                   height="20"
@@ -1077,7 +1077,7 @@ export default function Home() {
           style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', zIndex: 9999 }}
         />
 
-        <section className="relative w-full min-h-screen flex flex-col justify-center pt-10 sm:pt-16 pb-10 sm:pb-14">
+        <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14">
           <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
             <p className="text-sm uppercase tracking-[0.3em] mb-2 sm:mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
               Welcome to
