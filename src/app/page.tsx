@@ -978,7 +978,7 @@ export default function Home() {
                 </div>
               </div>
               {/* Bouncing arrow at bottom of house */}
-              <div ref={arrowRef} className="flex justify-center pb-4 sm:pb-8">
+              <div ref={arrowRef} className="flex items-center justify-center gap-2 pb-4 sm:pb-8">
                 <button
                   onClick={() => {
                     const wrapper = heroWrapperRef.current;
@@ -991,9 +991,10 @@ export default function Home() {
                       window.scrollTo({ top: wrapperBottom - window.innerHeight, behavior: 'smooth' });
                     }
                   }}
-                  className="cursor-pointer bg-transparent border-none p-2"
+                  className="cursor-pointer bg-transparent border-none p-2 flex items-center gap-2"
                   aria-label="Scroll to next section"
                 >
+                  <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>continue</span>
                   <svg
                     width="20"
                     height="20"
@@ -1121,8 +1122,8 @@ export default function Home() {
                 <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#ffffff' }}>
                   Val<span style={{ color: '#E87A2A' }}>e</span>ncia
                 </h2>
-                <p className="mt-3 sm:mt-5 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto" style={{ fontFamily: 'var(--font-dm-mono)', color: 'rgba(255,255,255,0.7)' }}>
-                  [We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things]
+                <p className="mt-3 sm:mt-5 text-sm sm:text-base leading-relaxed max-w-xl mx-auto" style={{ fontFamily: 'var(--font-dm-mono)', color: 'rgba(255,255,255,0.7)' }}>
+                  [We host 1-week houses for<br className="sm:hidden" /> people who build things]
                 </p>
               </div>
             </div>
