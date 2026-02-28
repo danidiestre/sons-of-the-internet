@@ -981,19 +981,25 @@ export default function Home() {
               </div>
               {/* Bouncing arrow at bottom of house */}
               <div ref={arrowRef} className="flex justify-center pb-4 sm:pb-8">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#5a5a6a"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="animate-bounce"
+                <button
+                  onClick={() => zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                  className="cursor-pointer bg-transparent border-none p-2"
+                  aria-label="Scroll to next section"
                 >
-                  <path d="M12 5v14M5 12l7 7 7-7" />
-                </svg>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5a5a6a"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-bounce"
+                  >
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -1084,14 +1090,14 @@ export default function Home() {
             </p>
             <div className="flex justify-center mb-2 sm:mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="relative w-36 h-16 sm:w-48 sm:h-20">
-                <Image src="/logo.png" alt="SOTI" fill className="object-contain" />
+                <Image src="/logo-simple.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-            <h2 className="mt-2 sm:mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
+            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
               Val<span style={{ color: '#E87A2A' }}>e</span>ncia.
             </h2>
-            <p className="mt-2 sm:mt-4 text-lg sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              We host 1-week houses for people who build things
+            <p className="mt-2 sm:mt-4 text-base sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+              We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things
             </p>
 
             {/* Image Carousel */}
