@@ -807,7 +807,7 @@ export default function Home() {
           const children = content.children;
           for (let i = 0; i < children.length; i++) {
             const child = children[i] as HTMLElement;
-            child.style.transition = 'opacity 0.5s ease-out';
+            child.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
             child.style.opacity = '1';
             child.style.transform = 'translateY(0)';
           }
@@ -915,7 +915,12 @@ export default function Home() {
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
       <div ref={heroWrapperRef} className="relative z-10" style={{ height: '200vh', background: '#0a0a0c' }}>
-      <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0c' }}>
+      <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden">
+        {/* Background image — full section */}
+        <div className="absolute inset-0 z-0">
+          <Image src="/windows-xp-big.png" alt="" fill className="object-cover" />
+          <div className="absolute inset-0" style={{ background: 'rgba(10,10,12,0.7)' }} />
+        </div>
         {/* Rain canvas with goo filter */}
         <canvas
           ref={canvasRef}
