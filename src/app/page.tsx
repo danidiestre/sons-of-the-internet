@@ -30,9 +30,7 @@ export default function Home() {
     setRainUI(prev => ({ ...prev, [key]: val }));
   };
 
-  // Image carousel
-  const [carouselIdx, setCarouselIdx] = useState(0);
-  const carouselImages = ['/landing-house.jpg', '/landing-people.png', '/landing-paella.png'];
+
 
   // Mobile detection for disabling expensive effects
   const [isMobile, setIsMobile] = useState(false);
@@ -1093,84 +1091,50 @@ export default function Home() {
           style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', zIndex: 9999 }}
         />
 
-        <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14">
-          <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] mb-2 sm:mb-4" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
+        <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14" ref={zone2ContentRef}>
+          {/* Welcome to — above the box */}
+          <div className="mx-auto w-full max-w-3xl px-6 sm:px-10 text-center mb-6 sm:mb-8" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+            <p className="text-sm uppercase tracking-[0.3em]" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>
               Welcome to
             </p>
-            <div className="flex justify-center mb-2 sm:mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
-              <div className="relative w-36 h-16 sm:w-48 sm:h-20">
-                <Image src="/logo-simple.png" alt="SOTI" fill className="object-contain" />
+          </div>
+
+          {/* Hero card with blurred background image */}
+          <div className="relative mx-auto w-full max-w-3xl px-6 sm:px-10" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+            <div className="relative overflow-hidden rounded-2xl">
+              {/* Background image + blur */}
+              <div className="absolute inset-0">
+                <Image src="/landing-house.jpg" alt="" fill className="object-cover blur-md scale-110" />
+                <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }} />
+              </div>
+              {/* Logo top-left + April 2026 top-right */}
+              <div className="relative z-20 flex justify-between items-start px-6 sm:px-8 pt-5 sm:pt-6">
+                <div className="relative w-20 h-8 sm:w-28 sm:h-10">
+                  <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
+                </div>
+                <span className="text-xs sm:text-sm uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-dm-mono)', color: 'rgba(255,255,255,0.7)' }}>
+                  April 2026
+                </span>
+              </div>
+              {/* Content overlay */}
+              <div className="relative z-20 text-center px-8 sm:px-16 pt-8 sm:pt-12 pb-16 sm:pb-24">
+                <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#ffffff' }}>
+                  Val<span style={{ color: '#E87A2A' }}>e</span>ncia
+                </h2>
+                <p className="mt-3 sm:mt-5 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto" style={{ fontFamily: 'var(--font-dm-mono)', color: 'rgba(255,255,255,0.7)' }}>
+                  [We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things]
+                </p>
               </div>
             </div>
-            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#333333', opacity: 0, transform: 'translateY(30px)' }}>
-              Val<span style={{ color: '#E87A2A' }}>e</span>ncia
-            </h2>
-            <p className="mt-2 sm:mt-4 text-base sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things
-            </p>
+          </div>
 
-            {/* Image Carousel */}
-            <div
-              className="mt-4 sm:mt-8 mb-2 sm:mb-4 relative w-full overflow-hidden"
-              style={{ height: '260px', perspective: '1200px', opacity: 0, transform: 'translateY(30px)' }}
-              onTouchStart={(e) => { (e.currentTarget as HTMLElement).dataset.touchX = String(e.touches[0].clientX); }}
-              onTouchEnd={(e) => {
-                const startX = Number((e.currentTarget as HTMLElement).dataset.touchX);
-                const endX = e.changedTouches[0].clientX;
-                const diff = startX - endX;
-                if (Math.abs(diff) > 40) {
-                  setCarouselIdx(prev => diff > 0 ? (prev + 1) % 3 : (prev + 2) % 3);
-                }
-              }}
-            >
-              <div className="relative w-full h-full" style={{ transformStyle: 'preserve-3d' }}>
-                {carouselImages.map((src, i) => {
-                  const pos = (i - carouselIdx + 3) % 3; // 0=center, 1=right, 2=left
-                  const isCenter = pos === 0;
-                  const isRight = pos === 1;
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => !isCenter && setCarouselIdx(i)}
-                      className="absolute top-1/2 left-1/2 transition-all duration-500 ease-in-out rounded-2xl overflow-hidden"
-                      style={{
-                        width: isCenter ? '300px' : '220px',
-                        height: isCenter ? '200px' : '155px',
-                        transform: `translate(-50%, -50%) translateX(${isCenter ? '0px' : isRight ? '120px' : '-120px'}) translateZ(${isCenter ? '60px' : '-20px'}) rotateY(${isCenter ? '0deg' : isRight ? '-12deg' : '12deg'})`,
-                        zIndex: isCenter ? 5 : 10,
-                        cursor: isCenter ? 'default' : 'pointer',
-                        boxShadow: 'none',
-                        opacity: isCenter ? 1 : 0.6,
-                      }}
-                    >
-                      <Image src={src} alt="" fill className="object-cover" sizes="(min-width: 640px) 300px, 220px" />
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Dots */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {carouselImages.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCarouselIdx(i)}
-                    className="w-2.5 h-2.5 rounded-full transition-all duration-300"
-                    style={{ background: i === carouselIdx ? '#FF6B2B' : '#1a1a1a30' }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Progress + Apply — inside hero so it fills the viewport */}
-            <div className="mt-3 sm:mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
+          {/* Progress + Apply — below the hero image */}
+          <div className="w-full py-8 sm:py-12" style={{ background: '#FFF8F0', opacity: 0, transform: 'translateY(30px)' }}>
+            <div className="mx-auto w-full max-w-md px-6">
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                    {valenciaCount}/20 builders on Valencia 2026
-                  </span>
-                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                    {Math.round((valenciaCount / 20) * 100)}%
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#333333' }}>
+                    {Math.round((valenciaCount / 20) * 100)}% spots booked
                   </span>
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
