@@ -982,7 +982,17 @@ export default function Home() {
               {/* Bouncing arrow at bottom of house */}
               <div ref={arrowRef} className="flex justify-center pb-4 sm:pb-8">
                 <button
-                  onClick={() => zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => {
+                    const wrapper = heroWrapperRef.current;
+                    if (!wrapper) return;
+                    const wrapperBottom = wrapper.offsetTop + wrapper.offsetHeight;
+                    const scrolledPast = window.scrollY + window.innerHeight >= wrapperBottom - 100;
+                    if (scrolledPast) {
+                      zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.scrollTo({ top: wrapperBottom - window.innerHeight, behavior: 'smooth' });
+                    }
+                  }}
                   className="cursor-pointer bg-transparent border-none p-2"
                   aria-label="Scroll to next section"
                 >
