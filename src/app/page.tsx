@@ -967,7 +967,7 @@ export default function Home() {
                         style={{ opacity: i === 0 ? 1 : 0 }}
                       >
                         <div className="space-y-6 sm:space-y-10">
-                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
+                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#d0d0dd' }}>
                             {msg.title}
                           </h1>
                           <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -1103,8 +1103,8 @@ export default function Home() {
                 <Image src="/logo-simple.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
-              Val<span style={{ color: '#E87A2A' }}>e</span>ncia.
+            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-syne)', color: '#333333', opacity: 0, transform: 'translateY(30px)' }}>
+              Val<span style={{ color: '#E87A2A' }}>e</span>ncia
             </h2>
             <p className="mt-2 sm:mt-4 text-base sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
               We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things
@@ -1167,7 +1167,10 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                    {valenciaCount}/20 builders
+                    {valenciaCount}/20 builders on Valencia 2026
+                  </span>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
+                    {Math.round((valenciaCount / 20) * 100)}%
                   </span>
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
@@ -1198,7 +1201,7 @@ export default function Home() {
         <section id="1" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-8 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Our Manif<span style={{ color: '#FF6B2B' }}>e</span>sto</h3>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Our Manif<span style={{ color: '#FF6B2B' }}>e</span>sto</h3>
             </div>
             <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto" style={{ color: '#6b5e52' }}>
               <RevealText text="We grew up online, through forums, pixels and late-night calls." className="text-[#6b5e52]" />
@@ -1215,7 +1218,7 @@ export default function Home() {
         <section className="relative z-40 w-full pb-10 sm:pb-14 pt-6 sm:pt-8" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-md px-6 sm:px-10">
             <div className="w-full space-y-4">
-              <h3 className="text-center text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
+              <h3 className="text-center text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>
                 SOTI Community
               </h3>
               <div className="flex justify-between items-center">
@@ -1253,7 +1256,7 @@ export default function Home() {
         <section id="2" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-10 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Hous<span style={{ color: '#FF6B2B' }}>e</span>s</h3>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Hous<span style={{ color: '#FF6B2B' }}>e</span>s</h3>
               <p className="mt-3 text-base" style={{ color: '#6b5e52' }}>Mark your digital calendar. These moments only happen IRL.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
@@ -1324,7 +1327,7 @@ export default function Home() {
         <section className="relative z-40 w-full py-8 sm:py-12" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
             <div className="mb-8 text-center">
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>
                 Last Sch<span style={{ color: '#FF6B2B' }}>e</span>dule
               </h3>
               <p style={{ color: '#6b5e52' }}>Weekly program structure</p>
@@ -1404,7 +1407,7 @@ export default function Home() {
                 { day: 'Sunday', slots: ['09:00–13:00 → Morning activity + Check out', '13:00–15:00 → Lunch', '15:00–18:00 → Reflect & Harvest', '18:00+ → Check out'] },
               ].map((d) => (
                 <div key={d.day} className="rounded-xl p-4" style={{ background: '#FF6B2B06', border: '1px solid #FF6B2B15' }}>
-                  <h4 className="font-bold text-base mb-3" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>{d.day}</h4>
+                  <h4 className="font-bold text-base mb-3" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>{d.day}</h4>
                   <div className="space-y-2 text-sm" style={{ color: '#6b5e52' }}>
                     {d.slots.map((slot, j) => {
                       const colors = ['#FF6B2B10', '#FF8C4210', '#FFD16610', '#FF6B2B08'];
@@ -1426,7 +1429,7 @@ export default function Home() {
         {/* ============================================= */}
         <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>L<span style={{ color: '#FF6B2B' }}>e</span>d by</h3>
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>L<span style={{ color: '#FF6B2B' }}>e</span>d by</h3>
             <p className="mb-12 text-center text-base" style={{ color: '#6b5e52' }}>Meet the builders behind SOTI</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
@@ -1436,7 +1439,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Marcos Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Marcos Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
                     <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
@@ -1452,7 +1455,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/juan-pablo.jpeg" alt="Juan Pablo" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Juan Pablo</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Juan Pablo</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                     <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
@@ -1468,7 +1471,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Dani Di<span style={{ color: '#FF6B2B' }}>e</span>stre</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Dani Di<span style={{ color: '#FF6B2B' }}>e</span>stre</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
                     <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
@@ -1484,7 +1487,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Aniol Carr<span style={{ color: '#FF6B2B' }}>e</span>ras</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Aniol Carr<span style={{ color: '#FF6B2B' }}>e</span>ras</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                     <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
@@ -1499,7 +1502,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Jos<span style={{ color: '#FF6B2B' }}>e</span> Saura</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Jos<span style={{ color: '#FF6B2B' }}>e</span> Saura</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
                     <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
@@ -1515,7 +1518,7 @@ export default function Home() {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
                     <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Adrian Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
+                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Adrian Val<span style={{ color: '#FF6B2B' }}>e</span>ra</h4>
                   <div className="flex gap-4 items-center">
                     <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
                     <a href="https://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
@@ -1533,7 +1536,7 @@ export default function Home() {
         {/* ============================================= */}
         <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>Build som<span style={{ color: '#FF6B2B' }}>e</span>thing that matters</h3>
+            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>Build som<span style={{ color: '#FF6B2B' }}>e</span>thing that matters</h3>
             <p className="mt-4 text-lg" style={{ color: '#6b5e52' }}>Not another community.</p>
             <p style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
             <div className="mt-8">
@@ -1552,7 +1555,7 @@ export default function Home() {
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
             <div className="space-y-8">
               <div>
-                <h4 className="text-lg sm:text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#1a1a1a' }}>SOTI Family</h4>
+                <h4 className="text-lg sm:text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#333333' }}>SOTI Family</h4>
                 <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
                 <div className="flex mt-4">
                   <div className="relative w-40 h-14">
