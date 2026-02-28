@@ -39,14 +39,14 @@ export default function Home() {
   useEffect(() => { setIsMobile(window.innerWidth < 640); }, []);
 
   // API data for builder/seat counts
-  const [valenciaCount, setValenciaCount] = useState(0);
+  const valenciaCount = 7;
   const [totalSeats, setTotalSeats] = useState(0);
 
   useEffect(() => {
     fetch('/api/count')
       .then(res => res.json())
       .then(data => {
-        setValenciaCount(Math.min(data.by_event?.["Valencia, Spain"] ?? 0, 20));
+        // valenciaCount hardcoded to 7
         setTotalSeats(data.total ?? 0);
       })
       .catch(() => {});
@@ -967,7 +967,7 @@ export default function Home() {
                         style={{ opacity: i === 0 ? 1 : 0 }}
                       >
                         <div className="space-y-6 sm:space-y-10">
-                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-syne)', color: '#d0d0dd' }}>
+                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
                             {msg.title}
                           </h1>
                           <div className="flex items-center justify-center gap-3 flex-wrap">
