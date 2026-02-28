@@ -915,12 +915,7 @@ export default function Home() {
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
       <div ref={heroWrapperRef} className="relative z-10" style={{ height: '200vh', background: '#0a0a0c' }}>
-      <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden">
-        {/* Background image — full section */}
-        <div className="absolute inset-0 z-0">
-          <Image src="/windows-xp-big.png" alt="" fill className="object-cover" />
-          <div className="absolute inset-0" style={{ background: 'rgba(10,10,12,0.7)' }} />
-        </div>
+      <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Rain canvas with goo filter */}
         <canvas
           ref={canvasRef}
@@ -996,20 +991,20 @@ export default function Home() {
                       window.scrollTo({ top: wrapperBottom - window.innerHeight, behavior: 'smooth' });
                     }
                   }}
-                  className="cursor-pointer bg-transparent border-none p-2 flex items-center gap-2"
+                  className="group cursor-pointer bg-transparent border border-[#3a3a48] rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-500 hover:border-amber-500/60 hover:shadow-[0_0_18px_rgba(245,158,11,0.15)]"
                   aria-label="Scroll to next section"
                 >
-                  <span className="text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-dm-mono)', color: '#5a5a6a' }}>continue</span>
+                  <span className="text-xs uppercase tracking-widest text-[#5a5a6a] transition-all duration-500 group-hover:text-amber-500/60 group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.15)]" style={{ fontFamily: 'var(--font-dm-mono)' }}>see next house</span>
                   <svg
-                    width="20"
-                    height="20"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#5a5a6a"
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="animate-bounce"
+                    className="animate-bounce transition-all duration-500 group-hover:stroke-amber-400/80 group-hover:drop-shadow-[0_0_6px_rgba(245,158,11,0.4)]"
                   >
                     <path d="M12 5v14M5 12l7 7 7-7" />
                   </svg>
