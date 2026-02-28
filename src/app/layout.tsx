@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Manrope, Geist_Mono, Space_Mono, Instrument_Serif, DM_Mono, Syne } from "next/font/google";
+import { Manrope, Geist_Mono, Space_Mono, Instrument_Serif, DM_Mono, Syne, Cormorant_Garamond } from "next/font/google";
+import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { OgLogo } from "@/components/og-logo";
@@ -42,6 +43,22 @@ const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+});
+
+const ttInterphasesMono = localFont({
+  src: [
+    { path: "../../public/fonts/TTInterphasesMono-Regular.ttf", weight: "400" },
+    { path: "../../public/fonts/TTInterphasesMono-Bold.ttf", weight: "700" },
+  ],
+  variable: "--font-tt-interphases",
   display: "swap",
 });
 
@@ -95,7 +112,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} ${syne.variable} antialiased bg-black`}
+        className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} ${syne.variable} ${ttInterphasesMono.variable} ${cormorantGaramond.variable} antialiased bg-black`}
         style={{ overflowX: 'clip' }}
       >
         <OgLogo />
