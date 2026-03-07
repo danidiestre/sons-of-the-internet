@@ -54,6 +54,24 @@ export default function Home() {
     {
       title: (
         <>
+          They called it a phase.<br />
+          <span style={{ color: '#9a9aaa' }}>It&apos;s been two years.</span>
+        </>
+      ),
+      subtitle: "Still here. Still building. Still proving no one wrong but yourself.",
+    },
+    {
+      title: (
+        <>
+          You&apos;re not lost.<br />
+          <span style={{ color: '#9a9aaa' }}>You&apos;re early.</span>
+        </>
+      ),
+      subtitle: `The gap between "what are you doing?" and "how did you do it?" is just time.`,
+    },
+    {
+      title: (
+        <>
           Your friends don&apos;t get it.<br />
           <span style={{ color: '#9a9aaa' }}>They never did.</span>
         </>
