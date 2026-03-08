@@ -923,8 +923,8 @@ export default function Home() {
             <h3 className="mt-1 sm:mt-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
               20-26 April
             </h3>
-            <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto whitespace-nowrap" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              [We host 1-week houses for people who build things]
+            <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto sm:whitespace-nowrap text-center" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+              [We host 1-week houses for<br className="sm:hidden" /> people who build things]
             </p>
 
             {/* Image Carousel */}
@@ -1106,7 +1106,7 @@ export default function Home() {
             {/* Featured — Next House */}
             <div className="mb-20 sm:mb-24">
               <div className="relative rounded-3xl overflow-hidden group cursor-pointer" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div className="relative w-full aspect-[21/9] sm:aspect-[21/8]">
+                <div className="relative w-full aspect-[3/4] sm:aspect-[21/8]">
                   <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="100vw" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
@@ -1118,7 +1118,7 @@ export default function Home() {
                       <span className="text-sm text-white/50">April 2026</span>
                     </div>
                     <h4 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>Valencia</h4>
-                    <p className="text-white/60 text-base sm:text-lg mb-6">Spain &middot; 1 week &middot; 15 builders</p>
+                    <p className="text-white/60 text-base sm:text-lg mb-6">Spain &middot; 1 week &middot; 20-26 April</p>
                     <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-full transition-all duration-300 bg-white text-black hover:bg-white/90 hover:scale-105">
                       JOIN THE WAITLIST
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
