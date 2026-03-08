@@ -972,7 +972,7 @@ export default function Home() {
               Valencia
             </h2>
             <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto whitespace-nowrap" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              [ We host 1-week houses for people who build things ]
+              [We host 1-week houses for people who build things]
             </p>
 
             {/* Image Carousel */}
