@@ -447,7 +447,7 @@ export function MiniNavbar() {
   const logoElement = (
     <div className="relative w-7 h-7">
       <Image
-        src={onLightBg ? "/logo-simple.png" : "/logo white.png"}
+        src={onLightBg ? "/logo dark.png" : "/logo white.png"}
         alt="Sons of the Internet"
         fill
         sizes="28px"
@@ -467,7 +467,7 @@ export function MiniNavbar() {
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
-                       ${onLightBg ? 'border border-[#FF6B2B30] bg-[#FFF8F0ee]' : 'border border-[#333] bg-[#1f1f1f57]'}
+                       ${onLightBg ? 'border border-[#1a1a1a30] bg-[#FFF8F0ee]' : 'border border-[#333] bg-[#1f1f1f57]'}
                        w-[calc(100%-2rem)] sm:w-auto
                        transition-all duration-300 ease-in-out`}>
 

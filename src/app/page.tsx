@@ -918,8 +918,11 @@ export default function Home() {
               </div>
             </div>
             <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
-              Valencia, 20-26 April
+              Valencia
             </h2>
+            <h3 className="mt-1 sm:mt-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
+              20-26 April
+            </h3>
             <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto whitespace-nowrap" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
               [We host 1-week houses for people who build things]
             </p>
@@ -998,7 +1001,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a' }}>
-                    {valenciaCount}/20 on April 2026
+                    {valenciaCount}/20 builders are confirmed
                   </span>
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a' }}>
                     {Math.round((valenciaCount / 20) * 100)}%
@@ -1026,9 +1029,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Transition: warm → dark */}
-        <div className="w-full h-32" style={{ background: 'linear-gradient(to bottom, #FFF8F0, #000000)' }} />
+      </div>
+      {/* END data-light-section wrapper */}
 
+      {/* Transition: warm → dark */}
+      <div className="w-full h-32" style={{ background: 'linear-gradient(to bottom, #FFF8F0, #000000)' }} />
+
+      <div className="relative" style={{ background: '#000000' }}>
         {/* ============================================= */}
         {/* SECTION: Manifesto                             */}
         {/* ============================================= */}
