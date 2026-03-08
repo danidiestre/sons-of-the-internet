@@ -424,7 +424,7 @@ export function MiniNavbar() {
   const logoElement = (
     <div className="relative w-7 h-7">
       <Image
-        src="/logo-white-simple.png"
+        src="/logo white.png"
         alt="Sons of the Internet"
         fill
         sizes="28px"
