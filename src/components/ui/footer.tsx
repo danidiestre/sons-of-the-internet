@@ -15,7 +15,7 @@ export function Footer() {
             <div className="flex mt-4">
               <div className="relative w-40 h-14">
                 <Image
-                  src="/logo-white.png"
+                  src="/logo-white-simple.png"
                   alt="SOTI Isotope"
                   fill
                   className="object-contain"

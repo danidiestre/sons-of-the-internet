@@ -830,7 +830,7 @@ export default function Home() {
               {/* SOTI logo at the peak */}
               <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10">
                 <div className="relative w-24 h-10">
-                  <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
+                  <Image src="/logo-white-simple.png" alt="SOTI" fill className="object-contain" />
                 </div>
               </div>
             </div>
@@ -978,7 +978,7 @@ export default function Home() {
               {/* Logo top-left + April 2026 top-right */}
               <div className="relative z-20 flex justify-between items-start px-6 sm:px-8 pt-5 sm:pt-6">
                 <div className="relative w-20 h-8 sm:w-28 sm:h-10">
-                  <Image src="/logo-white.png" alt="SOTI" fill className="object-contain" />
+                  <Image src="/logo-white-simple.png" alt="SOTI" fill className="object-contain" />
                 </div>
                 <span className="text-xs sm:text-sm uppercase tracking-[0.2em]" style={{ fontFamily: 'var(--font-dm-mono)', color: 'rgba(255,255,255,0.7)' }}>
                   April 2026
@@ -1391,7 +1391,7 @@ export default function Home() {
                 <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
                 <div className="flex mt-4">
                   <div className="relative w-40 h-14">
-                    <Image src="/logo.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
+                    <Image src="/logo-simple.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
                   </div>
                 </div>
               </div>
