@@ -80,7 +80,7 @@ export default function Home() {
       roofBaseY = 0;
     let animationId: number;
 
-    rainCfg.current.density = 30;
+    rainCfg.current.density = 60;
 
     // Thunder state
     let thunderAlpha = 0;
@@ -88,7 +88,7 @@ export default function Home() {
     let nextThunder = performance.now() + (5000 + Math.random() * 3000);
 
     // Pre-allocated particle pools
-    const MAX_RAIN = 300;
+    const MAX_RAIN = 600;
     const MAX_SPLASH = 160;
     const SPLASH_PER_HIT = 3;
     const SPLASH_DECAY = 0.04;
@@ -882,7 +882,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* ZONE 2: Valencia — Warm Mediterranean          */}
       {/* ============================================= */}
-      <div className="relative" data-light-section style={{ background: '#FFF8F0' }}>
+      <div className="relative -mt-px" data-light-section style={{ background: '#FFF8F0' }}>
 
         {/* Flash overlay — fills the entire viewport on trigger */}
         <div
