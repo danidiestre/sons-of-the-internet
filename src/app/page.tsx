@@ -682,11 +682,21 @@ export default function Home() {
         sunCanvas.style.opacity = '1';
         startSunAnimation(sunCanvas);
 
-        // t=150ms: flash fades, sun stays permanently
+        // t=150ms: flash fades
         setTimeout(() => {
           flash.style.transition = 'opacity 0.5s ease-out';
           flash.style.opacity = '0';
         }, 150);
+
+        // t=5s: sun fades out permanently
+        setTimeout(() => {
+          sunCanvas.style.transition = 'opacity 1s ease-out';
+          sunCanvas.style.opacity = '0';
+          setTimeout(() => {
+            cancelAnimationFrame(sunAnimId.current);
+            sunCleanup.current?.();
+          }, 1000);
+        }, 5000);
 
         // t=350ms: reveal all content with a single 0.5s fade
         setTimeout(() => {
@@ -717,67 +727,9 @@ export default function Home() {
       { threshold: 0.15 }
     );
 
-    // Scroll-based sun fade: hide sun when scrolling away from the transition zone
-    // (either up toward rain or far above the trigger)
-    let didReset = false;
-    const handleSunScroll = () => {
-      if (animGuard || !zone2Fired.current) return;
-      const triggerRect = trigger.getBoundingClientRect();
-      const triggerBottom = triggerRect.bottom;
-      const triggerTop = triggerRect.top;
-      const viewportH = window.innerHeight;
-      const fadeRange = 300;
-
-      // Scrolled UP past the trigger (trigger is below viewport) — fade out sun
-      if (triggerTop > viewportH) {
-        const distBelow = triggerTop - viewportH;
-        const opacity = Math.max(0, 1 - distBelow / fadeRange);
-        sunCanvas.style.transition = 'none';
-        sunCanvas.style.opacity = String(opacity);
-        if (opacity <= 0 && !didReset) {
-          didReset = true;
-          flash.style.opacity = '0';
-          setTimeout(() => {
-            cancelAnimationFrame(sunAnimId.current);
-            sunCleanup.current?.();
-          }, 100);
-        }
-        return;
-      }
-
-      // Scrolled DOWN past the trigger (trigger is above viewport) — fade out sun
-      if (triggerBottom <= 0) {
-        sunCanvas.style.opacity = '0';
-        if (!didReset) {
-          didReset = true;
-          flash.style.opacity = '0';
-          setTimeout(() => {
-            cancelAnimationFrame(sunAnimId.current);
-            sunCleanup.current?.();
-          }, 100);
-        }
-        return;
-      }
-
-      // Trigger is near top of viewport — progressive fade
-      if (triggerBottom < fadeRange) {
-        const opacity = triggerBottom / fadeRange;
-        sunCanvas.style.transition = 'none';
-        sunCanvas.style.opacity = String(Math.max(0, Math.min(1, opacity)));
-        didReset = false;
-        return;
-      }
-
-      // Trigger is in view — sun fully visible
-      sunCanvas.style.opacity = '1';
-      didReset = false;
-    };
-    window.addEventListener('scroll', handleSunScroll, { passive: true });
-
     observer.observe(trigger);
     return () => {
       observer.disconnect();
-      window.removeEventListener('scroll', handleSunScroll);
       cancelAnimationFrame(sunAnimId.current);
       sunCleanup.current?.();
     };
