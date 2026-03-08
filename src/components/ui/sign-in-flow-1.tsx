@@ -375,9 +375,9 @@ const Shader: React.FC<ShaderProps> = ({ source, uniforms, maxFps = 60 }) => {
   );
 };
 
-const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const defaultTextColor = 'text-gray-300';
-  const hoverTextColor = 'text-white';
+const AnimatedNavLink = ({ href, children, light }: { href: string; children: React.ReactNode; light?: boolean }) => {
+  const defaultTextColor = light ? 'text-gray-700' : 'text-gray-300';
+  const hoverTextColor = light ? 'text-black' : 'text-white';
   const textSizeClass = 'text-sm';
 
   return (
@@ -393,12 +393,13 @@ const AnimatedNavLink = ({ href, children }: { href: string; children: React.Rea
 export function MiniNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState('rounded-full');
+  const [onLightBg, setOnLightBg] = useState(false);
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   const toggleMenu = () => {
     setIsOpen((prev) => {
       const newIsOpen = !prev;
-      // Update shape class based on new state
       if (newIsOpen) {
         setHeaderShapeClass('rounded-xl');
       } else {
@@ -413,6 +414,40 @@ export function MiniNavbar() {
     });
   };
 
+  // Detect if navbar overlaps a light-background section
+  useEffect(() => {
+    const check = () => {
+      const header = headerRef.current;
+      if (!header) return;
+      const rect = header.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const probeY = rect.bottom + 4;
+      header.style.pointerEvents = 'none';
+      const el = document.elementFromPoint(centerX, probeY);
+      header.style.pointerEvents = '';
+      if (!el) return;
+      let node: Element | null = el;
+      let isLight = false;
+      while (node && node !== document.body) {
+        const bg = (node as HTMLElement).style?.background || '';
+        const bgColor = (node as HTMLElement).style?.backgroundColor || '';
+        if (bg.includes('#FFF8F0') || bgColor.includes('#FFF8F0') || bg.includes('FFF8F0')) {
+          isLight = true;
+          break;
+        }
+        if (bg.includes('#000') || bg.includes('#0a0a0c') || bgColor.includes('#000')) {
+          isLight = false;
+          break;
+        }
+        node = node.parentElement;
+      }
+      setOnLightBg(isLight);
+    };
+    check();
+    window.addEventListener('scroll', check, { passive: true });
+    return () => window.removeEventListener('scroll', check);
+  }, []);
+
   useEffect(() => {
     return () => {
       if (shapeTimeoutRef.current) {
@@ -424,7 +459,7 @@ export function MiniNavbar() {
   const logoElement = (
     <div className="relative w-7 h-7">
       <Image
-        src="/logo white.png"
+        src={onLightBg ? "/logo-simple.png" : "/logo white.png"}
         alt="Sons of the Internet"
         fill
         sizes="28px"
@@ -440,13 +475,13 @@ export function MiniNavbar() {
   ];
 
   return (
-    <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[9998]
+    <header ref={headerRef} className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[9998]
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
-                       border border-[#333] bg-[#1f1f1f57]
+                       ${onLightBg ? 'border border-[#ddd] bg-[#ffffffcc]' : 'border border-[#333] bg-[#1f1f1f57]'}
                        w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-0 ease-in-out`}>
+                       transition-all duration-300 ease-in-out`}>
 
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
         <div className="flex items-center">
@@ -457,13 +492,13 @@ export function MiniNavbar() {
 
         <nav className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
           {navLinksData.map((link) => (
-            <AnimatedNavLink key={link.href} href={link.href}>
+            <AnimatedNavLink key={link.href} href={link.href} light={onLightBg}>
               {link.label}
             </AnimatedNavLink>
           ))}
         </nav>
 
-        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
+        <button className={`sm:hidden flex items-center justify-center w-8 h-8 focus:outline-none ${onLightBg ? 'text-gray-700' : 'text-gray-300'}`} onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
           {isOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
@@ -476,7 +511,7 @@ export function MiniNavbar() {
                        ${isOpen ? 'max-h-[1000px] opacity-100 pt-4' : 'max-h-0 opacity-0 pt-0 pointer-events-none'}`}>
         <nav className="flex flex-col items-center space-y-4 text-base w-full">
           {navLinksData.map((link) => (
-            <Link key={link.href} href={link.href} className="text-gray-300 hover:text-white transition-colors w-full text-center">
+            <Link key={link.href} href={link.href} className={`${onLightBg ? 'text-gray-700 hover:text-black' : 'text-gray-300 hover:text-white'} transition-colors w-full text-center`}>
               {link.label}
             </Link>
           ))}

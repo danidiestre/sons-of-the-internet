@@ -741,12 +741,13 @@ export default function Home() {
   return (
     <main style={{ background: '#0a0a0c' }}>
 
-      {/* Floating Navbar — appears after sun fades */}
-      {showNav && (
-        <div className="transition-opacity duration-700 animate-in fade-in" style={{ opacity: 1 }}>
-          <MiniNavbar />
-        </div>
-      )}
+      {/* Floating Navbar — fades in after sun disappears */}
+      <div
+        className="transition-opacity duration-1000 ease-in-out"
+        style={{ opacity: showNav ? 1 : 0, pointerEvents: showNav ? 'auto' : 'none' }}
+      >
+        <MiniNavbar />
+      </div>
 
       {/* SVG Goo Filter */}
       <svg className="hidden absolute w-0 h-0">
@@ -816,30 +817,16 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              {/* Bouncing arrow at bottom of house */}
+              {/* CTA at bottom of house */}
               <div ref={arrowRef} className="flex items-center justify-center gap-2 pb-4 sm:pb-8">
-                <button
-                  onClick={() => {
-                    zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="group cursor-pointer bg-transparent border border-[#3a3a48] rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-500 hover:border-amber-500/60 hover:shadow-[0_0_18px_rgba(245,158,11,0.15)]"
-                  aria-label="Scroll to next section"
+                <a
+                  href={TALLY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-7 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
                 >
-                  <span className="text-xs uppercase tracking-widest text-[#5a5a6a] transition-all duration-500 group-hover:text-amber-500/60 group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.15)]" style={{ fontFamily: 'var(--font-dm-mono)' }}>see next house</span>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#5a5a6a"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="animate-bounce transition-all duration-500 group-hover:stroke-amber-400/80 group-hover:drop-shadow-[0_0_6px_rgba(245,158,11,0.4)]"
-                  >
-                    <path d="M12 5v14M5 12l7 7 7-7" />
-                  </svg>
-                </button>
+                  I want to join the next one
+                </a>
               </div>
             </div>
 
