@@ -1091,70 +1091,97 @@ export default function Home() {
         {/* SECTION: Houses / Events                       */}
         {/* ============================================= */}
         <section id="2" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#000000' }}>
-          <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
-            <div className="mb-10 text-center">
-              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Houses</h3>
-              <p className="mt-3 text-base text-white/60">Mark your digital calendar. These moments only happen IRL.</p>
+          <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 py-20 sm:py-32">
+
+            {/* Section header */}
+            <div className="mb-6 flex items-center gap-4">
+              <span className="text-xs tracking-[0.3em] uppercase text-white/40 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>03</span>
+              <div className="h-px flex-1 bg-white/10" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <div className="mb-16 sm:mb-20">
+              <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Houses</h3>
+              <p className="mt-4 text-lg text-white/50 max-w-lg">Where builders come together. One week. One place. No distractions.</p>
+            </div>
 
-              {/* Event Card: Valencia */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-                <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">UPCOMING</span>
-                      <span className="text-xs text-white/60">April 2026</span>
-                    </div>
-                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>Valencia April Edition</h4>
-                    <p className="text-white/70 text-sm">Valencia, Spain</p>
-                    <div className="mt-3">
-                      <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all duration-200 inline-block border border-white/40 text-white/80 hover:text-white hover:border-white/70">
-                        JOIN THE WAITLIST
-                      </a>
-                    </div>
-                  </div>
+            {/* Featured — Next House */}
+            <div className="mb-20 sm:mb-24">
+              <div className="relative rounded-3xl overflow-hidden group cursor-pointer" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="relative w-full aspect-[21/9] sm:aspect-[21/8]">
+                  <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="100vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
                 </div>
-              </div>
-
-              {/* Event Card: Barcelona */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-                <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">FINISHED</span>
-                      <span className="text-xs text-white/60">Dec 15, 2025</span>
+                <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-12 lg:p-16">
+                  <div className="max-w-xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold tracking-wider text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">NEXT HOUSE</span>
+                      <span className="text-sm text-white/50">April 2026</span>
                     </div>
-                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>Barcelona Winter Edition</h4>
-                    <p className="text-white/70 text-sm">Barcelona, Spain</p>
-                    <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-white/80 hover:text-white transition-colors">
-                      VIEW EVENT &rarr;
+                    <h4 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>Valencia</h4>
+                    <p className="text-white/60 text-base sm:text-lg mb-6">Spain &middot; 1 week &middot; 15 builders</p>
+                    <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-full transition-all duration-300 bg-white text-black hover:bg-white/90 hover:scale-105">
+                      JOIN THE WAITLIST
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                     </a>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Event Card: Italy */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-                <Image src="/events/italia.jpg" alt="Taranto, Italy" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-300 bg-emerald-500/20 border border-emerald-500/30">FINISHED</span>
-                      <span className="text-xs text-white/60">Sept 21, 2025</span>
-                    </div>
-                    <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>La Settimana: Great Minds</h4>
-                    <p className="text-white/70 text-sm">Taranto, Italy</p>
-                    <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-white/80 hover:text-white transition-colors">
-                      VIEW EVENT &rarr;
-                    </a>
+            {/* Past Houses — Editorial timeline */}
+            <div className="mb-8 flex items-center gap-4">
+              <span className="text-xs tracking-[0.2em] uppercase text-white/30 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>Past editions</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+
+              {/* Past House: Barcelona */}
+              <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="group relative bg-black">
+                <div className="relative w-full aspect-[4/3]">
+                  <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105 brightness-75 group-hover:brightness-90" sizes="(min-width: 768px) 50vw, 100vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                </div>
+                <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
+                  <div className="flex justify-between items-start">
+                    <span className="text-xs tracking-[0.15em] uppercase text-white/80 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>Edition 02</span>
+                    <span className="text-xs text-white/40">Dec 2025</span>
+                  </div>
+                  <div>
+                    <h4 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-space-mono)' }}>Barcelona</h4>
+                    <p className="text-white/50 text-sm mb-3">Winter Edition &middot; Castellter&ccedil;ol, Spain</p>
+                    <span className="inline-flex items-center gap-1.5 text-sm text-white/60 group-hover:text-white transition-colors">
+                      View recap
+                      <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </span>
                   </div>
                 </div>
-              </div>
+              </a>
+
+              {/* Past House: Italy */}
+              <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="group relative bg-black">
+                <div className="relative w-full aspect-[4/3]">
+                  <Image src="/events/italia.jpg" alt="Taranto, Italy" fill className="object-cover transition-transform duration-700 group-hover:scale-105 brightness-75 group-hover:brightness-90" sizes="(min-width: 768px) 50vw, 100vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                </div>
+                <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
+                  <div className="flex justify-between items-start">
+                    <span className="text-xs tracking-[0.15em] uppercase text-white/80 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>Edition 01</span>
+                    <span className="text-xs text-white/40">Sept 2025</span>
+                  </div>
+                  <div>
+                    <h4 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-space-mono)' }}>La Settimana</h4>
+                    <p className="text-white/50 text-sm mb-3">Great Minds &middot; Taranto, Italy</p>
+                    <span className="inline-flex items-center gap-1.5 text-sm text-white/60 group-hover:text-white transition-colors">
+                      View recap
+                      <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
 
             </div>
+
           </div>
         </section>
 
