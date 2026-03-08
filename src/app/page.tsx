@@ -1420,35 +1420,6 @@ export default function Home() {
 
       </div>
 
-      {/* ============================================= */}
-      {/* Font Preview Section                          */}
-      {/* ============================================= */}
-      <section className="py-16 px-6" style={{ background: '#f5f5f5' }}>
-        <div className="mx-auto max-w-3xl space-y-10">
-          <h2 className="text-2xl font-bold text-center mb-10" style={{ color: '#333' }}>Font Preview</h2>
-          {[
-            { variable: '--font-geist-sans', name: 'Manrope' },
-            { variable: '--font-geist-mono', name: 'Geist Mono' },
-            { variable: '--font-space-mono', name: 'Space Mono' },
-            { variable: '--font-dm-mono', name: 'DM Mono' },
-            { variable: '--font-instrument-serif', name: 'Instrument Serif' },
-            { variable: '--font-cormorant', name: 'Cormorant Garamond' },
-            { variable: '--font-syne', name: 'Syne' },
-          ].map((f) => (
-            <div key={f.variable} className="border-b border-gray-300 pb-6">
-              <h3 className="text-4xl font-bold" style={{ fontFamily: `var(${f.variable})`, color: '#111' }}>
-                {f.name}
-              </h3>
-              <p className="text-2xl mt-2" style={{ fontFamily: `var(${f.variable})`, color: '#333' }}>
-                Valencia
-              </p>
-              <p className="text-sm mt-1" style={{ fontFamily: `var(${f.variable})`, color: '#666' }}>
-                {f.variable}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
 
     </main>
   );
