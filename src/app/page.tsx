@@ -1392,7 +1392,7 @@ export default function Home() {
                     <Image src="/logo-simple.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
                   </div>
                 </div>
-                <p className="mr-12 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
+                <p className="mr-12 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>people you'd actually want to spend a night, a week, or a lifetime building with.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
@@ -1405,7 +1405,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h5 className="text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>FIND_US</h5>
-                  <p className="text-sm mt-2" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Only in real life.<br />We don&apos;t do social media.<br />We do moments that matter.</p>
+                  <p className="text-sm mt-2" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>only in real life.<br />we don&apos;t do social media.<br />we do moments that matter.</p>
                 </div>
               </div>
               <div className="pt-6 text-xs" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e5240' }}>&copy; {new Date().getFullYear()} SOTI</div>
