@@ -739,7 +739,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ background: '#0a0a0c' }}>
+    <main className="overflow-x-hidden" style={{ background: '#0a0a0c' }}>
 
       {/* Floating Navbar — fades in after sun disappears */}
       <div
