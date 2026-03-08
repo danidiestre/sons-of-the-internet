@@ -1139,7 +1139,7 @@ export default function Home() {
               {/* Past House: Barcelona */}
               <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="group relative bg-black">
                 <div className="relative w-full aspect-[4/3]">
-                  <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105 brightness-75 group-hover:brightness-90" sizes="(min-width: 768px) 50vw, 100vw" />
+                  <Image src="/barcelona-together.png" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105 brightness-75 group-hover:brightness-90" sizes="(min-width: 768px) 50vw, 100vw" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                 </div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
