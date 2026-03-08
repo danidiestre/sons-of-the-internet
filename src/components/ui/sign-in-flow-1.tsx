@@ -440,7 +440,7 @@ export function MiniNavbar() {
   ];
 
   return (
-    <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
+    <header className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[9998]
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
