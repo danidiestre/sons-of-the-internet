@@ -962,7 +962,7 @@ export default function Home() {
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14" ref={zone2ContentRef}>
           {/* Welcome to — above the box */}
           <div className="mx-auto w-full max-w-3xl px-6 sm:px-10 text-center mb-6 sm:mb-8" style={{ opacity: 0, transform: 'translateY(30px)' }}>
-            <p className="text-sm uppercase tracking-[0.3em]" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>
+            <p className="text-sm uppercase tracking-[0.3em]" style={{ fontFamily: 'var(--font-geist-sans)', color: '#FF6B2B' }}>
               Welcome to
             </p>
           </div>
