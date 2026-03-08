@@ -823,7 +823,7 @@ export default function Home() {
                   href={TALLY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-7 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
+                  className="px-7 py-3 text-sm font-semibold text-white/70 border border-white/30 rounded-full hover:text-white hover:border-white/60 transition-all duration-200 cursor-pointer"
                 >
                   I want to join the next one
                 </a>
@@ -1061,7 +1061,7 @@ export default function Home() {
                 </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((totalSeats / (totalSeats > 128 ? totalSeats + 5 : 128)) * 100)}%`, background: '#FF8C42' }} />
+                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((totalSeats / (totalSeats > 128 ? totalSeats + 5 : 128)) * 100)}%`, background: '#ffffff' }} />
               </div>
               <div className="flex justify-center pt-3">
                 <div className="relative group inline-block">
@@ -1103,7 +1103,7 @@ export default function Home() {
                     <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>Valencia April Edition</h4>
                     <p className="text-white/70 text-sm">Valencia, Spain</p>
                     <div className="mt-3">
-                      <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-200 inline-block" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>
+                      <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all duration-200 inline-block border border-white/40 text-white/80 hover:text-white hover:border-white/70">
                         JOIN THE WAITLIST
                       </a>
                     </div>
@@ -1122,7 +1122,7 @@ export default function Home() {
                     </div>
                     <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>Barcelona Winter Edition</h4>
                     <p className="text-white/70 text-sm">Barcelona, Spain</p>
-                    <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold" style={{ color: '#FFD166' }}>
+                    <a href="https://www.notion.so/valeramarcos/Castellter-ol-Winter-House-28dbff6a5cda80109b9fcbbc2873c83f?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-white/80 hover:text-white transition-colors">
                       VIEW EVENT &rarr;
                     </a>
                   </div>
@@ -1140,7 +1140,7 @@ export default function Home() {
                     </div>
                     <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-space-mono)' }}>La Settimana: Great Minds</h4>
                     <p className="text-white/70 text-sm">Taranto, Italy</p>
-                    <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold" style={{ color: '#FFD166' }}>
+                    <a href="https://www.notion.so/valeramarcos/Taranto-La-Settimana-1f6bff6a5cda8083a794dd49975cf9ce?source=copy_link" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-white/80 hover:text-white transition-colors">
                       VIEW EVENT &rarr;
                     </a>
                   </div>
