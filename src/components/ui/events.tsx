@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { TALLY_URL } from "@/lib/constants";
 import { GlowCard } from "@/components/ui/glow-card";
 import { DotPattern } from "@/components/ui/dot-pattern";
 
@@ -30,7 +31,7 @@ const EVENTS: EventItem[] = [
     cta: "JOIN THE WAITLIST →",
     image: "dot-pattern",
     alt: "Interactive dot pattern",
-    href: "https://tally.so/r/BzXWgN",
+    href: TALLY_URL,
   },
   {
     id: "2",

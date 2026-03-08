@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { RevealText } from "@/components/ui/manifesto";
+import { TALLY_URL } from "@/lib/constants";
 
 const HOUSE_COLOR = "#1a1a1a";
 
@@ -1011,7 +1012,7 @@ export default function Home() {
                   <div className="relative group inline-block">
                     <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
                     <a
-                      href="https://tally.so/r/BzXWgN"
+                      href={TALLY_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
@@ -1064,7 +1065,7 @@ export default function Home() {
                 <div className="relative group inline-block">
                   <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
                   <a
-                    href="https://tally.so/r/BzXWgN"
+                    href={TALLY_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
@@ -1104,7 +1105,7 @@ export default function Home() {
                     <h4 className="text-white text-lg sm:text-xl font-bold" style={{ fontFamily: 'var(--font-syne)' }}>Valencia April Edition</h4>
                     <p className="text-white/70 text-sm">Valencia, Spain</p>
                     <div className="mt-3">
-                      <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-200 inline-block" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>
+                      <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-200 inline-block" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>
                         JOIN THE WAITLIST
                       </a>
                     </div>
@@ -1373,7 +1374,7 @@ export default function Home() {
             <div className="mt-8">
               <div className="relative group inline-block">
                 <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
-                <a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>Apply to join the family</a>
+                <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>Apply to join the family</a>
               </div>
             </div>
           </div>
@@ -1400,7 +1401,7 @@ export default function Home() {
                   <ul className="space-y-2 text-sm">
                     <li><Link href="/#1" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Manifesto</Link></li>
                     <li><Link href="/#2" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Houses</Link></li>
-                    <li><a href="https://tally.so/r/BzXWgN" target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Apply to become a member</a></li>
+                    <li><a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Apply to become a member</a></li>
                   </ul>
                 </div>
                 <div>
