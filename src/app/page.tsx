@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { RevealText } from "@/components/ui/manifesto";
+import { MiniNavbar } from "@/components/ui/sign-in-flow-1";
 import { TALLY_URL } from "@/lib/constants";
 
 const HOUSE_COLOR = "#1a1a1a";
@@ -39,8 +40,9 @@ export default function Home() {
   // API data for builder/seat counts
   const valenciaCount = 7;
   const [carouselIdx, setCarouselIdx] = useState(0);
-  const carouselImages = ['/landing-house.jpg', '/landing-people.png', '/landing-paella.png'];
+  const carouselImages = ['/landing-house.jpg', '/landing-people.png', '/working.png'];
   const [totalSeats, setTotalSeats] = useState(0);
+  const [showNav, setShowNav] = useState(false);
 
   useEffect(() => {
     fetch('/api/count')
@@ -692,11 +694,12 @@ export default function Home() {
         setTimeout(() => {
           sunCanvas.style.transition = 'opacity 1s ease-out';
           sunCanvas.style.opacity = '0';
+          setShowNav(true);
           setTimeout(() => {
             cancelAnimationFrame(sunAnimId.current);
             sunCleanup.current?.();
           }, 1000);
-        }, 5000);
+        }, 3000);
 
         // t=350ms: reveal all content with a single 0.5s fade
         setTimeout(() => {
@@ -737,6 +740,13 @@ export default function Home() {
 
   return (
     <main style={{ background: '#0a0a0c' }}>
+
+      {/* Floating Navbar — appears after sun fades */}
+      {showNav && (
+        <div className="transition-opacity duration-700 animate-in fade-in" style={{ opacity: 1 }}>
+          <MiniNavbar />
+        </div>
+      )}
 
       {/* SVG Goo Filter */}
       <svg className="hidden absolute w-0 h-0">
@@ -930,19 +940,35 @@ export default function Home() {
             {/* Image Carousel */}
             <div
               className="mt-4 sm:mt-8 mb-2 sm:mb-4 relative w-full overflow-hidden"
-              style={{ height: '260px', perspective: '1200px', opacity: 0, transform: 'translateY(30px)' }}
+              style={{ height: '260px', opacity: 0, transform: 'translateY(30px)' }}
               onTouchStart={(e) => { (e.currentTarget as HTMLElement).dataset.touchX = String(e.touches[0].clientX); }}
               onTouchEnd={(e) => {
                 const startX = Number((e.currentTarget as HTMLElement).dataset.touchX);
                 const endX = e.changedTouches[0].clientX;
                 const diff = startX - endX;
                 if (Math.abs(diff) > 40) {
-                  setCarouselIdx(prev => diff > 0 ? (prev + 1) % 3 : (prev + 2) % 3);
+                  setCarouselIdx((prev: number) => diff > 0 ? (prev + 1) % 3 : (prev + 2) % 3);
                 }
               }}
             >
-              <div className="relative w-full h-full" style={{ transformStyle: 'preserve-3d' }}>
-                {carouselImages.map((src, i) => {
+              {/* Arrow left */}
+              <button
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full transition-all hover:bg-black/10"
+                style={{ color: '#6b5e52' }}
+                onClick={() => setCarouselIdx((prev: number) => (prev + 2) % 3)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              {/* Arrow right */}
+              <button
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full transition-all hover:bg-black/10"
+                style={{ color: '#6b5e52' }}
+                onClick={() => setCarouselIdx((prev: number) => (prev + 1) % 3)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+              <div className="relative w-full h-full flex items-center justify-center">
+                {carouselImages.map((src: string, i: number) => {
                   const pos = (i - carouselIdx + 3) % 3;
                   const isCenter = pos === 0;
                   const isRight = pos === 1;
@@ -950,15 +976,16 @@ export default function Home() {
                     <div
                       key={i}
                       onClick={() => !isCenter && setCarouselIdx(i)}
-                      className="absolute top-1/2 left-1/2 transition-all duration-500 ease-in-out rounded-2xl overflow-hidden"
+                      className="absolute transition-all duration-500 ease-in-out rounded-2xl overflow-hidden"
                       style={{
                         width: isCenter ? '300px' : '220px',
                         height: isCenter ? '200px' : '155px',
-                        transform: `translate(-50%, -50%) translateX(${isCenter ? '0px' : isRight ? '120px' : '-120px'}) translateZ(${isCenter ? '60px' : '-20px'}) rotateY(${isCenter ? '0deg' : isRight ? '-12deg' : '12deg'})`,
-                        zIndex: isCenter ? 5 : 10,
+                        left: '50%',
+                        top: '50%',
+                        transform: `translate(-50%, -50%) translateX(${isCenter ? '0px' : isRight ? '140px' : '-140px'})`,
+                        zIndex: isCenter ? 5 : 3,
                         cursor: isCenter ? 'default' : 'pointer',
-                        boxShadow: 'none',
-                        opacity: isCenter ? 1 : 0.6,
+                        opacity: isCenter ? 1 : 0.5,
                       }}
                     >
                       <Image src={src} alt="" fill className="object-cover" sizes="(min-width: 640px) 300px, 220px" />
@@ -968,7 +995,7 @@ export default function Home() {
               </div>
               {/* Dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {carouselImages.map((_, i) => (
+                {carouselImages.map((_: string, i: number) => (
                   <button
                     key={i}
                     onClick={() => setCarouselIdx(i)}
@@ -983,10 +1010,10 @@ export default function Home() {
             <div className="mt-3 sm:mt-6 mx-auto w-full max-w-md" style={{ opacity: 0, transform: 'translateY(30px)' }}>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-geist-sans)', color: '#1a1a1a' }}>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a' }}>
                     {valenciaCount}/20 on April 2026
                   </span>
-                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-geist-sans)', color: '#1a1a1a' }}>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a' }}>
                     {Math.round((valenciaCount / 20) * 100)}%
                   </span>
                 </div>
