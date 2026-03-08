@@ -1402,8 +1402,8 @@ export default function Home() {
         <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
             <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Build something that matters</h3>
-            <p className="mt-4 text-lg" style={{ color: '#6b5e52' }}>Not another community.</p>
-            <p style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
+            <p className="mt-4 text-base" style={{ color: '#6b5e52' }}>Not another community.</p>
+            <p className="text-base" style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
             <div className="mt-8">
               <div className="relative group inline-block">
                 <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
