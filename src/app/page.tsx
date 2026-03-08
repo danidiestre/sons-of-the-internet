@@ -1434,6 +1434,9 @@ export default function Home() {
               <h3 className="text-4xl font-bold" style={{ fontFamily: `var(${f.variable})`, color: '#111' }}>
                 {f.name}
               </h3>
+              <p className="text-2xl mt-2" style={{ fontFamily: `var(${f.variable})`, color: '#333' }}>
+                Valencia
+              </p>
               <p className="text-sm mt-1" style={{ fontFamily: `var(${f.variable})`, color: '#666' }}>
                 {f.variable}
               </p>
