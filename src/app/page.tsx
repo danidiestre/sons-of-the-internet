@@ -963,19 +963,16 @@ export default function Home() {
 
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14">
           <div ref={zone2ContentRef} className="relative z-20 mx-auto w-full max-w-3xl px-6 sm:px-10 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] mb-2 sm:mb-4" style={{ fontFamily: 'var(--font-geist-sans)', color: '#FF6B2B', opacity: 0, transform: 'translateY(30px)' }}>
-              Welcome to
-            </p>
             <div className="flex justify-center mb-2 sm:mb-5" style={{ opacity: 0, transform: 'translateY(30px)' }}>
-              <div className="relative w-36 h-16 sm:w-48 sm:h-20">
+              <div className="relative w-28 h-12 sm:w-36 sm:h-16">
                 <Image src="/logo-simple.png" alt="SOTI" fill className="object-contain" />
               </div>
             </div>
-            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-geist-sans)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
-              Valencia.
+            <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
+              Valencia
             </h2>
-            <p className="mt-2 sm:mt-4 text-base sm:text-xl leading-relaxed max-w-xl mx-auto" style={{ color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
-              We host 1-week houses for<br className="min-[425px]:hidden" /> people who build things
+            <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto whitespace-nowrap" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
+              [ We host 1-week houses for people who build things ]
             </p>
 
             {/* Image Carousel */}
@@ -1051,7 +1048,7 @@ export default function Home() {
                       className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
                       style={{ background: '#FF6B2B', color: '#FFF8F0' }}
                     >
-                      Apply to join
+                      Apply to the house
                     </a>
                   </div>
                 </div>
