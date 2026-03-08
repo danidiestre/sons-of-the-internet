@@ -414,32 +414,20 @@ export function MiniNavbar() {
     });
   };
 
-  // Detect if navbar overlaps a light-background section
+  // Detect if navbar overlaps a light-background section (marked with data-light-section)
   useEffect(() => {
     const check = () => {
       const header = headerRef.current;
       if (!header) return;
-      const rect = header.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const probeY = rect.bottom + 4;
-      header.style.pointerEvents = 'none';
-      const el = document.elementFromPoint(centerX, probeY);
-      header.style.pointerEvents = '';
-      if (!el) return;
-      let node: Element | null = el;
+      const headerBottom = header.getBoundingClientRect().bottom;
+      const lightSections = document.querySelectorAll('[data-light-section]');
       let isLight = false;
-      while (node && node !== document.body) {
-        const bg = (node as HTMLElement).style?.background || '';
-        const bgColor = (node as HTMLElement).style?.backgroundColor || '';
-        if (bg.includes('#FFF8F0') || bgColor.includes('#FFF8F0') || bg.includes('FFF8F0')) {
+      for (const section of lightSections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < headerBottom && rect.bottom > headerBottom) {
           isLight = true;
           break;
         }
-        if (bg.includes('#000') || bg.includes('#0a0a0c') || bgColor.includes('#000')) {
-          isLight = false;
-          break;
-        }
-        node = node.parentElement;
       }
       setOnLightBg(isLight);
     };
@@ -479,7 +467,7 @@ export function MiniNavbar() {
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
-                       ${onLightBg ? 'border border-[#ddd] bg-[#ffffffcc]' : 'border border-[#333] bg-[#1f1f1f57]'}
+                       ${onLightBg ? 'border border-[#FF6B2B30] bg-[#FFF8F0ee]' : 'border border-[#333] bg-[#1f1f1f57]'}
                        w-[calc(100%-2rem)] sm:w-auto
                        transition-all duration-300 ease-in-out`}>
 

@@ -882,7 +882,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* ZONE 2: Valencia — Warm Mediterranean          */}
       {/* ============================================= */}
-      <div className="relative" style={{ background: '#FFF8F0' }}>
+      <div className="relative" data-light-section style={{ background: '#FFF8F0' }}>
 
         {/* Flash overlay — fills the entire viewport on trigger */}
         <div
@@ -918,7 +918,7 @@ export default function Home() {
               </div>
             </div>
             <h2 className="mt-2 sm:mt-6 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-space-mono)', color: '#1a1a1a', opacity: 0, transform: 'translateY(30px)' }}>
-              Valencia
+              Valencia, 20-26 April
             </h2>
             <p className="mt-2 sm:mt-4 text-sm sm:text-base leading-relaxed max-w-xl mx-auto whitespace-nowrap" style={{ fontFamily: 'var(--font-space-mono)', color: '#6b5e52', opacity: 0, transform: 'translateY(30px)' }}>
               [We host 1-week houses for people who build things]
@@ -1169,14 +1169,14 @@ export default function Home() {
                 <table className="w-full table-fixed">
                   <thead>
                     <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                      <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: '#FF6B2B' }}>Time</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Mon</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Tue</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Wed</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Thu</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Fri</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Sat</th>
-                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Sun</th>
+                      <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Time</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Mon</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Tue</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Wed</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Thu</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Fri</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Sat</th>
+                      <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>Sun</th>
                     </tr>
                   </thead>
                   <tbody>
