@@ -10,7 +10,6 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const heroWrapperRef = useRef<HTMLDivElement>(null);
-  const textRefs = useRef<(HTMLDivElement | null)[]>([]);
   const arrowRef = useRef<HTMLDivElement>(null);
 
   // Zone 2 transition refs
@@ -50,44 +49,13 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const heroMessages = [
-    {
-      title: (
-        <>
-          They called it a phase.<br />
-          <span style={{ color: '#9a9aaa' }}>It&apos;s been two years.</span>
-        </>
-      ),
-      subtitle: "Still here. Still building. Still proving no one wrong but yourself.",
-    },
-    {
-      title: (
-        <>
-          You&apos;re not lost.<br />
-          <span style={{ color: '#9a9aaa' }}>You&apos;re early.</span>
-        </>
-      ),
-      subtitle: `The gap between "what are you doing?" and "how did you do it?" is just time.`,
-    },
-    {
-      title: (
-        <>
-          Your friends don&apos;t get it.<br />
-          <span style={{ color: '#9a9aaa' }}>They never did.</span>
-        </>
-      ),
-      subtitle: `"Get a normal job?" Because normal jobs don't keep you up at 3AM with a pulse.`,
-    },
-    {
-      title: (
-        <>
-          The screen is warm.<br />
-          <span style={{ color: '#9a9aaa' }}>The room is cold.</span>
-        </>
-      ),
-      subtitle: "You build alone. You celebrate alone. It doesn't have to be this way.",
-    },
-  ];
+  const heroTitle = (
+    <>
+      They called it a phase.<br />
+      <span style={{ color: '#9a9aaa' }}>It&apos;s been two years.</span>
+    </>
+  );
+  const heroSubtitle = "Still here. Still building. Still proving no one wrong but yourself.";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -303,109 +271,6 @@ export default function Home() {
       window.removeEventListener("resize", updateLayout);
       observer.disconnect();
       cancelAnimationFrame(animationId);
-    };
-  }, []);
-
-  // Scroll-driven hero message transitions (no React re-renders — direct DOM)
-  useEffect(() => {
-    let isSnapping = false;
-    let snapTimeout: ReturnType<typeof setTimeout>;
-    // Clamp wheel delta so large scroll gestures only advance one phase at a time
-    const MAX_WHEEL_DELTA = 80;
-    const handleWheel = (e: WheelEvent) => {
-      const wrapper = heroWrapperRef.current;
-      if (!wrapper) return;
-      const rect = wrapper.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const scrollableHeight = wrapper.offsetHeight - window.innerHeight;
-      // Only intercept when inside the hero scroll zone
-      if (scrolled < -50 || scrolled > scrollableHeight + 50) return;
-      if (Math.abs(e.deltaY) > MAX_WHEEL_DELTA) {
-        e.preventDefault();
-        const clampedDelta = Math.sign(e.deltaY) * MAX_WHEEL_DELTA;
-        window.scrollBy({ top: clampedDelta, behavior: 'auto' });
-      }
-    };
-    window.addEventListener('wheel', handleWheel, { passive: false });
-
-    const handleScroll = () => {
-      const wrapper = heroWrapperRef.current;
-      if (!wrapper) return;
-
-      const rect = wrapper.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const scrollableHeight = wrapper.offsetHeight - window.innerHeight;
-
-      if (scrolled <= 0 || scrollableHeight <= 0) {
-        textRefs.current.forEach((el, i) => {
-          if (el) el.style.opacity = i === 0 ? '1' : '0';
-        });
-        if (arrowRef.current) arrowRef.current.style.opacity = '1';
-        return;
-      }
-
-      const progress = Math.min(Math.max(scrolled / scrollableHeight, 0), 1);
-      const totalPhases = 2;
-      const phaseFloat = progress * totalPhases;
-      const phase = Math.min(Math.floor(phaseFloat), totalPhases - 1);
-      const within = phaseFloat - phase;
-
-      textRefs.current.forEach((el, i) => {
-        if (!el) return;
-        if (i === phase) {
-          let opacity = 1;
-          if (phase < totalPhases - 1 && within > 0.75) {
-            opacity = (1 - within) / 0.25;
-          }
-          if (phase > 0 && within < 0.2) {
-            opacity = within / 0.2;
-          }
-          if (phase === 0 && within < 0.2) opacity = 1;
-          el.style.opacity = String(opacity);
-        } else {
-          el.style.opacity = '0';
-        }
-      });
-
-      if (arrowRef.current) {
-        arrowRef.current.style.opacity = '1';
-      }
-
-      // Snap to nearest phase when user stops scrolling
-      if (!isSnapping) {
-        clearTimeout(snapTimeout);
-        snapTimeout = setTimeout(() => {
-          const w = heroWrapperRef.current;
-          if (!w) return;
-          const r = w.getBoundingClientRect();
-          const s = -r.top;
-          const sh = w.offsetHeight - window.innerHeight;
-          if (s <= 0 || s >= sh) return;
-
-          const phaseSize = sh / totalPhases;
-          // Round to nearest phase CENTER (where text is fully visible), not boundary
-          const nearestPhase = Math.max(0, Math.min(Math.round(s / phaseSize - 0.5), totalPhases - 1));
-          // Don't snap if user is scrolling past the hero (lower threshold for mobile touch)
-          if (nearestPhase === totalPhases - 1 && s > (nearestPhase + 0.55) * phaseSize) return;
-          // Phase 0 snaps to top; others snap to center of phase
-          const targetScrolled = nearestPhase === 0 ? 0 : (nearestPhase + 0.5) * phaseSize;
-          const target = targetScrolled + w.offsetTop;
-
-          if (Math.abs(window.scrollY - target) < 5) return;
-
-          isSnapping = true;
-          window.scrollTo({ top: target, behavior: 'smooth' });
-          setTimeout(() => { isSnapping = false; }, 600);
-        }, 120);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('wheel', handleWheel);
-      clearTimeout(snapTimeout);
     };
   }, []);
 
@@ -932,7 +797,7 @@ export default function Home() {
       {/* ============================================= */}
       {/* SECTION: Hero                                 */}
       {/* ============================================= */}
-      <div ref={heroWrapperRef} className="relative z-10" style={{ height: '200vh', background: '#0a0a0c' }}>
+      <div ref={heroWrapperRef} className="relative z-10" style={{ height: '100vh', background: '#0a0a0c' }}>
       <section className="sticky top-0 relative flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0c' }}>
         {/* Rain canvas with goo filter */}
         <canvas
@@ -975,23 +840,14 @@ export default function Home() {
                 {/* Hero text + CTA */}
                 <div className="flex flex-col items-center justify-center py-4 sm:py-12">
                   <div className="relative w-full text-center">
-                    {heroMessages.map((msg, i) => (
-                      <div
-                        key={i}
-                        ref={(el) => { textRefs.current[i] = el; }}
-                        className={i === 0 ? '' : 'absolute inset-0'}
-                        style={{ opacity: i === 0 ? 1 : 0 }}
-                      >
-                        <div className="space-y-6 sm:space-y-10">
-                          <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
-                            {msg.title}
-                          </h1>
-                          <div className="flex items-center justify-center gap-3 flex-wrap">
-                            <h2 className="text-[1.2rem] sm:text-[1.4rem] font-light" style={{ color: '#8a8a9a' }}>{msg.subtitle}</h2>
-                          </div>
-                        </div>
+                    <div className="space-y-6 sm:space-y-10">
+                      <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#d0d0dd' }}>
+                        {heroTitle}
+                      </h1>
+                      <div className="flex items-center justify-center gap-3 flex-wrap">
+                        <h2 className="text-[1.2rem] sm:text-[1.4rem] font-light" style={{ color: '#8a8a9a' }}>{heroSubtitle}</h2>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -999,15 +855,7 @@ export default function Home() {
               <div ref={arrowRef} className="flex items-center justify-center gap-2 pb-4 sm:pb-8">
                 <button
                   onClick={() => {
-                    const wrapper = heroWrapperRef.current;
-                    if (!wrapper) return;
-                    const wrapperBottom = wrapper.offsetTop + wrapper.offsetHeight;
-                    const scrolledPast = window.scrollY + window.innerHeight >= wrapperBottom - 100;
-                    if (scrolledPast) {
-                      zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                      window.scrollTo({ top: wrapperBottom - window.innerHeight, behavior: 'smooth' });
-                    }
+                    zone2TriggerRef.current?.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="group cursor-pointer bg-transparent border border-[#3a3a48] rounded-full px-5 py-2.5 flex items-center gap-3 transition-all duration-500 hover:border-amber-500/60 hover:shadow-[0_0_18px_rgba(245,158,11,0.15)]"
                   aria-label="Scroll to next section"
