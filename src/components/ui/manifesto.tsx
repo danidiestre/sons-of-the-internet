@@ -71,7 +71,7 @@ export function RevealText({ text, className = "" }: RevealTextProps) {
   const words = text.split(" ");
 
   return (
-    <p ref={containerRef} className={className} style={{ fontFamily: 'var(--font-instrument-serif)' }}>
+    <p ref={containerRef} className={className} style={{ fontFamily: 'var(--font-geist-sans)' }}>
       {words.map((word, wordIndex) => {
         // Calculate the starting character index for this word
         let wordStartIndex = 0;

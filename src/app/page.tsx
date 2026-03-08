@@ -1012,19 +1012,22 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Transition: warm → dark */}
+        <div className="w-full h-32" style={{ background: 'linear-gradient(to bottom, #FFF8F0, #000000)' }} />
+
         {/* ============================================= */}
         {/* SECTION: Manifesto                             */}
         {/* ============================================= */}
-        <section id="1" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
+        <section id="1" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-8 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Our Manifesto</h3>
+              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Our Manifesto</h3>
             </div>
-            <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto" style={{ color: '#6b5e52' }}>
-              <RevealText text="We grew up online, through forums, pixels and late-night calls." className="text-[#6b5e52]" />
-              <RevealText text="We build in public, meet offline, and chase that first feeling of discovering the internet." className="text-[#6b5e52]" />
-              <RevealText text="We're digital natives who enjoy disconnecting with other passionate builders." className="text-[#6b5e52]" />
-              <RevealText text="Our community is global, our connections are real, and our gatherings never forget." className="text-[#6b5e52]" />
+            <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto text-white">
+              <RevealText text="We grew up online, through forums, pixels and late-night calls." className="text-white" />
+              <RevealText text="We build in public, meet offline, and chase that first feeling of discovering the internet." className="text-white" />
+              <RevealText text="We're digital natives who enjoy disconnecting with other passionate builders." className="text-white" />
+              <RevealText text="Our community is global, our connections are real, and our gatherings never forget." className="text-white" />
             </div>
           </div>
         </section>
@@ -1032,29 +1035,28 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: SOTI Community Progress               */}
         {/* ============================================= */}
-        <section className="relative z-40 w-full pb-10 sm:pb-14 pt-6 sm:pt-8" style={{ background: '#FFF8F0' }}>
+        <section className="relative z-40 w-full pb-10 sm:pb-14 pt-6 sm:pt-8" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-md px-6 sm:px-10">
             <div className="w-full space-y-4">
-              <h3 className="text-center text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>
+              <h3 className="text-center text-2xl sm:text-3xl font-semibold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>
                 SOTI Community
               </h3>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-geist-sans)', color: '#1a1a1a' }}>
+                <span className="text-sm font-medium text-white/60" style={{ fontFamily: 'var(--font-space-mono)' }}>
                   {totalSeats}/{totalSeats > 128 ? totalSeats + 5 : 128} seats filled for 2026
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
                 <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((totalSeats / (totalSeats > 128 ? totalSeats + 5 : 128)) * 100)}%`, background: '#FF8C42' }} />
               </div>
               <div className="flex justify-center pt-3">
                 <div className="relative group inline-block">
-                  <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
+                  <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" />
                   <a
                     href={TALLY_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200 cursor-pointer"
-                    style={{ background: '#FF6B2B', color: '#FFF8F0' }}
+                    className="relative z-10 px-7 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer"
                   >
                     Apply to join the family
                   </a>
@@ -1064,22 +1066,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="mx-auto max-w-xs h-px" style={{ background: 'linear-gradient(to right, transparent, #FF6B2B30, transparent)' }} />
-
         {/* ============================================= */}
         {/* SECTION: Houses / Events                       */}
         {/* ============================================= */}
-        <section id="2" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
+        <section id="2" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-5xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-10 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Houses</h3>
-              <p className="mt-3 text-base" style={{ color: '#6b5e52' }}>Mark your digital calendar. These moments only happen IRL.</p>
+              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Houses</h3>
+              <p className="mt-3 text-base text-white/60">Mark your digital calendar. These moments only happen IRL.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
 
               {/* Event Card: Valencia */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #FF6B2B20' }}>
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
                   <div className="space-y-2">
@@ -1099,7 +1098,7 @@ export default function Home() {
               </div>
 
               {/* Event Card: Barcelona */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #1a1a1a10' }}>
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Image src="/events/barcelona.jpeg" alt="Barcelona, Spain" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
                   <div className="space-y-2">
@@ -1117,7 +1116,7 @@ export default function Home() {
               </div>
 
               {/* Event Card: Italy */}
-              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid #1a1a1a10' }}>
+              <div className="w-full aspect-square rounded-2xl overflow-hidden relative group" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Image src="/events/italia.jpg" alt="Taranto, Italy" fill className="object-cover transition-transform duration-300 group-hover:scale-110" sizes="(min-width: 640px) 50vw, 100vw" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 via-50% to-black/70 flex flex-col justify-end p-5 sm:p-6">
                   <div className="space-y-2">
@@ -1141,21 +1140,21 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Schedule                              */}
         {/* ============================================= */}
-        <section className="relative z-40 w-full py-8 sm:py-12" style={{ background: '#FFF8F0' }}>
+        <section className="relative z-40 w-full py-8 sm:py-12" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-4xl px-6 sm:px-10">
             <div className="mb-8 text-center">
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>
+              <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-2 text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>
                 Last Schedule
               </h3>
-              <p style={{ color: '#6b5e52' }}>Weekly program structure</p>
+              <p className="text-white/60">Weekly program structure</p>
             </div>
 
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
-              <div className="min-w-full rounded-xl overflow-hidden" style={{ border: '1px solid #1a1a1a10' }}>
+              <div className="min-w-full rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
                 <table className="w-full table-fixed">
                   <thead>
-                    <tr style={{ background: '#FF6B2B20', borderBottom: '1px solid #FF6B2B30' }}>
+                    <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <th className="w-32 px-4 py-4 text-left text-sm font-semibold" style={{ color: '#FF6B2B' }}>Time</th>
                       <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Mon</th>
                       <th className="px-4 py-4 text-center text-sm font-semibold" style={{ color: '#FF6B2B' }}>Tue</th>
@@ -1167,45 +1166,45 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ background: '#FF6B2B10', borderBottom: '1px solid #FF6B2B15' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B18' }}>09:00–13:00</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Check In</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Demo Day</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Morning activity</td>
+                    <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.05)' }}>09:00–13:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Check In</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Demo Day</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Morning activity</td>
                     </tr>
-                    <tr style={{ background: '#FFD16610', borderBottom: '1px solid #FF6B2B15' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FFD16618' }}>13:00–15:00</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Public Event – Paella (60 Attendees)</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Lunch</td>
+                    <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.04)' }}>13:00–15:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Public Event – Paella (60 Attendees)</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Lunch</td>
                     </tr>
-                    <tr style={{ background: '#FF6B2B10', borderBottom: '1px solid #FF6B2B15' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FF6B2B18' }}>15:00–18:00</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Work Time</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>DJ + Drinks</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Reflect & Harvest</td>
+                    <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.05)' }}>15:00–18:00</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Work Time</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>DJ + Drinks</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Reflect & Harvest</td>
                     </tr>
-                    <tr style={{ background: '#FFD16610' }}>
-                      <td className="px-4 py-4 text-sm font-medium" style={{ color: '#1a1a1a', background: '#FFD16618' }}>18:00+</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Intros & Goals</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Inspiration talk</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Network Afternoon</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Chef Dinner</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Demo Day</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>DJ + Drinks</td>
-                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: '#6b5e52' }}>Check out</td>
+                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
+                      <td className="px-4 py-4 text-sm font-medium" style={{ color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.04)' }}>18:00+</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Intros & Goals</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Inspiration talk</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Network Afternoon</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Chef Dinner</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Demo Day</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>DJ + Drinks</td>
+                      <td className="px-4 py-4 text-sm text-center h-20" style={{ color: 'rgba(255,255,255,0.6)' }}>Check out</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1223,11 +1222,11 @@ export default function Home() {
                 { day: 'Saturday', slots: ['09:00–13:00 → Demo Day', '13:00–15:00 → Public Event – Paella', '15:00–18:00 → DJ + Drinks', '18:00+ → DJ + Drinks'] },
                 { day: 'Sunday', slots: ['09:00–13:00 → Morning activity + Check out', '13:00–15:00 → Lunch', '15:00–18:00 → Reflect & Harvest', '18:00+ → Check out'] },
               ].map((d) => (
-                <div key={d.day} className="rounded-xl p-4" style={{ background: '#FF6B2B06', border: '1px solid #FF6B2B15' }}>
-                  <h4 className="font-bold text-base mb-3" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>{d.day}</h4>
-                  <div className="space-y-2 text-sm" style={{ color: '#6b5e52' }}>
+                <div key={d.day} className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <h4 className="font-bold text-base mb-3 text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>{d.day}</h4>
+                  <div className="space-y-2 text-sm text-white/60">
                     {d.slots.map((slot, j) => {
-                      const colors = ['#FF6B2B10', '#FF8C4210', '#FFD16610', '#FF6B2B08'];
+                      const colors = ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.03)', 'rgba(255,255,255,0.02)'];
                       return (
                         <div key={j} className="px-3 py-3 rounded-lg h-14 flex items-center" style={{ background: colors[j] }}>
                           {slot}
@@ -1244,103 +1243,103 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Led By (Team)                         */}
         {/* ============================================= */}
-        <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
+        <section className="relative z-40 w-full" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-center" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Led by</h3>
-            <p className="mb-12 text-center text-base" style={{ color: '#6b5e52' }}>Meet the builders behind SOTI</p>
+            <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-4 text-center text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Led by</h3>
+            <p className="mb-12 text-center text-base text-white/60">Meet the builders behind SOTI</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
               {/* Marcos */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/marcos.jpeg" alt="Marcos Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Marcos Valera</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Marcos Valera</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
-                    <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                    <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://www.youtube.com/@MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                    <a href="https://x.com/_MarcosValera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/valeramarcos/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>GTM @ ElevenLabs. building community.</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>GTM @ ElevenLabs. building community.</p>
                 </div>
               </div>
 
               {/* Juan Pablo */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/juan-pablo.jpeg" alt="Juan Pablo" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Juan Pablo</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Juan Pablo</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                    <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-                    <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://x.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://github.com/jpgallegoar" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/jpgallegoar/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>Researcher and CTO.</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>Researcher and CTO.</p>
                 </div>
               </div>
 
               {/* Dani */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/dani.png" alt="Dani Diestre" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Dani Diestre</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Dani Diestre</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
-                    <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-                    <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://www.youtube.com/@danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                    <a href="https://github.com/danidiestre" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/danidiestre/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>Co-Founder Autentic, Youtube Creator</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>Co-Founder Autentic, Youtube Creator</p>
                 </div>
               </div>
 
               {/* Aniol */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/aniol.jpeg" alt="Aniol Carreras" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Aniol Carreras</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Aniol Carreras</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                    <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://x.com/carrerasaniol" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/aniolcarreras" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>Co-Founder Autentic. Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>Co-Founder Autentic. Events Creator - Leading Product Fest (Madrid, 3 editions)</p>
                 </div>
               </div>
 
               {/* Saura */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/saura.jpeg" alt="Jose Saura" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Jose Saura</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Jose Saura</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                    <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-                    <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://x.com/iamsaura_" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://github.com/eddsaura" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://www.linkedin.com/in/jesauraoller/" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>Indiehacker - Paellas CEO - Starting on / IG / Tiktok - Skool community $1000MRR - DJ</p>
                 </div>
               </div>
 
               {/* Adrian */}
-              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: '#ffffff', border: '1px solid #FF6B2B15' }}>
+              <div className="rounded-2xl p-6 transition-all hover:shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px #FF6B2B30' }}>
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 0 3px rgba(255,255,255,0.15)' }}>
                     <Image src="/adrian.png" alt="Adrian Valera" fill className="object-cover" sizes="96px" />
                   </div>
-                  <h4 className="text-lg font-bold" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Adrian Valera</h4>
+                  <h4 className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Adrian Valera</h4>
                   <div className="flex gap-4 items-center">
-                    <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-                    <a href="https://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: '#6b5e52' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    <a href="https://github.com/adrixo" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://linkedin.com/in/adrian-valera" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70" style={{ color: 'rgba(255,255,255,0.6)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: '#6b5e52' }}>Engineer & Researcher. Building communities with love.</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: 'var(--font-geist-sans)', color: 'rgba(255,255,255,0.6)' }}>Engineer & Researcher. Building communities with love.</p>
                 </div>
               </div>
 
@@ -1351,15 +1350,15 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Final CTA                             */}
         {/* ============================================= */}
-        <section className="relative z-40 w-full" style={{ background: '#FFF8F0' }}>
+        <section className="relative z-40 w-full" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-20 sm:py-28 text-center">
-            <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-space-mono)', color: '#333333' }}>Build something that matters</h3>
-            <p className="mt-4 text-base" style={{ color: '#6b5e52' }}>Not another community.</p>
-            <p className="text-base" style={{ color: '#6b5e52' }}>Join the new generation of builders now</p>
+            <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white" style={{ fontFamily: 'var(--font-space-mono)' }}>Build something that matters</h3>
+            <p className="mt-4 text-base text-white/70">Not another community.</p>
+            <p className="text-base text-white/70">Join the new generation of builders now</p>
             <div className="mt-8">
               <div className="relative group inline-block">
-                <div className="absolute inset-0 -m-2 rounded-full hidden sm:block opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" style={{ background: '#FF6B2B' }} />
-                <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="relative z-10 px-7 py-3 text-sm font-bold rounded-full transition-all duration-200" style={{ background: '#FF6B2B', color: '#FFF8F0' }}>Apply to join the family</a>
+                <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3" />
+                <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="relative z-10 px-6 py-3 text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200">Apply to join the family</a>
               </div>
             </div>
           </div>
@@ -1368,32 +1367,32 @@ export default function Home() {
         {/* ============================================= */}
         {/* SECTION: Footer                                */}
         {/* ============================================= */}
-        <footer className="w-full" style={{ borderTop: '1px solid #1a1a1a10' }}>
+        <footer className="w-full border-t border-white/10" style={{ background: '#000000' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
             <div className="space-y-8">
               <div>
                 <div className="flex mb-4">
                   <div className="relative w-40 h-14">
-                    <Image src="/logo-simple.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
+                    <Image src="/logo-white-simple.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
                   </div>
                 </div>
-                <p className="mr-12 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>people you'd actually want to spend a night, a week, or a lifetime building with.</p>
+                <p className="text-white/60 mr-12 text-sm" style={{ fontFamily: 'var(--font-dm-mono)' }}>people you&apos;d actually want to spend a night, a week, or a lifetime building with.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
-                  <h5 className="text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>QUICK_LINKS</h5>
+                  <h5 className="text-white/80 text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)' }}>QUICK_LINKS</h5>
                   <ul className="space-y-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)' }}>
-                    <li><Link href="/#1" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Manifesto</Link></li>
-                    <li><Link href="/#2" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Houses</Link></li>
-                    <li><a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Apply to become a member</a></li>
+                    <li><Link href="/#1" className="text-white/70 hover:text-white transition-colors">&gt; Manifesto</Link></li>
+                    <li><Link href="/#2" className="text-white/70 hover:text-white transition-colors">&gt; Houses</Link></li>
+                    <li><a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">&gt; Apply to become a member</a></li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>FIND_US</h5>
-                  <p className="text-sm mt-2" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>only in real life.<br />we don&apos;t do social media.<br />we do moments that matter.</p>
+                  <h5 className="text-white/80 text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)' }}>FIND_US</h5>
+                  <p className="text-white/50 text-sm mt-2" style={{ fontFamily: 'var(--font-dm-mono)' }}>only in real life.<br />we don&apos;t do social media.<br />we do moments that matter.</p>
                 </div>
               </div>
-              <div className="pt-6 text-xs" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e5240' }}>&copy; {new Date().getFullYear()} SOTI</div>
+              <div className="pt-6 text-white/30 text-xs" style={{ fontFamily: 'var(--font-dm-mono)' }}>&copy; {new Date().getFullYear()} SOTI</div>
             </div>
           </div>
         </footer>
