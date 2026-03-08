@@ -1032,7 +1032,10 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
-                    {valenciaCount}/20 builders
+                    {valenciaCount}/20 on April 2026
+                  </span>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-dm-mono)', color: '#1a1a1a' }}>
+                    {Math.round((valenciaCount / 20) * 100)}%
                   </span>
                 </div>
                 <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: '#1a1a1a10' }}>
