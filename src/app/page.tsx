@@ -1033,7 +1033,7 @@ export default function Home() {
         <section id="1" className="relative z-40 w-full scroll-mt-32 md:scroll-mt-40" style={{ background: '#FFF8F0' }}>
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-16 sm:py-24">
             <div className="mb-8 text-center">
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-geist-sans)', color: '#333333' }}>Our Manifesto</h3>
+              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-instrument-serif)', color: '#333333' }}>Our Manifesto</h3>
             </div>
             <div className="text-center text-balance text-xl sm:text-2xl leading-relaxed max-w-2xl flex flex-col gap-5 mx-auto" style={{ color: '#6b5e52' }}>
               <RevealText text="We grew up online, through forums, pixels and late-night calls." className="text-[#6b5e52]" />
@@ -1387,29 +1387,28 @@ export default function Home() {
           <div className="mx-auto w-full max-w-2xl px-6 sm:px-10 py-12 sm:py-16">
             <div className="space-y-8">
               <div>
-                <h4 className="text-lg sm:text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-geist-sans)', color: '#333333' }}>SOTI Family</h4>
-                <p className="mr-12 mt-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
-                <div className="flex mt-4">
+                <div className="flex mb-4">
                   <div className="relative w-40 h-14">
                     <Image src="/logo-simple.png" alt="SOTI Isotope" fill className="object-contain" priority={false} />
                   </div>
                 </div>
+                <p className="mr-12 text-sm" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>A global community of digital natives who build, create, and connect.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
-                  <h5 className="text-xs tracking-wider mb-3" style={{ color: '#FF6B2B' }}>QUICK_LINKS</h5>
-                  <ul className="space-y-2 text-sm">
+                  <h5 className="text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>QUICK_LINKS</h5>
+                  <ul className="space-y-2 text-sm" style={{ fontFamily: 'var(--font-dm-mono)' }}>
                     <li><Link href="/#1" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Manifesto</Link></li>
                     <li><Link href="/#2" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Houses</Link></li>
                     <li><a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:underline" style={{ color: '#6b5e52' }}>&gt; Apply to become a member</a></li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="text-xs tracking-wider mb-3" style={{ color: '#FF6B2B' }}>FIND_US</h5>
-                  <p className="text-sm mt-2" style={{ color: '#6b5e52' }}>Only in real life.<br />We don&apos;t do social media.<br />We do moments that matter.</p>
+                  <h5 className="text-xs tracking-wider mb-3" style={{ fontFamily: 'var(--font-dm-mono)', color: '#FF6B2B' }}>FIND_US</h5>
+                  <p className="text-sm mt-2" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e52' }}>Only in real life.<br />We don&apos;t do social media.<br />We do moments that matter.</p>
                 </div>
               </div>
-              <div className="pt-6 text-xs" style={{ color: '#6b5e5240' }}>&copy; {new Date().getFullYear()} SOTI</div>
+              <div className="pt-6 text-xs" style={{ fontFamily: 'var(--font-dm-mono)', color: '#6b5e5240' }}>&copy; {new Date().getFullYear()} SOTI</div>
             </div>
           </div>
         </footer>
