@@ -1145,7 +1145,7 @@ export default function Home() {
                 <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
                   <div className="flex justify-between items-start">
                     <span className="text-xs tracking-[0.15em] uppercase text-white/80 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>Edition 02</span>
-                    <span className="text-xs text-white/40">Dec 2025</span>
+                    <span className="text-xs text-white/80">Dec 2025</span>
                   </div>
                   <div>
                     <h4 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-space-mono)' }}>Barcelona</h4>
@@ -1167,7 +1167,7 @@ export default function Home() {
                 <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8">
                   <div className="flex justify-between items-start">
                     <span className="text-xs tracking-[0.15em] uppercase text-white/80 font-medium" style={{ fontFamily: 'var(--font-space-mono)' }}>Edition 01</span>
-                    <span className="text-xs text-white/40">Sept 2025</span>
+                    <span className="text-xs text-white/80">Sept 2025</span>
                   </div>
                   <div>
                     <h4 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-space-mono)' }}>La Settimana</h4>
