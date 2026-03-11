@@ -104,7 +104,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${manrope.variable} ${geistMono.variable} ${spaceMono.variable} ${instrumentSerif.variable} ${dmMono.variable} ${syne.variable} ${cormorantGaramond.variable} antialiased bg-black`}
-        style={{ overflowX: 'clip' }}
+        style={{ overflowX: 'hidden' }}
       >
         <OgLogo />
         {children}

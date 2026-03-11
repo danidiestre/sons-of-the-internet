@@ -33,9 +33,14 @@ export default function Home() {
 
 
 
-  // Mobile detection for disabling expensive effects
+  // Mobile/Safari detection for disabling expensive effects
   const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => { setIsMobile(window.innerWidth < 640); }, []);
+  const [isSafari, setIsSafari] = useState(false);
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 640);
+    const ua = navigator.userAgent;
+    setIsSafari(/^((?!chrome|android).)*safari/i.test(ua));
+  }, []);
 
   // API data for builder/seat counts
   const valenciaCount = 7;
@@ -667,7 +672,7 @@ export default function Home() {
         zone2Fired.current = true;
         animGuard = true;
 
-        // Lock scroll — iOS Safari ignores overflow:hidden, so use position:fixed
+        // Lock scroll — use position:fixed trick for Safari compatibility
         const section = content.closest('section');
         const targetScrollY = section
           ? section.getBoundingClientRect().top + window.scrollY
@@ -676,6 +681,7 @@ export default function Home() {
         document.body.style.top = `-${targetScrollY}px`;
         document.body.style.left = '0';
         document.body.style.right = '0';
+        document.body.style.width = '100%';
         document.body.style.overflow = 'hidden';
 
         // t=0: bright flash ON + start sun canvas
@@ -718,8 +724,9 @@ export default function Home() {
           document.body.style.top = '';
           document.body.style.left = '';
           document.body.style.right = '';
+          document.body.style.width = '';
           document.body.style.overflow = '';
-          window.scrollTo(0, targetScrollY);
+          window.scrollTo({ top: targetScrollY, behavior: 'instant' as ScrollBehavior });
         }, 1400);
 
         // Allow exit observer to work after animation settles
@@ -769,7 +776,7 @@ export default function Home() {
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full pointer-events-none z-0"
-          style={isMobile ? undefined : { filter: 'url(#goo)' }}
+          style={isMobile || isSafari ? undefined : { filter: 'url(#goo)' }}
         />
 
         {/* Hero house */}
@@ -783,8 +790,10 @@ export default function Home() {
                 className="absolute inset-0"
                 style={{
                   clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+                  WebkitClipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
                   background: HOUSE_COLOR,
                   backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
                 }}
               />
               {/* Roof border lines */}
@@ -907,7 +916,7 @@ export default function Home() {
         <canvas
           ref={sunCanvasRef}
           className="fixed top-0 left-0 pointer-events-none"
-          style={{ width: '100vw', height: '100vh', opacity: 0, transition: 'opacity 0.3s ease-in', zIndex: 9999 }}
+          style={{ width: '100dvw', height: '100dvh', opacity: 0, transition: 'opacity 0.3s ease-in', zIndex: 9999 }}
         />
 
         <section className="relative w-full min-h-screen flex flex-col justify-center pt-7 sm:pt-16 pb-10 sm:pb-14">
