@@ -25,9 +25,9 @@ const EVENTS: EventItem[] = [
   {
     id: "3",
     status: "UPCOMING",
-    date: "April 2026",
-    title: "Next Soti House",
-    location: "Ireland, Spain or France",
+    date: "20-26 April 2026",
+    title: "Valencia House",
+    location: "Valencia, Spain",
     cta: "JOIN THE WAITLIST →",
     image: "dot-pattern",
     alt: "Interactive dot pattern",

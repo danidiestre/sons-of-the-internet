@@ -30,15 +30,9 @@ export function HeroSection({ className }: { className?: string }) {
               <div className="space-y-10">
                 <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">We host 1-week houses for people who build things</h1>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — April 2026</h2>
-                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Barcelona just happened. Sold out.</h2>
+                  <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Next House — Valencia, 20-26 April 2026</h2>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-6">
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40">
-                    <span className="text-orange-400 text-xs font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-space-mono)" }}>
-                      Sold out
-                    </span>
-                  </div>
                   <div className="relative group inline-block">
                     <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
                     <a href={TALLY_URL} target="_blank" rel="noopener noreferrer" className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 cursor-pointer">

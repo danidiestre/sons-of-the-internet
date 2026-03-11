@@ -85,6 +85,7 @@ export function FloorPlanCoordHelper({ floorPlanPath }: CoordHelperProps) {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     const coords = getRelativeCoords(e.clientX, e.clientY);
     setStartPos(coords);
     setCurrentPos(coords);
@@ -177,7 +178,7 @@ export function FloorPlanCoordHelper({ floorPlanPath }: CoordHelperProps) {
 
       <div
         ref={containerRef}
-        className="relative w-full bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-crosshair"
+        className="relative w-full bg-white/5 rounded-lg overflow-hidden border border-white/10 cursor-crosshair select-none"
         style={{ aspectRatio: "4/3" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

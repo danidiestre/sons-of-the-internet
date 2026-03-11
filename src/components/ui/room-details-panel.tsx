@@ -152,8 +152,8 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
                 {/* Bathroom */}
                 <div>
                   <p className="text-sm text-white/60 mb-1">Bathroom</p>
-                  <p className="text-base">
-                    {room.bathroomType === "private" ? "Private bathroom" : "Shared bathroom"} (Bathroom {room.bathroomNumber})
+                  <p className="text-base capitalize">
+                    {room.bathroomType}
                   </p>
                 </div>
 
@@ -188,16 +188,29 @@ export function RoomDetailsPanel({ room, isOpen, onClose }: RoomDetailsPanelProp
                   To save the spot send the payment via Revolut full payment with "Your name  - Booking Room {room.number.replace("Habitación ", "")}".
                 </p>
                 <div className="space-y-2">
-                  <div>
-                    <a
-                      href={`https://revolut.me/sokram98?amount=${room.id === "floor-2-room-7" ? room.pricePerPerson * 100 : room.roomPrice * 100}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-white underline hover:text-white/80 text-sm"
-                    >
-                      https://revolut.me/sokram98?amount={room.id === "floor-2-room-7" ? room.pricePerPerson * 100 : room.roomPrice * 100}
-                    </a>
-                  </div>
+                  {room.paymentUrl ? (
+                    <div>
+                      <a
+                        href={room.paymentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline hover:text-white/80 text-sm"
+                      >
+                        {room.paymentUrl}
+                      </a>
+                    </div>
+                  ) : (
+                    <div>
+                      <a
+                        href={`https://revolut.me/sokram98?amount=${room.roomPrice * 100}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline hover:text-white/80 text-sm"
+                      >
+                        https://revolut.me/sokram98?amount={room.roomPrice * 100}
+                      </a>
+                    </div>
+                  )}
                   <div>
                     <span className="text-white/80 text-sm">or IBAN: </span>
                     <button

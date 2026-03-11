@@ -1,17 +1,80 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { CanvasRevealEffect, MiniNavbar } from "@/components/ui/sign-in-flow-1";
 import { Footer } from "@/components/ui/footer";
 import { FloorPlanMap } from "@/components/ui/floor-plan-map";
 import { RoomDetailsPanel } from "@/components/ui/room-details-panel";
 import { LimelightNav } from "@/components/ui/limelight-nav";
-import { Room, floorsData } from "@/lib/room-data";
+import { Room, FloorData, floorsData as staticFloorsData } from "@/lib/room-data";
+
+interface ApiRoom {
+  id: string;
+  name: string;
+  price: number | null;
+  beds: number | null;
+  number_beds_paid: number | null;
+  type: string | null;
+  floor: string | null;
+  bathroom: string | null;
+  size: string | null;
+  bed_type: string | null;
+  payment_url: string | null;
+  member: string | null;
+  member_id: string | null;
+  notes: string | null;
+}
+
+function mergeApiData(floors: FloorData[], apiRooms: ApiRoom[]): FloorData[] {
+  return floors.map((floor) => ({
+    ...floor,
+    rooms: floor.rooms.map((room) => {
+      // Extract room number from id (e.g., "floor-0-room-1" -> "room-1")
+      const roomNum = room.id.split("-").pop();
+      const apiRoom = apiRooms.find((ar) => ar.id === `room-${roomNum}`);
+      if (!apiRoom) return room;
+
+      const isSoldOut = apiRoom.beds != null && apiRoom.number_beds_paid != null && apiRoom.number_beds_paid >= apiRoom.beds;
+
+      return {
+        ...room,
+        roomPrice: apiRoom.price ?? room.roomPrice,
+        pricePerPerson: apiRoom.beds && apiRoom.price ? Math.round(apiRoom.price / apiRoom.beds) : room.pricePerPerson,
+        beds: apiRoom.beds ?? room.beds,
+        capacity: apiRoom.beds ?? room.capacity,
+        currentOccupancy: apiRoom.number_beds_paid ?? room.currentOccupancy,
+        roomType: apiRoom.type === "shared" ? "shared" as const : apiRoom.type === "single" ? "individual" as const : room.roomType,
+        bathroomType: apiRoom.bathroom ?? room.bathroomType,
+        bedType: apiRoom.bed_type ?? room.bedType,
+        roomSize: apiRoom.size === "small" ? "small" as const : apiRoom.size === "medium" ? "small" as const : apiRoom.size === "large" ? "large" as const : room.roomSize,
+        paymentUrl: apiRoom.payment_url ?? room.paymentUrl,
+        isSoldOut,
+      };
+    }),
+  }));
+}
+
+const BOOKINGS_API = "http://localhost:3001/api/valencia/bookings";
 
 export default function BookingsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
+  const [floorsData, setFloorsData] = useState<FloorData[]>(staticFloorsData);
+
+  // Fetch room data from API
+  const fetchBookings = useCallback(() => {
+    fetch(BOOKINGS_API)
+      .then((res) => res.json())
+      .then((apiRooms: ApiRoom[]) => {
+        setFloorsData(mergeApiData(staticFloorsData, apiRooms));
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [fetchBookings]);
 
   // Block body scroll when panel is open
   useEffect(() => {
@@ -22,7 +85,7 @@ export default function BookingsPage() {
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
-      
+
       return () => {
         // Restore scroll position when panel closes
         document.body.style.position = '';
@@ -83,7 +146,7 @@ export default function BookingsPage() {
                 <div className="space-y-10">
                   <h1 className="text-[2.5rem] sm:text-[3rem] font-bold leading-[1.1] tracking-tight text-white">Make your booking</h1>
                   <div className="flex items-center justify-center gap-3 flex-wrap">
-                    <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Reserve your spot for the next Barcelona house (15th December 2025)</h2>
+                    <h2 className="text-[1.2rem] sm:text-[1.4rem] text-white/70 font-light">Reserve your spot for the Valencia house (20-26 April 2026)</h2>
                   </div>
                   <div className="relative group inline-block w-full sm:w-auto">
                     <div className="absolute inset-0 -m-2 rounded-full hidden sm:block bg-gray-100 opacity-40 filter blur-lg pointer-events-none transition-all duration-300 ease-out group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
