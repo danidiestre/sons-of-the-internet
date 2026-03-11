@@ -54,7 +54,7 @@ function mergeApiData(floors: FloorData[], apiRooms: ApiRoom[]): FloorData[] {
   }));
 }
 
-const BOOKINGS_API = "http://localhost:3001/api/valencia/bookings";
+const BOOKINGS_API = "https://notion-integration-pi.vercel.app/api/valencia/bookings";
 
 export default function BookingsPage() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
