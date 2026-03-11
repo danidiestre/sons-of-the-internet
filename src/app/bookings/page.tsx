@@ -61,15 +61,18 @@ export default function BookingsPage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [activeFloorIndex, setActiveFloorIndex] = useState(0);
   const [floorsData, setFloorsData] = useState<FloorData[]>(staticFloorsData);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch room data from API
   const fetchBookings = useCallback(() => {
+    setIsLoading(true);
     fetch(BOOKINGS_API)
       .then((res) => res.json())
       .then((apiRooms: ApiRoom[]) => {
         setFloorsData(mergeApiData(staticFloorsData, apiRooms));
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -188,14 +191,19 @@ export default function BookingsPage() {
           </div>
 
           {/* Floor Plan Map */}
-          {currentFloor && (
-            <FloorPlanMap 
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <p className="text-white/50 text-sm mt-4">Loading rooms...</p>
+            </div>
+          ) : currentFloor ? (
+            <FloorPlanMap
               onRoomClick={handleRoomClick}
               selectedRoomId={selectedRoom?.id || null}
               floorPlanPath={currentFloor.floorPlanPath}
               rooms={currentFloor.rooms}
             />
-          )}
+          ) : null}
         </div>
       </section>
 
