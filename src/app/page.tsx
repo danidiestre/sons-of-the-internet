@@ -59,13 +59,8 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const heroTitle = (
-    <>
-      They called it a phase.<br />
-      <span style={{ color: '#9a9aaa' }}>It&apos;s been two years.</span>
-    </>
-  );
-  const heroSubtitle = "Still here. Still building. Still proving no one wrong but yourself.";
+  const heroTitle = "For people who can't stop building.";
+  const heroSubtitle = "Even when no one is watching.";
 
   useEffect(() => {
     const canvas = canvasRef.current;
