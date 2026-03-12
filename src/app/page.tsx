@@ -1112,14 +1112,13 @@ export default function Home() {
               <div className="relative rounded-3xl overflow-hidden group cursor-pointer" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="relative w-full aspect-[3/4] sm:aspect-[21/8]">
                   <Image src="/landing-house.jpg" alt="Valencia, Spain" fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="100vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+                  <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 0% 100%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 35%, rgba(0,0,0,0.3) 60%, transparent 80%)' }} />
                 </div>
                 <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-12 lg:p-16">
                   <div className="max-w-xl">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold tracking-wider text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">NEXT HOUSE</span>
-                      <span className="text-sm text-white/50">April 2026</span>
+                      <span className="text-sm text-white/90">April 2026</span>
                     </div>
                     <h4 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-space-mono)' }}>Valencia</h4>
                     <p className="text-white/60 text-base sm:text-lg mb-6">Spain &middot; 1 week &middot; 20-26 April</p>
